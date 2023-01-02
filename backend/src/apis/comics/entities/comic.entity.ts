@@ -14,34 +14,34 @@ import {
 @ObjectType()
 export class Comic {
   @PrimaryGeneratedColumn('uuid')
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   comicId: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Field(() => String)
   title: string;
 
-  @Column()
+  @Column({ nullable: true, default: 0 })
   @Field(() => Int)
   deliveryFee: number;
 
-  @Column()
+  @Column({ nullable: true, default: 0 })
   @Field(() => Int)
   rentalFee: number;
 
-  @Column()
+  @Column({ nullable: true })
   @Field(() => String)
   author: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Field(() => String)
   illustrator: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Field(() => String)
-  pubisher: string;
+  publisher: string;
 
-  @Column({ default: 0 })
+  @Column({ default: 0, nullable: true })
   @Field(() => Float) // 별점을 줄 수 있도록 0.5 단위로 제한
   rating: number;
 

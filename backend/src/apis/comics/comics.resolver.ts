@@ -4,10 +4,17 @@ import { CreateComicInput } from './dto/createComic.input';
 import { CreateUrlInput } from './dto/createUrl.input';
 import { UpdateComicInput } from './dto/update-comic.input';
 import { Comic } from './entities/comic.entity';
+import { Cache } from 'cache-manager';
+import { ElasticsearchService } from '@nestjs/elasticsearch';
+import { CACHE_MANAGER, Inject } from '@nestjs/common';
 
 @Resolver()
 export class ComicsResolver {
-  constructor(private readonly comicsService: ComicsService) {}
+  constructor(
+    private readonly comicsService: ComicsService,
+    private readonly elasticsearchService: ElasticsearchService,
+    @Inject(CACHE_MANAGER) private readonly cache: Cache,
+  ) {}
 
   //조회
   @Query(() => [Comic])
@@ -21,6 +28,36 @@ export class ComicsResolver {
   //   return this.comicsService.findWithTitle({ title });
   // }
 
+  //----------------------------------*[Search comic]*------------------------------------------
+  @Query(() => [Comic])
+  async searchComics(
+    @Args({ name: 'search', nullable: true, description: '검색어' })
+    search: string, //
+  ) {
+    const comicCache = await this.cache.get(`searchUsers:${search}`);
+    if (comicCache) return comicCache;
+
+    const result = await this.elasticsearchService.search({
+      index: 'user',
+      query: { match: { title: search } },
+    });
+    console.log(JSON.stringify(result, null, ' '));
+    const comics = result.hits.hits.map((el: any) => ({
+      title: el._source.title,
+      deliveryFee: el._source.deliveryfee,
+      rentalFee: el._source.rentalfee,
+      author: el._source.author,
+      illustrator: el._source.illustrator,
+      publisher: el._source.publisher,
+    }));
+
+    console.log(comics);
+
+    // 엘라스틱 조회 결과가 있다면, 레디스에 결과 캐싱
+    // await this.cache.set(`searchUsers:${search}`, comics, { ttl: 30 });
+    return comics;
+  }
+  //----------------------------------*[Fetch Comic]*------------------------------------------
   @Query(() => Comic)
   fetchComic(
     @Args('comicId') comicId: string, //
