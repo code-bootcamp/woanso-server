@@ -34,7 +34,7 @@ registerEnumType(USER_INTEREST_ENUM, {
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   id: string;
 
   @Field(() => String)
@@ -42,15 +42,15 @@ export class User {
   nickname?: string;
 
   @Field(() => String)
-  @Column()
+  @Column({ nullable: true })
   email: string;
 
   // @Field(() => String)
-  @Column()
+  @Column({ nullable: true })
   password: string;
 
   @Field(() => String)
-  @Column()
+  @Column({ nullable: true })
   phone: string;
 
   @Field(() => USER_INTEREST_ENUM)

@@ -35,17 +35,17 @@ export class UsersResolver {
     const role = 'USER';
 
     // 엘라스틱서치 등록 임시 //
-    this.elasticsearchService.create({
-      id: 'id',
-      index: 'user',
-      document: {
-        email,
-        password,
-        nickname,
-        phone,
-        interest,
-      },
-    });
+    // this.elasticsearchService.create({
+    //   id: 'id',
+    //   index: 'user',
+    //   document: {
+    //     email,
+    //     password,
+    //     nickname,
+    //     phone,
+    //     interest,
+    //   },
+    // });
     return this.usersService.create({
       email,
       hashedPassword,
@@ -90,7 +90,35 @@ export class UsersResolver {
     return this.usersService.findAll(email);
   }
 
-  //Find User email (by phone)
+  //-------------------------------------**[SEARCH] Find all user**----------------------------------------------
+  @Query(() => [User])
+  async searchUsers(
+    @Args({ name: 'search', nullable: true, description: '검색어' })
+    search: string, //
+  ) {
+    // REDIS 캐시 조회
+    const userCache = await this.cache.get(`searchUsers:${search}`);
+    if (userCache) return userCache;
+    // 엘라스틱서치에서 조회
+    const result = await this.elasticsearchService.search({
+      index: 'user',
+      query: { match: { nickname: search } },
+    });
+    // console.log(JSON.stringify(result, null, ' '));
+    const users = result.hits.hits.map((el: any) => ({
+      id: el._source.id,
+      nickname: el._source.nickname,
+      email: el._source.email,
+    }));
+
+    // console.log(users);
+
+    // 엘라스틱 조회 결과가 있다면, 레디스에 결과 캐싱
+    // await this.cache.set(`searchUsers:${search}`, users, { ttl: 30 });
+    return users;
+  }
+
+  //-------------------------------------**Find user email**----------------------------------------------
   @Query(() => User)
   findEmail(@Args('phone') phone: string): Promise<User> {
     return this.usersService.findEmail({ phone });
