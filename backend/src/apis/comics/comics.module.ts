@@ -6,9 +6,15 @@ import { Comic } from './entities/comic.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Comic])],
-  providers: [
-    ComicsResolver, //
-    ComicsService,
-  ],
+  providers: [ComicsService, ComicsResolver],
+  exports: [ComicsService],
 })
+
+// @Module({
+//   imports: [TypeOrmModule.forFeature([Comic])],
+//   providers: [
+//     ComicsResolver, //
+//     ComicsService,
+//   ],
+// })
 export class ComicsModule {}

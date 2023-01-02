@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import {
   Column,
   CreateDateColumn,
@@ -41,9 +41,9 @@ export class Comic {
   @Field(() => String)
   pubisher: string;
 
-  @Column()
-  @Field(() => Int) // 별점을 줄 수 있도록 0.5 단위로 제한
-  ratings: number;
+  @Column({ default: 0 })
+  @Field(() => Float) // 별점을 줄 수 있도록 0.5 단위로 제한
+  rating: number;
 
   // @Column()
   // @Field(() => String) // 시리즈이기 떄문에 각각 발해일이 다르기 때문에
@@ -61,7 +61,7 @@ export class Comic {
   @Field(() => String)
   ISBN: string;
 
-  @Column()
+  @Column({ default: true })
   @Field(() => Boolean)
   isAvailable: boolean;
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateComicInput } from './dto/createComic.input';
+
 import { Comic } from './entities/comic.entity';
 import {
   IComicsServiceCreate,
@@ -15,6 +15,13 @@ export class ComicsService {
     @InjectRepository(Comic)
     private readonly comicsRepository: Repository<Comic>,
   ) {}
+
+  //검색기능
+  // async findWithTitle({ title }) {
+  //   const result = await this.comicsRepository.find();
+
+  //   return result.filter((el) => el.title.includes(title));
+  // }
 
   //전체조회
   findAll(): Promise<Comic[]> {
@@ -31,17 +38,27 @@ export class ComicsService {
     return result;
   }
 
-  //대여가능여부
+  //대여가능수량
   // findOne1(
   //   { isAvailable }: IComicsServicecheckOne, //: Promise<Comic>
   // ) {
-  //   if (stock > 0) {
-  //     return '대여 가능';
-  //   } else {
-  //     return '대여 불가능';
-  //   }
   //   return this.comicsRepository.findOne({ where: { isAvailable } });
-  //}
+  // }
+
+  //대여가능 , 대여불가 수량 조회
+  async findAll1() {
+    const result = await this.comicsRepository.find();
+    let availableCount = 0;
+    let nonAvailableCount = 0;
+    for (let i = 0; i < result.length; i++) {
+      if (result[i].isAvailable === true) {
+        availableCount++;
+      } else {
+        nonAvailableCount++;
+      }
+    }
+    return [availableCount, nonAvailableCount];
+  }
 
   update({
     comic,
