@@ -1,4 +1,4 @@
-import { Args, Resolver, Query, Mutation, ID } from '@nestjs/graphql';
+import { Args, Resolver, Query, Mutation, ID, Int } from '@nestjs/graphql';
 import { ComicsService } from './comics.service';
 import { CreateComicInput } from './dto/createComic.input';
 import { CreateUrlInput } from './dto/createUrl.input';
@@ -15,6 +15,12 @@ export class ComicsResolver {
     return this.comicsService.findAll();
   }
 
+  // 검색기능
+  // @Query(() => [Comic])
+  // fetchComicsWithTitle(@Args('title') title: string) {
+  //   return this.comicsService.findWithTitle({ title });
+  // }
+
   @Query(() => Comic)
   fetchComic(
     @Args('comicId') comicId: string, //
@@ -22,22 +28,15 @@ export class ComicsResolver {
     return this.comicsService.findOne({ comicId });
   }
 
-  // @Query(() => Comic)
-  // availableComic(
-  //   @Args('comicId') comicId: string, // //: Promise<Comic>
-  // ) {
-  //   return this.comicsService.findOne({ isAvailable });
-  // }
+  //대여가능 , 대여불가 수량 조회
+  @Query(() => [Int])
+  availableComic() {
+    return this.comicsService.findAll1();
+  }
 
   //------------------------------------------------//
 
   //생성;
-  @Mutation(() => Comic)
-  createComic(
-    @Args('createComicInput') createComicInput: CreateComicInput, //
-  ): Promise<Comic> {
-    return this.comicsService.create({ createComicInput });
-  }
 
   //수정
   @Mutation(() => Comic)
@@ -60,5 +59,11 @@ export class ComicsResolver {
   @Mutation(() => Boolean)
   restoreComic(@Args('comicId', { type: () => ID }) comicId: string) {
     return this.comicsService.restore({ comicId });
+  }
+  @Mutation(() => Comic)
+  createComic(
+    @Args('createComicInput') createComicInput: CreateComicInput, //
+  ): Promise<Comic> {
+    return this.comicsService.create({ createComicInput });
   }
 }

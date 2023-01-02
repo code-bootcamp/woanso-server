@@ -20,11 +20,8 @@ export class CreateComicInput {
   @Field(() => String)
   pubisher: string;
 
-  @Field(() => Int) // 별점을 줄 수 있도록 0.5 단위로 제한
-  ratings: number;
-
-  // @Field(() => String) //string
-  // publicationDate: string;
+  // @Field(() => Float) // 별점을 줄 수 있도록 0.5 단위로 제한
+  // ratings: number;
 
   @Field(() => Int)
   totalBooks: number;
@@ -38,8 +35,8 @@ export class CreateComicInput {
   @Field(() => Boolean)
   isAvailable: boolean;
 
-  // @Field(() => Int)
-  // stock: number;
+  @Field(() => Int)
+  stock: number;
 
   @Field(() => [String])
   url: string[];

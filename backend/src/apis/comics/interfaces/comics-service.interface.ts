@@ -28,6 +28,6 @@ export interface IImagesServiceCreate {
   createUrlInput: CreateUrlInput;
 }
 
-// export interface IComicsServicecheckOne {
-//   isAvailable: boolean;
-// }
+export interface IComicsServicecheckOne {
+  isAvailable: boolean;
+}

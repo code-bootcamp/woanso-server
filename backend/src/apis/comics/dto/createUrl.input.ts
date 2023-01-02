@@ -7,11 +7,5 @@ export class CreateUrlInput {
 
   @Field(() => Boolean)
   isMain: boolean;
-
-  //   @Field(() => String)
-  //   material: string;
-
-  //   @Field(() => Int)
-  //   delivery_fee: number;
 }
 // 이미지 담기

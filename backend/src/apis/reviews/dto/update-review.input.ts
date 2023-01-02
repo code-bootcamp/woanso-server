@@ -1,8 +1,12 @@
 import { InputType, PartialType } from '@nestjs/graphql';
-import { CreateComicInput } from './createComic.input';
+import { CreateReviewInput } from './createReview.input';
 
 @InputType()
-export class UpdateComicInput extends PartialType(CreateComicInput) {}
+export class UpdateReviewInput extends PartialType(CreateReviewInput) {
+  //   name: string;
+  //   description: string;
+  //   price: number;
+}
 
 //PickType(CreateProductInput, ['name', 'price']) => 고르기
 //OmitType(CreateProductInput, ['name', 'price']) => 빼기
