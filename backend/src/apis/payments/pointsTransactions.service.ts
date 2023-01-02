@@ -10,6 +10,7 @@ import {
   POINT_TRANSACTION_STATUS_ENUM,
 } from './entities/payment.entity';
 import { User } from 'src/apis/users/entities/user.entity';
+import { Comic } from '../comics/entities/comic.entity';
 
 @Injectable()
 export class PointsTransactionsService {
@@ -19,6 +20,9 @@ export class PointsTransactionsService {
 
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+
+    @InjectRepository(Comic)
+    private readonly comicRepository: Repository<Comic>,
 
     private readonly dataSource: DataSource,
   ) {}
@@ -73,12 +77,13 @@ export class PointsTransactionsService {
   }
 
   //////////////////////////////////////////////////////////////////////
-  async cancel({ impUid, amount, user }) {
+  async cancel({ impUid, amount, user, comicId }) {
     const pointTransaction = await this.create({
       impUid,
       amount: -amount,
       user,
       status: POINT_TRANSACTION_STATUS_ENUM.CANCEL,
+      comicId,
     });
     return pointTransaction;
   }
@@ -91,6 +96,7 @@ export class PointsTransactionsService {
     amount,
     user: _user,
     status = POINT_TRANSACTION_STATUS_ENUM.PAYMENT,
+    comicId,
   }): Promise<any> {
     const queryRunner = this.dataSource.createQueryRunner();
 
@@ -114,6 +120,17 @@ export class PointsTransactionsService {
         lock: { mode: 'pessimistic_partial_write' },
       });
 
+      //
+      const stock = await this.comicRepository.findOne({ where: comicId });
+      await this.comicRepository.update(
+        { comicId },
+        { stock: stock.stock - 1 },
+      );
+      const stock2 = await this.comicRepository.findOne({ where: comicId });
+
+      if (stock2.stock === 0) {
+        await this.comicRepository.update({ comicId }, { isAvailable: false });
+      }
       // 3. 유저의 돈 업데이트하기
       await this.usersRepository.update(
         { id: user.id },
