@@ -1,0 +1,138 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: String!
+  nickname: String!
+  email: String!
+  phone: String!
+  interest: USER_INTEREST_ENUM!
+  role: USER_ROLE_ENUM!
+  balance: Int!
+}
+
+enum USER_INTEREST_ENUM {
+  romance
+  drama
+  fantasy
+  action
+  school
+  horror
+}
+
+enum USER_ROLE_ENUM {
+  Admin
+  User
+}
+
+type Comic {
+  comicId: String!
+  title: String!
+  deliveryFee: Int!
+  rentalFee: Int!
+  author: String!
+  illustrator: String!
+  pubisher: String!
+  ratings: Int!
+  totalBooks: Int!
+  description: String!
+  ISBN: String!
+  isAvailable: Boolean!
+  stock: Int!
+}
+
+type PointTransaction {
+  id: String!
+  impUid: String!
+  amount: Int!
+  status: POINT_TRANSACTION_STATUS_ENUM!
+  user: User!
+  createdAt: DateTime!
+}
+
+enum POINT_TRANSACTION_STATUS_ENUM {
+  PAYMENT
+  CANCEL
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Query {
+  fetchUser(email: String!): User!
+  fetchUsers: [User!]!
+  findEmail(phone: String!): User!
+  authUser: String!
+  fetchComics: [Comic!]!
+  fetchComic(comicId: String!): Comic!
+}
+
+type Mutation {
+  uploadFile(files: [Upload!]!): [String!]!
+  uploadOneFile(file: Upload!): String!
+  signUp(email: String!, password: String!, nickname: String!, phone: String!, interest: String!): User!
+  signUpAdmin(email: String!, password: String!, phone: String!): User!
+  updateUser(email: String!, updateUserInput: UpdateUserInput!): User!
+  updatePassword(email: String!, phone: String!, newPassword: String!): String!
+  deleteUser(email: String!, password: String!): Boolean!
+  sendToken(phone: String!): String!
+  authToken(phone: String!, token: String!): String!
+  login(email: String!, password: String!): String!
+  restoreAccessToken: String!
+  logout: String!
+  createComic(createComicInput: CreateComicInput!): Comic!
+  updateComic(comicId: String!, updateComicInput: UpdateComicInput!, createUrlInput: CreateUrlInput!): Comic!
+  deleteComic(comicId: ID!): Boolean!
+  restoreComic(comicId: ID!): Boolean!
+  createPointTransaction(impUid: String!, amount: Int!): PointTransaction!
+  cancelPointTransaction(impUid: String!): PointTransaction!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input UpdateUserInput {
+  email: String
+  password: String
+  nickname: String
+  phone: String
+  interest: String
+}
+
+input CreateComicInput {
+  title: String!
+  deliveryFee: Int!
+  rentalFee: Int!
+  author: String!
+  illustrator: String!
+  pubisher: String!
+  ratings: Int!
+  totalBooks: Int!
+  description: String!
+  ISBN: String!
+  isAvailable: Boolean!
+  url: [String!]!
+}
+
+input UpdateComicInput {
+  title: String
+  deliveryFee: Int
+  rentalFee: Int
+  author: String
+  illustrator: String
+  pubisher: String
+  ratings: Int
+  totalBooks: Int
+  description: String
+  ISBN: String
+  isAvailable: Boolean
+  url: [String!]
+}
+
+input CreateUrlInput {
+  url: [String!]!
+  isMain: Boolean!
+}
