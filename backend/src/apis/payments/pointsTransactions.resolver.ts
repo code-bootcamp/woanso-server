@@ -19,6 +19,7 @@ export class PointsTransactionsResolver {
   @Mutation(() => PointTransaction)
   async createPointTransaction(
     @Args('impUid') impUid: string,
+    @Args('comicId') comicId: string,
     @Args({ name: 'amount', type: () => Int }) amount: number,
     @Context() context: IContext,
   ): Promise<any> {
@@ -34,6 +35,7 @@ export class PointsTransactionsResolver {
       impUid,
       amount,
       user,
+      comicId,
     });
   }
 
@@ -43,6 +45,7 @@ export class PointsTransactionsResolver {
   @Mutation(() => PointTransaction)
   async cancelPointTransaction(
     @Args('impUid') impUid: string,
+    @Args('comicId') comicId: string,
     @Context() context: IContext,
   ) {
     const user = context.req.user;
@@ -66,6 +69,7 @@ export class PointsTransactionsResolver {
       impUid,
       amount: cancelledAmount,
       user,
+      comicId,
     });
   }
 }
