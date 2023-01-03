@@ -20,14 +20,12 @@ export interface IUsersServiceCreate {
   nickname: string;
   phone: string;
   interest?: string;
-  role?: string;
 }
 
 export interface IUsersServiceCreateAdmin {
   email: string;
   hashedPassword: string;
   phone?: string;
-  role?: string;
 }
 
 export interface IUsersServiceUpdate {

@@ -6,7 +6,7 @@ import {
   Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import {
   IUsersServiceCreate,
@@ -19,6 +19,8 @@ import {
 } from './interfaces/users-service.interface';
 import coolsms from 'coolsms-node-sdk';
 import { Cache } from 'cache-manager';
+import * as bcrypt from 'bcrypt';
+import { UserDTO } from '../auth/dto/user.dto';
 
 @Injectable()
 export class UsersService {
@@ -28,14 +30,13 @@ export class UsersService {
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
-  //Create
+  //------------------------**[Create]**-------------------------------
   async create({
     email,
     hashedPassword: password,
     nickname,
     phone,
     interest,
-    role,
   }: IUsersServiceCreate): Promise<User> {
     const user = await this.usersRepository.findOne({ where: { email } });
     if (user) throw new ConflictException();
@@ -46,31 +47,28 @@ export class UsersService {
       phone,
       password,
       interest,
-      role,
     });
   }
 
-  //CreateAdmin
+  //------------------------**[Create ADMIN user]**-------------------------------
   async createAdmin({
     email,
     hashedPassword: password,
     phone,
-    role,
   }: IUsersServiceCreateAdmin) {
     return this.usersRepository.save({
       email,
       password,
-      role,
       phone,
     });
   }
 
-  //Find one user
+  //------------------------**[Find one user by EMAIL]**-------------------------------
   findOne({ email }: IUsersServiceFindOne): Promise<User> {
     return this.usersRepository.findOne({ where: { email } });
   }
 
-  //Find one user for Update password
+  //------------------------**[Find one user for update password]**-------------------------------
   findOneForUpdate({
     email,
     phone,
@@ -78,18 +76,17 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { email, phone } });
   }
 
-  //Find email for user
+  //------------------------**[Find email by PHONE]**-------------------------------
   findEmail({ phone }: IUsersServiceFindEmail): Promise<User> {
     return this.usersRepository.findOne({ where: { phone } });
   }
 
-  //Find all user for admin
+  //------------------------**[Fetch all users for admin]**-------------------------------
   async findAll(email): Promise<User[]> {
-    const user = await this.usersRepository.findOne({ where: { email } });
-    if (user.role === 'ADMIN') return this.usersRepository.find();
+    return this.usersRepository.find(email);
   }
 
-  //Update
+  //------------------------**[Update user]**-------------------------------
   update({ user, updateUserInput }: IUsersServiceUpdate): Promise<User> {
     const result = this.usersRepository.save({
       ...user, //
@@ -98,7 +95,7 @@ export class UsersService {
     return result;
   }
 
-  //Update password
+  //------------------------**[Update password]**-------------------------------
   async updatePassword({ email, hashedPassword }) {
     const user = this.usersRepository.findOne({ where: email });
     await this.usersRepository.save({
@@ -107,13 +104,13 @@ export class UsersService {
     });
   }
 
-  //Delete
+  //------------------------**[Delete user]**-------------------------------
   async delete({ email }: IUsersServiceDelete): Promise<boolean> {
     const result = await this.usersRepository.softDelete({ email });
     return result.affected ? true : false;
   }
 
-  //Send Token
+  //------------------------**[Send token by PHONE]**-------------------------------
   async sendToken({ phone }) {
     const SMS_KEY = process.env.SMS_KEY;
     const SMS_SECRET = process.env.SMS_SECRET;
@@ -143,7 +140,7 @@ export class UsersService {
     }
   }
 
-  //Auth Token
+  //------------------------**[Auth token]**-------------------------------
   async authToken({ phone, token }) {
     const myToken = await this.cache.get(phone);
 
@@ -151,5 +148,41 @@ export class UsersService {
     else {
       throw new UnprocessableEntityException('인증번호가 잘못 되었습니다.');
     }
+  }
+
+  //------------------------**[Block user]**-------------------------------
+
+  async blockUser({ email, id }) {
+    const admin = await this.usersRepository.findOne({
+      where: { email },
+    });
+
+    this.userRole({ admin });
+  }
+
+  userRole({ admin }) {
+    if (!admin) {
+      throw new ConflictException('존재하지 않는 계정입니다.');
+    }
+    if (admin.role !== 'ADMIN') {
+      throw new ConflictException('관리자가 아닙니다.');
+    }
+  }
+  //------------------------**[ROLE LOGIC]**-------------------------------
+  async findByFields(
+    options: FindOneOptions<UserDTO>,
+  ): Promise<User | undefined> {
+    return await this.usersRepository.findOne(options);
+  }
+
+  async save(userDTO: UserDTO): Promise<UserDTO | undefined> {
+    await this.transformPassword(userDTO);
+    console.log(userDTO);
+    return await this.usersRepository.save(userDTO);
+  }
+
+  async transformPassword(user: UserDTO): Promise<void> {
+    user.password = await bcrypt.hash(user.password, 10);
+    return Promise.resolve();
   }
 }
