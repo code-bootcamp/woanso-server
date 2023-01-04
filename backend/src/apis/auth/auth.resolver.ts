@@ -12,21 +12,25 @@ import { AuthService } from './auth.service';
 import { IContext } from 'src/commons/types/context';
 import {
   GqlAuthAccessGuard,
-  // GqlAuthAccessGuard,
   GqlAuthRefreshGuard,
 } from 'src/commons/auth/gql-auth.guard';
 import { Cache } from 'cache-manager';
 import * as jwt from 'jsonwebtoken';
+import { AuthRoleService } from './auth.role.service';
+import { User } from 'src/apis/users/entities/user.entity';
+import { UserDTO } from './dto/user.dto';
 
 @Resolver()
 export class AuthResolver {
   constructor(
     private readonly usersService: UsersService, //
     private readonly authService: AuthService, //
+    private readonly authRoleService: AuthRoleService, //
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
 
+  //-----------------**[LOGIN normal]**------------------
   @Mutation(() => String)
   async login(
     @Args('email') email: string, //
@@ -52,6 +56,7 @@ export class AuthResolver {
     return this.authService.getAccessToken({ user });
   }
 
+  //-----------------**[Restore access token]**------------------
   @UseGuards(GqlAuthRefreshGuard)
   @Mutation(() => String)
   restoreAccessToken(
@@ -61,6 +66,7 @@ export class AuthResolver {
     return this.authService.getAccessToken({ user: context.req.user });
   }
 
+  //-----------------**[Logout]**------------------
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => String)
   async logout(
@@ -81,4 +87,72 @@ export class AuthResolver {
     await this.cacheManager.set(`refreshToken:${refresh}`, 'refresh', 3600);
     return '로그아웃에 성공했습니다.';
   }
+
+  //-----------------**[Auth logics]**------------------
+
+  @Mutation(() => String)
+  async adminSignUp(@Args('userDTO') userDTO: UserDTO): Promise<any> {
+    // const hashedPassword = await bcrypt.hash(userDTO.password, 10);
+    return this.authRoleService.registerUser(userDTO);
+  }
+
+  @Mutation(() => String)
+  async loginAdmin(
+    @Args('email') email: string, //
+    @Args('password') password: string,
+    @Context() context: IContext,
+  ): Promise<string> {
+    const user = await this.usersService.findOne({ email });
+    if (!user) throw new UnprocessableEntityException('이메일이 없습니다.');
+    const isAuth = await bcrypt.compare(password, user.password);
+    console.log(isAuth);
+    if (!isAuth) throw new UnprocessableEntityException('암호가 틀렸습니다.');
+    this.authService.setRefreshToken({ user, res: context.res });
+    console.log(context.req);
+    return this.authService.getAccessToken({ user });
+  }
 }
+
+// @Post('/login')
+//     async login(@Body() userDTO: UserDTO, @Res() res: Response): Promise<any> {
+//         const jwt = await this.authService.validateUser(userDTO);
+//         res.setHeader('Authorization', 'Bearer '+jwt.accessToken);
+//         res.cookie('jwt', jwt.accessToken, {
+//             httpOnly: true,
+//             maxAge: 24 * 60 * 60 * 1000
+//         })
+//         return res.send({
+//             message: 'success'
+//         });
+//     }
+
+// @Get('/authenticate')
+// @UseGuards(AuthGuard)
+// isAuthenticated(@Req() req: Request): any {
+//     const user: any = req.user;
+//     return user;
+// }
+
+//     @Get('/admin-role')
+//     @UseGuards(AuthGuard, RolesGuard)
+//     @Roles(RoleType.ADMIN)
+//     adminRoleCheck(@Req() req: Request): any {
+//         const user: any = req.user;
+//         return user;
+//     }
+
+//     @Get('/cookies')
+//     getCookies(@Req() req: Request, @Res() res: Response): any {
+//         const jwt = req.cookies['jwt'];
+//         return res.send(jwt);
+//     }
+
+//     @Post('/logout')
+//     logout(@Res() res: Response): any {
+//         res.cookie('jwt', '', {
+//             maxAge: 0
+//         });
+//         return res.send({
+//             message: 'success'
+//         })
+//     }

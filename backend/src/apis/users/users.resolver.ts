@@ -22,7 +22,7 @@ export class UsersResolver {
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
-  //Sign up for USER
+  //--------------------------------**[Sign up for USER]**--------------------------------
   @Mutation(() => User)
   async signUp(
     @Args('email') email: string,
@@ -32,31 +32,17 @@ export class UsersResolver {
     @Args('interest') interest: string,
   ): Promise<User> {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const role = 'USER';
 
-    // 엘라스틱서치 등록 임시 //
-    // this.elasticsearchService.create({
-    //   id: 'id',
-    //   index: 'user',
-    //   document: {
-    //     email,
-    //     password,
-    //     nickname,
-    //     phone,
-    //     interest,
-    //   },
-    // });
     return this.usersService.create({
       email,
       hashedPassword,
       nickname,
       phone,
       interest,
-      role,
     });
   }
 
-  //Sign up for ADMIN user
+  //--------------------------------**[Sign up for ADMIN]**--------------------------------
   @Mutation(() => User)
   async signUpAdmin(
     @Args('email') email: string,
@@ -64,17 +50,15 @@ export class UsersResolver {
     @Args('phone') phone?: string,
   ) {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const role = 'ADMIN';
 
     return this.usersService.createAdmin({
       email,
       hashedPassword,
-      role,
       phone,
     });
   }
 
-  //Find one user(by email)
+  //--------------------------------**[Find user by EMAIL]**--------------------------------
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => User)
   fetchUser(
@@ -83,17 +67,21 @@ export class UsersResolver {
     return this.usersService.findOne({ email });
   }
 
-  //Find all user
+  //--------------------------------**[Find all user]**--------------------------------
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [User])
   fetchUsers(email): Promise<User[]> {
     return this.usersService.findAll(email);
   }
 
-  //-------------------------------------**[SEARCH] Find all user**----------------------------------------------
+  //-------------------------------------**[SEARCH users]**----------------------------------------------
   @Query(() => [User])
   async searchUsers(
-    @Args({ name: 'search', nullable: true, description: '검색어' })
+    @Args({
+      name: 'search',
+      nullable: true,
+      description: '유저 닉네임으로 검색',
+    })
     search: string, //
   ) {
     // REDIS 캐시 조회
@@ -118,7 +106,7 @@ export class UsersResolver {
     return users;
   }
 
-  //-------------------------------------**Find user email**----------------------------------------------
+  //-------------------------------------**[Find user email]**----------------------------------------------
   @Query(() => User)
   findEmail(@Args('phone') phone: string): Promise<User> {
     return this.usersService.findEmail({ phone });
@@ -138,7 +126,7 @@ export class UsersResolver {
     });
   }
 
-  //Update password
+  //------------------------------------**[Update password]**----------------------------------------------
   @Mutation(() => String)
   async updatePassword(
     @Args('email') email: string,
@@ -155,7 +143,7 @@ export class UsersResolver {
     return await this.usersService.updatePassword({ email, hashedPassword });
   }
 
-  //Delete
+  //-------------------------------------**[Delete user]**----------------------------------------------
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   deleteUser(
@@ -165,7 +153,7 @@ export class UsersResolver {
     return this.usersService.delete({ email, password });
   }
 
-  //Guard
+  //-------------------------------------**[Auth user]**----------------------------------------------
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => String)
   authUser(
@@ -176,15 +164,25 @@ export class UsersResolver {
     return '인가 성공';
   }
 
-  //Get Token
+  //-------------------------------------**[Get token]**----------------------------------------------
   @Mutation(() => String)
   async sendToken(@Args('phone') phone: string) {
     return await this.usersService.sendToken({ phone });
   }
 
-  //Auth token
+  //-------------------------------------**[Auth token]**----------------------------------------------
   @Mutation(() => String)
   async authToken(@Args('phone') phone: string, @Args('token') token: string) {
     return this.usersService.authToken({ phone, token });
+  }
+  //-------------------------------------**[Block User]**----------------------------------------------
+  @UseGuards(GqlAuthAccessGuard)
+  @Mutation(() => Boolean)
+  blockUser(
+    @Context() context: any, //
+    @Args('id') id: string,
+  ) {
+    const email = context.req.user.email;
+    return this.usersService.blockUser({ email, id });
   }
 }

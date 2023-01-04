@@ -1,17 +1,19 @@
 import { Field, ObjectType, Int, registerEnumType } from '@nestjs/graphql';
+import { UserAuthority } from 'src/apis/usersAuth/entities/user.auth.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-export enum USER_ROLE_ENUM {
-  Admin = 'ADMIN',
-  User = 'USER',
-}
+// export enum USER_ROLE_ENUM {
+//   Admin = 'ADMIN',
+//   User = 'USER',
+// }
 
 export enum USER_INTEREST_ENUM {
   romance = '로맨스',
@@ -22,9 +24,9 @@ export enum USER_INTEREST_ENUM {
   horror = '추리/공포',
 }
 
-registerEnumType(USER_ROLE_ENUM, {
-  name: 'USER_ROLE_ENUM',
-});
+// registerEnumType(USER_ROLE_ENUM, {
+//   name: 'USER_ROLE_ENUM',
+// });
 
 registerEnumType(USER_INTEREST_ENUM, {
   name: 'USER_INTEREST_ENUM',
@@ -39,7 +41,7 @@ export class User {
 
   @Field(() => String)
   @Column({ default: '', nullable: true })
-  nickname?: string;
+  nickname: string;
 
   @Field(() => String)
   @Column({ nullable: true })
@@ -57,9 +59,9 @@ export class User {
   @Column({ type: 'enum', enum: USER_INTEREST_ENUM })
   interest: string;
 
-  @Field(() => USER_ROLE_ENUM)
-  @Column({ type: 'enum', enum: USER_ROLE_ENUM })
-  role: string;
+  // @Field(() => USER_ROLE_ENUM)
+  // @Column({ type: 'enum', enum: USER_ROLE_ENUM })
+  // role: string;
 
   @Field(() => Int)
   @Column({ default: 3000 })
@@ -73,4 +75,9 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => UserAuthority, (userAuthority) => userAuthority.user, {
+    eager: true,
+  })
+  authorities?: any[];
 }
