@@ -24,7 +24,6 @@ export class Review {
   @Field(() => Int)
   like: number;
 
-  @Field(() => Int)
   @CreateDateColumn()
   createdAt: Date;
 

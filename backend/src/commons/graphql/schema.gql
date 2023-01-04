@@ -39,10 +39,8 @@ type Comic {
   description: String!
   ISBN: String!
   isAvailable: Boolean!
-  stock: Int!
 }
 
-<<<<<<< HEAD
 type PointTransaction {
   id: String!
   impUid: String!
@@ -66,14 +64,11 @@ type Review {
   reviewId: String!
   content: String!
   like: Int!
-  createdAt: DateTime!
   rating: Int!
   user: User!
   comic: Comic!
 }
 
-=======
->>>>>>> dev
 type Query {
   fetchUser(email: String!): User!
   fetchUsers: [User!]!
@@ -103,19 +98,13 @@ type Mutation {
   login(email: String!, password: String!): String!
   restoreAccessToken: String!
   logout: String!
-  updateComic(reviewId: String!, updateReviewInput: UpdateReviewInput!): Review!
+  updateComic(comicId: String!, updateComicInput: UpdateComicInput!, createUrlInput: CreateUrlInput!): Comic!
   deleteComic(reviewId: ID!): Boolean!
   restoreComic(reviewId: ID!): Boolean!
   createComic(createComicInput: CreateComicInput!): Comic!
-<<<<<<< HEAD
   createReview(createReviewInput: CreateReviewInput!): Review!
   createPointTransaction(impUid: String!, comicId: String!, amount: Int!): PointTransaction!
   cancelPointTransaction(impUid: String!, comicId: String!): PointTransaction!
-=======
-  updateComic(comicId: String!, updateComicInput: UpdateComicInput!, createUrlInput: CreateUrlInput!): Comic!
-  deleteComic(comicId: ID!): Boolean!
-  restoreComic(comicId: ID!): Boolean!
->>>>>>> dev
 }
 
 """The `Upload` scalar type represents a file upload."""
@@ -129,12 +118,24 @@ input UpdateUserInput {
   interest: String
 }
 
-input UpdateReviewInput {
-  comicId: String
-  userId: String
-  content: String
-  like: Int
-  rating: Int
+input UpdateComicInput {
+  title: String
+  deliveryFee: Int
+  rentalFee: Int
+  author: String
+  illustrator: String
+  pubisher: String
+  totalBooks: Int
+  description: String
+  ISBN: String
+  isAvailable: Boolean
+  stock: Int
+  url: [String!]
+}
+
+input CreateUrlInput {
+  url: [String!]!
+  isMain: Boolean!
 }
 
 input CreateComicInput {
