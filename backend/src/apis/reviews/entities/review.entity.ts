@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import { Comic } from 'src/apis/comics/entities/comic.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
@@ -28,7 +28,7 @@ export class Review {
   createdAt: Date;
 
   @Column()
-  @Field(() => Int)
+  @Field(() => Float)
   rating: number;
 
   @ManyToOne(() => User)

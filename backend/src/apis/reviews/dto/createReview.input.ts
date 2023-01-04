@@ -17,6 +17,6 @@ export class CreateReviewInput {
   // @Field()
   // createdAt: Date; 굳이 디비에 저장할 필요없음. 자동 생성
 
-  @Field(() => Int)
+  // @Field(() => Int)
   rating: number;
 }

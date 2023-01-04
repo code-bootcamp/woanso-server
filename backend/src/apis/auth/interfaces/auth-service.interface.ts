@@ -1,6 +1,6 @@
 import { User } from 'src/apis/users/entities/user.entity';
 import { IAuthUserItem } from 'src/commons/types/context';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 export interface IAuthServiceGetAccessToken {
   user: User | IAuthUserItem;
 }
@@ -8,4 +8,5 @@ export interface IAuthServiceGetAccessToken {
 export interface IAUthServiceSetRefreshToken {
   user: User;
   res: Response;
+  req?: Request;
 }

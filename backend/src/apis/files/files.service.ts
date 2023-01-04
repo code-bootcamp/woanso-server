@@ -8,13 +8,12 @@ import { v4 as uuidv4 } from 'uuid';
 export class FilesService {
   async upload({ files }: IFilesServiceUpload): Promise<string[]> {
     const waitedFiles = await Promise.all(files);
-
+    console.log(waitedFiles);
     // 1-1) 스토리지 셋팅하기
-    const bucket = process.env.BUCKET;
     const storage = new Storage({
-      projectId: process.env.GCP_PROJECT,
-      keyFilename: process.env.GCP_PROJECT_KEY_FILE,
-    }).bucket(bucket);
+      projectId: 'woanso',
+      keyFilename: '/my-secret/gcp-file-storage.json',
+    }).bucket('woanso-storage');
 
     // 1-2) 스토리지에 파일 올리기
     const results = await Promise.all(
@@ -25,7 +24,7 @@ export class FilesService {
 
             el.createReadStream()
               .pipe(storage.file(el.filename).createWriteStream())
-              .on('finish', () => resolve(`${bucket}/${fname}`))
+              .on('finish', () => resolve(`woanso-storage/${fname}`))
               .on('error', () => reject('실패'));
           }),
       ),
@@ -35,18 +34,17 @@ export class FilesService {
     return results;
   }
   async uploadOne({ file }) {
-    const bucket = process.env.BUCKET;
     const storage = new Storage({
-      projectId: process.env.GCP_PROJECT,
-      keyFilename: process.env.GCP_PROJECT_KEY_FILE,
-    }).bucket(bucket);
+      projectId: 'woanso',
+      keyFilename: '/my-secret/gcp-file-storage.json',
+    }).bucket('woanso-storage');
 
     const fname = `${getToday()}/${uuidv4()}/origin/${file.filename}`;
     const result = await new Promise((resolve, reject) => {
       file
         .createReadStream()
         .pipe(storage.file(fname).createWriteStream())
-        .on('finish', () => resolve(`${bucket}/${fname}`))
+        .on('finish', () => resolve(`woanso-storage/${fname}`))
         .on('error', () => reject('false'));
     });
     if (result === 'false') {
