@@ -13,19 +13,42 @@ export class AuthService {
     private readonly usersService: UsersService,
   ) {}
 
-  setRefreshToken({ user, res }: IAUthServiceSetRefreshToken): void {
+  setRefreshToken({ user, res, req }: IAUthServiceSetRefreshToken): string {
     const refreshToken = this.jwtService.sign(
       { email: user.email, sub: user.id },
       { secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
     );
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://127.0.0.1:5500',
+      'https://examplezi.shop',
+      'https://woanso.shop',
+    ];
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+    );
+    res.setHeader(
+      'Set-Cookie',
+      `refreshToken=${refreshToken}; path=/; domain=.woanso.shop; SameSite=None; Secure; httpOnly;`,
+    );
 
-    //개발환경
-    // @ts-ignore
-    res.setHeader('Set-Cookie', `refreshToken=${refreshToken};path=/;`);
-    // 배포환경
-    // res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/; domain=.mybacksite.com; SameSite=None; Secure; httpOnly;`)
-    // res.setHeader('Access-Control-Allow-Origin', 'https://myfrontsite.com')
+    return refreshToken;
   }
+
+  //개발환경
+
+  //   res.setHeader('Set-Cookie', `refreshToken=${refreshToken};path=/;`);
+  //   // 배포환경
+  //   // res.setHeader('Set-Cookie', refreshToken=${refreshToken}; path=/; domain=.mybacksite.com; SameSite=None; Secure; httpOnly;)
+  //   // res.setHeader('Access-Control-Allow-Origin', 'https://myfrontsite.com')
+  // }
 
   async loginOAuth({ req, res }) {
     //프로필을 받아온 다음, 로그인 처리해야 하는 곳
