@@ -66,7 +66,7 @@ export class Comic {
   isAvailable: boolean;
 
   @Column()
-  @Field(() => Int)
+  //@Field(() => Int)
   stock: number;
 
   @CreateDateColumn()

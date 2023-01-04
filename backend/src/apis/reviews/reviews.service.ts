@@ -50,6 +50,7 @@ export class ReviewsService {
     });
     console.log(result2);
     if (resultComic.length === 0) {
+      //리뷰쓴 사람이 0이라면
       await this.comicRepository.update(
         {
           comicId,
@@ -68,12 +69,6 @@ export class ReviewsService {
         },
       );
     }
-
-    // const result3 = await this.comicRepository.findOne({
-    //   where: {
-    //     comicId,
-    //   },
-    // });
 
     const result = this.reviewRepository.save({
       comic: {
@@ -111,10 +106,4 @@ export class ReviewsService {
 
     return result.affected ? true : false;
   }
-
-  // const result = this.reviewRepository.save({
-  //   ...review, //수정 후 수정되지 않은 다른 결과값까지 모두 받고 싶을 때 사용
-  //   ...updateReviewInput,
-  // });
-  // return result;
 }
