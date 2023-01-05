@@ -1,4 +1,5 @@
-import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+
 import { CreateReviewInput } from './dto/createReview.input';
 
 import { Review } from './entities/review.entity';
@@ -7,7 +8,7 @@ import { ReviewsService } from './reviews.service';
 @Resolver()
 export class ReviewsResolver {
   constructor(
-    private readonly reviewsService: ReviewsService, //
+    private readonly reviewsService: ReviewsService, // // private readonly reviewsRatingService: ReviewsRatingService, //
   ) {}
 
   @Query(() => [Review])
@@ -18,6 +19,7 @@ export class ReviewsResolver {
   @Query(() => Review)
   fetchReview(
     @Args('reviewId') reviewId: string, //
+    // @Args('reviewRatingId') reviewRatingId: string, //
   ): Promise<Review> {
     return this.reviewsService.findOne({ reviewId });
   }
@@ -28,15 +30,21 @@ export class ReviewsResolver {
   ): Promise<Review> {
     return this.reviewsService.create({ createReviewInput });
   }
-
+  // 좋아요
+  // @Mutation(() => Int)
+  // createlikes(
+  //   @Args('createReviewLikeInput') createReviewLikeInput: CreateReviewLikeInput,
+  // ) {
+  //   return this.reviewsService.create2({ createReviewLikeInput });
+  // }
   //삭제
   @Mutation(() => Boolean)
-  deleteComic(@Args('reviewId', { type: () => ID }) reviewId: string) {
+  deleteReview(@Args('reviewId', { type: () => ID }) reviewId: string) {
     return this.reviewsService.delete({ reviewId });
   }
 
   @Mutation(() => Boolean)
-  restoreComic(@Args('reviewId', { type: () => ID }) reviewId: string) {
+  restoreReview(@Args('reviewId', { type: () => ID }) reviewId: string) {
     return this.reviewsService.restore({ reviewId });
   }
 }
