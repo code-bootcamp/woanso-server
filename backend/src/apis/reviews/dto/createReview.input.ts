@@ -1,4 +1,4 @@
-import { Field, InputType, Int } from '@nestjs/graphql';
+import { Field, Float, InputType, Int } from '@nestjs/graphql';
 
 @InputType()
 export class CreateReviewInput {
@@ -11,12 +11,12 @@ export class CreateReviewInput {
   @Field(() => String)
   content: string;
 
-  @Field(() => Int)
+  //@Field(() => Int)
   like: number;
 
   // @Field()
   // createdAt: Date; 굳이 디비에 저장할 필요없음. 자동 생성
 
-  // @Field(() => Int)
+  @Field(() => Float)
   rating: number;
 }

@@ -5,7 +5,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -20,16 +22,12 @@ export class Review {
   @Field(() => String)
   content: string;
 
-  @Column()
+  @Column({ default: 0 })
   @Field(() => Int)
   like: number;
 
   @CreateDateColumn()
   createdAt: Date;
-
-  @Column()
-  @Field(() => Float)
-  rating: number;
 
   @ManyToOne(() => User)
   @Field(() => User)

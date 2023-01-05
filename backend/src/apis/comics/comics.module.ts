@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ComicRating } from '../comicsRating/entities/comicRating.entity';
 import { ComicsResolver } from './comics.resolver';
 import { ComicsService } from './comics.service';
 import { Comic } from './entities/comic.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Comic]),
+    TypeOrmModule.forFeature([Comic, ComicRating]),
     ElasticsearchModule.register({
       node: 'http://elasticsearch:9200',
     }),

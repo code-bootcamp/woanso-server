@@ -20,6 +20,12 @@ enum USER_INTEREST_ENUM {
   horror
 }
 
+type ComicRating {
+  comicRatingId: String!
+  totalRating: Int!
+  comicRating: Float!
+}
+
 type Comic {
   comicId: String
   title: String!
@@ -28,37 +34,17 @@ type Comic {
   author: String!
   illustrator: String!
   publisher: String!
-  rating: Float!
   totalBooks: Int!
   description: String!
   ISBN: String!
   isAvailable: Boolean!
+  comicRating: ComicRating!
 }
-
-type PointTransaction {
-  id: String!
-  impUid: String!
-  amount: Int!
-  status: POINT_TRANSACTION_STATUS_ENUM!
-  user: User!
-  createdAt: DateTime!
-}
-
-enum POINT_TRANSACTION_STATUS_ENUM {
-  PAYMENT
-  CANCEL
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 type Review {
   reviewId: String!
   content: String!
   like: Int!
-  rating: Float!
   user: User!
   comic: Comic!
 }
@@ -100,12 +86,12 @@ type Mutation {
   adminSignUp(userDTO: UserDTO!): String!
   loginAdmin(email: String!, password: String!): String!
   updateComic(comicId: String!, updateComicInput: UpdateComicInput!, createUrlInput: CreateUrlInput!): Comic!
-  deleteComic(reviewId: ID!): Boolean!
-  restoreComic(reviewId: ID!): Boolean!
+  deleteComic(comicId: ID!): Boolean!
+  restoreComic(comicId: ID!): Boolean!
   createComic(createComicInput: CreateComicInput!): Comic!
   createReview(createReviewInput: CreateReviewInput!): Review!
-  createPointTransaction(impUid: String!, comicId: String!, amount: Int!): PointTransaction!
-  cancelPointTransaction(impUid: String!, comicId: String!): PointTransaction!
+  deleteReview(reviewId: ID!): Boolean!
+  restoreReview(reviewId: ID!): Boolean!
 }
 
 """The `Upload` scalar type represents a file upload."""
@@ -166,5 +152,5 @@ input CreateReviewInput {
   comicId: String!
   userId: String!
   content: String!
-  like: Int!
+  rating: Float!
 }
