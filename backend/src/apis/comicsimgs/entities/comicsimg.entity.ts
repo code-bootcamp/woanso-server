@@ -1,10 +1,19 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Comic } from 'src/apis/comics/entities/comic.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @ObjectType()
 @Entity()
-export class Image {
+export class ComicImg {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
   id: string;
@@ -20,4 +29,16 @@ export class Image {
   // @ManyToOne(() => Comic, (comic) => comic.image)
   // @Field(() => Comic)
   // comic: Comic;
+
+  // @OneToOne((type) => Comic, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  // @JoinColumn()
+  // comic: Comic;
+
+  @JoinTable()
+  @ManyToOne(() => Comic)
+  @Field(() => Comic)
+  comic: Comic;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }
