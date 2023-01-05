@@ -1,13 +1,13 @@
-import { InputType, Field } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 
 @InputType()
 export class CreateBoardInput {
-  @Field(() => String)
-  writer: string;
-
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   title: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   contents: string;
+
+  @Field(() => [String], { nullable: true })
+  boardImg: string[];
 }

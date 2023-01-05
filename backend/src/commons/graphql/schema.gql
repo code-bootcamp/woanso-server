@@ -8,6 +8,7 @@ type User {
   email: String!
   phone: String!
   interest: USER_INTEREST_ENUM!
+  role: USER_ROLE_ENUM!
   balance: Int!
 }
 
@@ -18,6 +19,11 @@ enum USER_INTEREST_ENUM {
   action
   school
   horror
+}
+
+enum USER_ROLE_ENUM {
+  Admin
+  User
 }
 
 type Comic {
@@ -54,16 +60,26 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type Review {
-  reviewId: String!
+type BoardImg {
+  boardImgID: String!
+  url: String
+  board: Board!
+}
+
+type Board {
+  id: String!
+  title: String!
   content: String!
   like: Int!
-  rating: Float!
+  dislike: Int!
+  boardImg: [BoardImg!]!
   user: User!
-  comic: Comic!
 }
 
 type Query {
+  fetchBoards(page: Float = 1, order: String = "DESC"): [Board!]!
+  fetchUserBoards: [Board!]!
+  fetchBoard(id: String!): Board!
   fetchUser(email: String!): User!
   fetchUsers: [User!]!
   searchUsers(
@@ -79,11 +95,12 @@ type Query {
   ): [Comic!]!
   fetchComic(comicId: String!): Comic!
   availableComic: [Int!]!
-  fetchReviews: [Review!]!
-  fetchReview(reviewId: String!): Review!
 }
 
 type Mutation {
+  createBoard(createBoardInput: CreateBoardInput!): Board!
+  updateBoard(id: String!, updateBoardInput: UpdateBoardInput!): Board!
+  deleteBoard(id: String!): Boolean!
   uploadFile(files: [Upload!]!): [String!]!
   uploadOneFile(file: Upload!): String!
   signUp(email: String!, password: String!, nickname: String!, phone: String!, interest: String!): User!
@@ -97,15 +114,24 @@ type Mutation {
   login(email: String!, password: String!): String!
   restoreAccessToken: String!
   logout: String!
-  adminSignUp(userDTO: UserDTO!): String!
-  loginAdmin(email: String!, password: String!): String!
   updateComic(comicId: String!, updateComicInput: UpdateComicInput!, createUrlInput: CreateUrlInput!): Comic!
-  deleteComic(reviewId: ID!): Boolean!
-  restoreComic(reviewId: ID!): Boolean!
+  deleteComic(comicId: ID!): Boolean!
+  restoreComic(comicId: ID!): Boolean!
   createComic(createComicInput: CreateComicInput!): Comic!
-  createReview(createReviewInput: CreateReviewInput!): Review!
   createPointTransaction(impUid: String!, comicId: String!, amount: Int!): PointTransaction!
   cancelPointTransaction(impUid: String!, comicId: String!): PointTransaction!
+}
+
+input CreateBoardInput {
+  title: String
+  contents: String
+  boardImg: [String!]
+}
+
+input UpdateBoardInput {
+  title: String
+  contents: String
+  boardImg: [String!]
 }
 
 """The `Upload` scalar type represents a file upload."""
@@ -117,14 +143,6 @@ input UpdateUserInput {
   nickname: String
   phone: String
   interest: String
-}
-
-input UserDTO {
-  email: String!
-  password: String!
-  nickname: String!
-  phone: String!
-  interest: String!
 }
 
 input UpdateComicInput {
@@ -160,11 +178,4 @@ input CreateComicInput {
   isAvailable: Boolean!
   stock: Int!
   url: [String!]!
-}
-
-input CreateReviewInput {
-  comicId: String!
-  userId: String!
-  content: String!
-  like: Int!
 }

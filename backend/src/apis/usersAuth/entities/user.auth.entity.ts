@@ -12,7 +12,7 @@ export class UserAuthority {
   @Column('varchar', { name: 'authority_name' })
   authorityName: string;
 
-  @ManyToOne((type) => User, (user) => user.authorities)
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+  // @ManyToOne((type) => User, (user) => user.authorities)
+  // @JoinColumn({ name: 'user_id' })
+  // user: User;
 }

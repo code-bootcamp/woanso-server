@@ -1,5 +1,4 @@
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
@@ -15,7 +14,9 @@ interface IOAuthUser {
 
 @Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService, //
+  ) {}
   // 구글
   @UseGuards(AuthGuard('google'))
   @Get('/login/google')

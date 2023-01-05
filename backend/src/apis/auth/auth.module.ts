@@ -9,7 +9,6 @@ import { JwtAccessStrategy } from 'src/commons/auth/jwt-access.strategy';
 import { JwtRefreshStrategy } from 'src/commons/auth/jwt-refresh.strategy';
 import { AuthController } from './auth.controller';
 import { UserAuthorityRepository } from '../usersAuth/user.auth.repository';
-import { AuthRoleService } from './auth.role.service';
 
 @Module({
   imports: [
@@ -25,10 +24,10 @@ import { AuthRoleService } from './auth.role.service';
     AuthResolver, //
     AuthService,
     UsersService,
-    AuthRoleService,
   ],
   controllers: [
-    AuthController, //
+    AuthController,
+    // AuthRoleController, //
   ],
 })
 export class AuthModule {}

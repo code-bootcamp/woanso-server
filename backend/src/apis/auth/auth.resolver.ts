@@ -16,16 +16,12 @@ import {
 } from 'src/commons/auth/gql-auth.guard';
 import { Cache } from 'cache-manager';
 import * as jwt from 'jsonwebtoken';
-import { AuthRoleService } from './auth.role.service';
-import { User } from 'src/apis/users/entities/user.entity';
-import { UserDTO } from './dto/user.dto';
 
 @Resolver()
 export class AuthResolver {
   constructor(
     private readonly usersService: UsersService, //
     private readonly authService: AuthService, //
-    private readonly authRoleService: AuthRoleService, //
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
@@ -43,12 +39,16 @@ export class AuthResolver {
     if (!user) throw new UnprocessableEntityException('이메일이 없습니다.');
     // 3. 일치하는 유저가 있지만 비밀번호가 틀렸다면
     const isAuth = await bcrypt.compare(password, user.password); // 해시된 패스워드(user.password)
-    console.log(isAuth);
+    // console.log(isAuth);
     if (!isAuth) throw new UnprocessableEntityException('암호가 틀렸습니다.');
     //password === user.password;
 
     // 4. refreshToken(=JWT)을 만들어서 프론트엔드 브라우저 쿠키에 저장해서 보내주기
-    this.authService.setRefreshToken({ user, res: context.res });
+    this.authService.setRefreshToken({
+      user,
+      res: context.res,
+      req: context.req,
+    });
 
     // 5. 일치하는 유저도 있고 비밀번호도 맞았다면
     // => accessToken(=JWT)을 만들어서 브라우저에 전달
@@ -90,69 +90,26 @@ export class AuthResolver {
 
   //-----------------**[Auth logics]**------------------
 
-  @Mutation(() => String)
-  async adminSignUp(@Args('userDTO') userDTO: UserDTO): Promise<any> {
-    // const hashedPassword = await bcrypt.hash(userDTO.password, 10);
-    return this.authRoleService.registerUser(userDTO);
-  }
+  //   @Mutation(() => String)
+  //   async adminSignUp(@Args('userDTO') userDTO: UserDTO): Promise<any> {
+  //     // const hashedPassword = await bcrypt.hash(userDTO.password, 10);
+  //     return this.authRoleService.registerUser(userDTO);
+  //   }
 
-  @Mutation(() => String)
-  async loginAdmin(
-    @Args('email') email: string, //
-    @Args('password') password: string,
-    @Context() context: IContext,
-  ): Promise<string> {
-    const user = await this.usersService.findOne({ email });
-    if (!user) throw new UnprocessableEntityException('이메일이 없습니다.');
-    const isAuth = await bcrypt.compare(password, user.password);
-    console.log(isAuth);
-    if (!isAuth) throw new UnprocessableEntityException('암호가 틀렸습니다.');
-    this.authService.setRefreshToken({ user, res: context.res });
-    console.log(context.req);
-    return this.authService.getAccessToken({ user });
-  }
+  //   @Mutation(() => String)
+  //   async loginAdmin(
+  //     @Args('email') email: string, //
+  //     @Args('password') password: string,
+  //     @Context() context: IContext,
+  //   ): Promise<string> {
+  //     const user = await this.usersService.findOne({ email });
+  //     if (!user) throw new UnprocessableEntityException('이메일이 없습니다.');
+  //     const isAuth = await bcrypt.compare(password, user.password);
+  //     console.log(isAuth);
+  //     if (!isAuth) throw new UnprocessableEntityException('암호가 틀렸습니다.');
+  //     this.authService.setRefreshToken({ user, res: context.res });
+  //     console.log(context.req);
+  //     return this.authService.getAccessToken({ user });
+  //   }
+  // }
 }
-
-// @Post('/login')
-//     async login(@Body() userDTO: UserDTO, @Res() res: Response): Promise<any> {
-//         const jwt = await this.authService.validateUser(userDTO);
-//         res.setHeader('Authorization', 'Bearer '+jwt.accessToken);
-//         res.cookie('jwt', jwt.accessToken, {
-//             httpOnly: true,
-//             maxAge: 24 * 60 * 60 * 1000
-//         })
-//         return res.send({
-//             message: 'success'
-//         });
-//     }
-
-// @Get('/authenticate')
-// @UseGuards(AuthGuard)
-// isAuthenticated(@Req() req: Request): any {
-//     const user: any = req.user;
-//     return user;
-// }
-
-//     @Get('/admin-role')
-//     @UseGuards(AuthGuard, RolesGuard)
-//     @Roles(RoleType.ADMIN)
-//     adminRoleCheck(@Req() req: Request): any {
-//         const user: any = req.user;
-//         return user;
-//     }
-
-//     @Get('/cookies')
-//     getCookies(@Req() req: Request, @Res() res: Response): any {
-//         const jwt = req.cookies['jwt'];
-//         return res.send(jwt);
-//     }
-
-//     @Post('/logout')
-//     logout(@Res() res: Response): any {
-//         res.cookie('jwt', '', {
-//             maxAge: 0
-//         });
-//         return res.send({
-//             message: 'success'
-//         })
-//     }

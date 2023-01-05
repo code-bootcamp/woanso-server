@@ -32,13 +32,14 @@ export class UsersResolver {
     @Args('interest') interest: string,
   ): Promise<User> {
     const hashedPassword = await bcrypt.hash(password, 10);
-
+    const role = 'USER';
     return this.usersService.create({
       email,
       hashedPassword,
       nickname,
       phone,
       interest,
+      role,
     });
   }
 
@@ -50,11 +51,13 @@ export class UsersResolver {
     @Args('phone') phone?: string,
   ) {
     const hashedPassword = await bcrypt.hash(password, 10);
+    const role = 'ADMIN';
 
     return this.usersService.createAdmin({
       email,
       hashedPassword,
       phone,
+      role,
     });
   }
 
