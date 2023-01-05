@@ -106,6 +106,14 @@ export class UsersService {
 
   //------------------------**[Delete user]**-------------------------------
   async delete({ email }: IUsersServiceDelete): Promise<boolean> {
+    const user = await this.usersRepository.findOne({
+      where: { email },
+    });
+
+    if (user.role !== 'ADMIN') {
+      throw new ConflictException('권한없음');
+    }
+
     const result = await this.usersRepository.softDelete({ email });
     return result.affected ? true : false;
   }
