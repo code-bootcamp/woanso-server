@@ -1,11 +1,12 @@
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
+import { ComicRating } from 'src/apis/comicsRating/entities/comicRating.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  ManyToOne,
-  OneToMany,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -41,12 +42,12 @@ export class Comic {
   @Field(() => String)
   publisher: string;
 
-  @Column({ default: 0, nullable: true })
-  @Field(() => Float) // 별점을 줄 수 있도록 0.5 단위로 제한
-  rating: number;
+  // @Column({ default: 0, nullable: true })
+  // @Field(() => Float) // 별점을 줄 수 있도록 0.5 단위로 제한
+  // rating: number;
 
   // @Column()
-  // @Field(() => String) // 시리즈이기 떄문에 각각 발해일이 다르기 때문에
+  // @Field(() => String) // 시리즈이기 떄문에 각각 발행일이 다르기 때문에
   // publicationDate: string;
 
   @Column()
@@ -77,6 +78,11 @@ export class Comic {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @JoinColumn()
+  @OneToOne(() => ComicRating)
+  @Field(() => ComicRating)
+  comicRating: ComicRating;
 
   // @ManyToOne(() => Category)
   // @Field(() => Category)

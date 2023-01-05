@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ComicRating } from '../comicsRating/entities/comicRating.entity';
+import { Review } from '../reviews/entities/review.entity';
+import { User } from '../users/entities/user.entity';
 
 import { Comic } from './entities/comic.entity';
 import {
@@ -14,6 +17,8 @@ export class ComicsService {
   constructor(
     @InjectRepository(Comic)
     private readonly comicsRepository: Repository<Comic>,
+    @InjectRepository(ComicRating)
+    private readonly comicsRatingRepository: Repository<ComicRating>,
   ) {}
 
   //검색기능
@@ -25,15 +30,48 @@ export class ComicsService {
 
   //전체조회
   findAll(): Promise<Comic[]> {
-    return this.comicsRepository.find();
+    return this.comicsRepository.find({ relations: ['comicRating'] });
   }
 
   findOne({ comicId }: IComicsServiceFindOne): Promise<Comic> {
-    return this.comicsRepository.findOne({ where: { comicId } });
+    return this.comicsRepository.findOne({
+      where: { comicId },
+      relations: ['comicRating'],
+    });
   }
 
-  create({ createComicInput }: IComicsServiceCreate): Promise<Comic> {
-    const result = this.comicsRepository.save({ ...createComicInput });
+  async create({ createComicInput }: IComicsServiceCreate): Promise<Comic> {
+    const { reviewId, ...comic } = createComicInput;
+    // const user = await this.userRepository.findOne({
+    //   where: {
+    //     id: userId,
+    //   },
+    // });
+    // const resultReview = await this.comicsRepository.find({
+    //   where: {
+    //     review: { reviewId },
+    //   },
+    //   relations: ['user', 'review'],
+    // });
+    // const result2 = await this.reviewRepository.findOne({
+    //   where: {
+    //     reviewId,
+    //   },
+    // });
+    // console.log(result2);
+    // if (resultReview.length === 0) {
+    // }
+    // 어떻게 별점 평균으로 저장하지?
+    const result2 = await this.comicsRatingRepository.save({
+      comicRating: 0,
+      totalRating: 0,
+    });
+    const result = this.comicsRepository.save({
+      comicRating: {
+        ...result2,
+      },
+      ...createComicInput,
+    });
 
     return result;
   }
