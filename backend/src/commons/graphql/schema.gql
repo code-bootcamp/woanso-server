@@ -2,6 +2,12 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type UserImg {
+  id: String!
+  url: String!
+  isMain: Boolean!
+}
+
 type User {
   id: String
   nickname: String!
@@ -10,6 +16,7 @@ type User {
   interest: USER_INTEREST_ENUM!
   role: USER_ROLE_ENUM!
   balance: Int!
+  userImg: UserImg!
 }
 
 enum USER_INTEREST_ENUM {
