@@ -1,43 +1,31 @@
+// import { UseGuards } from '@nestjs/common';
+// import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+// import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
+// import { IContext } from 'src/commons/type/context';
+// import { Like } from './entities/like.entity';
+// import { LikeService } from './like.service';
+
 // @Resolver()
-// export class ReviewsResolver {
+// export class ReviewLikeResolver {
 //   constructor(
-//     private readonly reviewsService: ReviewsService, // // private readonly reviewsRatingService: ReviewsRatingService, //
+//     private readonly likeService: LikeService, //
 //   ) {}
 
-//   @Query(() => [Review])
-//   fetchReviews() {
-//     return this.reviewsService.findAll();
-//   }
+//   //   @Query(() => [Like])
+//   //   fetchLikeReviewBoard(
+//   //     @Args('userId') userId: string, //
+//   //     @Args('reviewBoardId') reviewBoardId: string,
+//   //   ) {
+//   //     return;
+//   //   }
 
-//   @Query(() => Review)
-//   fetchReview(
-//     @Args('reviewId') reviewId: string, //
-//     // @Args('reviewRatingId') reviewRatingId: string, //
-//   ): Promise<Review> {
-//     return this.reviewsService.findOne({ reviewId });
-//   }
-
-//   @Mutation(() => Review)
-//   createReview(
-//     @Args('createReviewInput') createReviewInput: CreateReviewInput,
-//   ): Promise<Review> {
-//     return this.reviewsService.create({ createReviewInput });
-//   }
-//   // 좋아요
-//   // @Mutation(() => Int)
-//   // createlikes(
-//   //   @Args('createReviewLikeInput') createReviewLikeInput: CreateReviewLikeInput,
-//   // ) {
-//   //   return this.reviewsService.create2({ createReviewLikeInput });
-//   // }
-//   //삭제
-//   @Mutation(() => Boolean)
-//   deleteReview(@Args('reviewId', { type: () => ID }) reviewId: string) {
-//     return this.reviewsService.delete({ reviewId });
-//   }
-
-//   @Mutation(() => Boolean)
-//   restoreReview(@Args('reviewId', { type: () => ID }) reviewId: string) {
-//     return this.reviewsService.restore({ reviewId });
+//   @UseGuards(GqlAuthAccessGuard)
+//   @Mutation(() => String)
+//   likeReviewBoard(
+//     @Args('reviewBoardId') reviewBoardId: string, //
+//     @Context() context: IContext,
+//   ) {
+//     const user = context.req.user.email;
+//     return this.likeService.like({ reviewBoardId, user });
 //   }
 // }

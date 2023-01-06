@@ -52,7 +52,7 @@ export class AuthResolver {
 
     // 5. 일치하는 유저도 있고 비밀번호도 맞았다면
     // => accessToken(=JWT)을 만들어서 브라우저에 전달
-    console.log(context.req);
+    // console.log(context.req);
     return this.authService.getAccessToken({ user });
   }
 
@@ -63,6 +63,11 @@ export class AuthResolver {
     @Context() context: IContext, //
   ): string {
     // accessToken(=JWT)을 만들어서 브라우저에 전달하기
+    // this.authService.setRefreshToken({
+    //   user: context.req.user,
+    //   req: context.req,
+    //   res: context.res,
+    // });
     return this.authService.getAccessToken({ user: context.req.user });
   }
 
@@ -70,23 +75,54 @@ export class AuthResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => String)
   async logout(
-    @Context() context: any, // 왜 굳이 any로 받지? 타입체크 안하려고?
+    @Context() context: IContext, //any, // 왜 굳이 any로 받지? 타입체크 안하려고?
   ) {
     const access = context.req.headers.authorization.replace('Bearer ', '');
 
     const refresh = context.req.headers.cookie.replace('refreshToken=', '');
+    console.log(refresh);
 
     try {
-      jwt.verify(access, process.env.JWT_ACCESS_KEY);
-      jwt.verify(refresh, process.env.JWT_REFRESH_KEY);
+      const changedAcc = jwt.verify(access, process.env.JWT_ACCESS_KEY);
+      const changedRef = jwt.verify(refresh, process.env.JWT_REFRESH_KEY);
+      const time = new Date().getTime();
+      const accessTtl = changedAcc['exp'] - Number(String(time).slice(0, -3));
+      const refreshTtl = changedRef['exp'] - Number(String(time).slice(0, -3));
+
+      //await this.cacheManager.set(`accessToken:${access}`, 'access', 3600);
+      await this.cacheManager.set(`accessToken:${access}`, 'access', accessTtl);
+      await this.cacheManager.set(
+        `refreshToken:${refresh}`,
+        'refresh',
+        refreshTtl,
+      );
     } catch {
       throw new UnauthorizedException('에러발생');
     }
 
-    await this.cacheManager.set(`accessToken:${access}`, 'access', 3600);
-    await this.cacheManager.set(`refreshToken:${refresh}`, 'refresh', 3600);
     return '로그아웃에 성공했습니다.';
   }
+
+  //   try {
+  //     const decoded = jwt.verify(access_token, process.env.JWT_ACCESS_KEY);
+  //     await this.cacheManager.set(
+  //       `access_token:${access_token}`,
+  //       'accessToken',
+  //       context.req.user.exp,
+  //     );
+  //     const decodedR = jwt.verify(refresh_token, process.env.JWT_REFRESH_KEY);
+
+  //     await this.cacheManager.set(
+  //       `refresh_token:${refresh_token}`,
+  //       'refreshToken',
+  //       context.req.user.exp,
+  //     );
+  //   } catch (error) {
+  //     throw new UnauthorizedException('유효하지 않은 토큰입니다.');
+  //   }
+
+  //   return '로그아웃에 성공하였습니다.';
+  // }
 
   //-----------------**[Auth logics]**------------------
 

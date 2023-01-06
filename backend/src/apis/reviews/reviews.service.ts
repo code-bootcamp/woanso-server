@@ -111,7 +111,7 @@ export class ReviewsService {
   }
 
   //---------------좋아요 함수 -------------------------
-  // async create2(createReviewLikeInput: CreateReviewLikeInput): Promise<Review> {
+  // async create2(createReviewLikeInput: CreateReviewLikeInput): {
   //   const { data, review } = createReviewLikeInput;
 
   //   const reviewData = await getConnection()

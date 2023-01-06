@@ -55,13 +55,18 @@ export class AuthService {
     // 회원 조회(찾기)
     let user = await this.usersService.findOne({ email: req.user.email });
     // 회원가입이 안되어있다면 => 회원 등록(가입)
-    if (!user) user = await this.usersService.create({ ...req.user });
-    //로그인
-    this.setRefreshToken({ user, res });
-    res.redirect(
-      'http://localhost:5500/homework/main-project/frontend/login/index.html',
+    if (!user) {
+      user = await this.usersService.create({ ...req.user });
+      //로그인
+      this.setRefreshToken({ user, res });
+      res.redirect('https://woanso.shop/join');
+      //'http://localhost:5500/homework/main-project/frontend/login/index.html',
       // 프론트엔드 파일 합친 후, 수정하기
-    );
+      //);
+    } else {
+      this.setRefreshToken({ user, res, req });
+      res.redirect('https://woanso.shop');
+    }
   }
 
   getAccessToken({ user }: IAuthServiceGetAccessToken): string {

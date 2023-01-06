@@ -1,46 +1,72 @@
-// import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+// import { Injectable } from '@nestjs/common';
+// import { InjectRepository } from '@nestjs/typeorm';
+// import { Repository } from 'typeorm';
 
-// @Resolver()
-// export class ReviewLikeResolver {
+// import { Review } from '../reviews/entities/review.entity';
+// import { User } from '../users/entities/user.entity';
+
+// @Injectable()
+// export class ReviewLikeService {
 //   constructor(
-//     private readonly reviewsService: ReviewsService, //
+//     @InjectRepository(Review)
+//     private readonly reviewRepository: Repository<Review>,
+
+//     @InjectRepository(User)
+//     private readonly userRepository: Repository<User>,
+
+//     @InjectRepository(ReviewLike)
+//     private readonly likeRepository: Repository<Like>,
 //   ) {}
 
-//   //   @Query(() => [Review])
-//   //   fetchReviews() {
-//   //     return this.reviewsService.findAll();
-//   //   }
+//   //
 
-//   //   @Query(() => Review)
-//   //   fetchReview(
-//   //     @Args('reviewId') reviewId: string, //
-//   //     // @Args('reviewRatingId') reviewRatingId: string, //
-//   //   ): Promise<Review> {
-//   //     return this.reviewsService.findOne({ reviewId });
-//   //   }
+//   //
+//   async like({ reviewBoardId, user }) {
+//     const findUser = await this.userRepository.findOne({
+//       where: { email: user },
+//     });
 
-//   //   @Mutation(() => Review)
-//   //   createReview(
-//   //     @Args('createReviewInput') createReviewInput: CreateReviewInput,
-//   //   ): Promise<Review> {
-//   //     return this.reviewsService.create({ createReviewInput });
-//   //   }
+//     const findLike = await this.likeRepository.findOne({
+//       where: {
+//         reviewBoard: { id: reviewBoardId },
+//         user: { id: findUser.id },
+//       },
+//       relations: ['reviewBoard', 'user'],
+//     });
+//     console.log(findLike);
 
-//   // 좋아요
-//   @Mutation(() => Int)
-//   createlikes(
-//     @Args('createReviewLikeInput') createReviewLikeInput: CreateReviewLikeInput,
-//   ) {
-//     return this.reviewsService.create2({ createReviewLikeInput });
-//   }
-//   //삭제
-//   @Mutation(() => Boolean)
-//   deleteReview(@Args('reviewId', { type: () => ID }) reviewId: string) {
-//     return this.reviewsService.delete({ reviewId });
-//   }
+//     if (findLike) {
+//       await this.likeRepository.delete({
+//         reviewBoard: { id: reviewBoardId },
+//         user: { id: findUser.id },
+//       });
 
-//   @Mutation(() => Boolean)
-//   restoreReview(@Args('reviewId', { type: () => ID }) reviewId: string) {
-//     return this.reviewsService.restore({ reviewId });
+//       const reviewBoard = await this.reviewBoardRepository.findOne({
+//         where: { id: reviewBoardId },
+//       });
+
+//       await this.reviewBoardRepository.update(
+//         { id: reviewBoardId },
+//         { like: reviewBoard.like - 1 },
+//       );
+
+//       return '좋아요 취소';
+//     } else {
+//       await this.likeRepository.save({
+//         reviewBoard: { id: reviewBoardId },
+//         user: { id: findUser.id },
+//       });
+
+//       const reviewBoard = await this.reviewBoardRepository.findOne({
+//         where: { id: reviewBoardId },
+//       });
+
+//       await this.reviewBoardRepository.update(
+//         { id: reviewBoardId },
+//         { like: reviewBoard.like + 1 },
+//       );
+
+//       return '좋아요 추가';
+//     }
 //   }
 // }
