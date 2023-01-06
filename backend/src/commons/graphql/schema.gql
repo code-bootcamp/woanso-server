@@ -2,6 +2,12 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type UserImg {
+  id: String!
+  url: String!
+  isMain: Boolean!
+}
+
 type User {
   id: String
   nickname: String!
@@ -10,6 +16,7 @@ type User {
   interest: USER_INTEREST_ENUM!
   role: USER_ROLE_ENUM!
   balance: Int!
+  userImg: UserImg!
 }
 
 enum USER_INTEREST_ENUM {
@@ -47,14 +54,6 @@ type Comic {
   comicRating: ComicRating!
 }
 
-type Review {
-  reviewId: String!
-  content: String!
-  like: Int!
-  user: User!
-  comic: Comic!
-}
-
 type BoardImg {
   boardImgID: String!
   url: String
@@ -78,7 +77,25 @@ type ComicImg {
   comic: Comic!
 }
 
+type Comment {
+  id: String!
+  title: String!
+  content: String!
+  createdAt: DateTime!
+  board: Board!
+  user: User!
+  isDeleted: Boolean!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type Query {
+  fetchBoards(page: Float = 1, order: String = "DESC"): [Board!]!
+  fetchUserBoards: [Board!]!
+  fetchBoard(id: String!): Board!
   fetchUser(email: String!): User!
   fetchUsers: [User!]!
   searchUsers(
@@ -94,16 +111,16 @@ type Query {
   ): [Comic!]!
   fetchComic(comicId: String!): Comic!
   availableComic: [Int!]!
+  fetchComments: [Comment!]!
+  fetchComment(ID: String!): Comment!
   fetchBoardImage(comicId: String!): [ComicImg!]!
   fetchAllCrewBoardImages: [ComicImg!]!
-  fetchReviews: [Review!]!
-  fetchReview(reviewId: String!): Review!
-  fetchBoards(page: Float = 1, order: String = "DESC"): [Board!]!
-  fetchUserBoards: [Board!]!
-  fetchBoard(id: String!): Board!
 }
 
 type Mutation {
+  createBoard(createBoardInput: CreateBoardInput!): Board!
+  updateBoard(id: String!, updateBoardInput: UpdateBoardInput!): Board!
+  deleteBoard(id: String!): Boolean!
   uploadFile(files: [Upload!]!): [String!]!
   uploadOneFile(file: Upload!): String!
   signUp(email: String!, password: String!, nickname: String!, phone: String!, interest: String!): User!
@@ -121,13 +138,21 @@ type Mutation {
   deleteComic(comicId: ID!): Boolean!
   restoreComic(comicId: ID!): Boolean!
   createComic(createComicInput: CreateComicInput!): Comic!
+  createComment(createCommentInput: CreateCommentInput!): Comment!
+  deleteComment(ID: String!): Boolean!
   uploadComicImg(url: [String!]!, comicId: String!): [ComicImg!]!
-  createReview(createReviewInput: CreateReviewInput!): Review!
-  deleteReview(reviewId: ID!): Boolean!
-  restoreReview(reviewId: ID!): Boolean!
-  createBoard(createBoardInput: CreateBoardInput!): Board!
-  updateBoard(id: String!, updateBoardInput: UpdateBoardInput!): Board!
-  deleteBoard(id: String!): Boolean!
+}
+
+input CreateBoardInput {
+  title: String
+  contents: String
+  boardImg: [String!]
+}
+
+input UpdateBoardInput {
+  title: String
+  contents: String
+  boardImg: [String!]
 }
 
 """The `Upload` scalar type represents a file upload."""
@@ -176,21 +201,8 @@ input CreateComicInput {
   url: [String!]!
 }
 
-input CreateReviewInput {
-  comicId: String!
-  userId: String!
+input CreateCommentInput {
   content: String!
-  rating: Float!
-}
-
-input CreateBoardInput {
-  title: String
-  contents: String
-  boardImg: [String!]
-}
-
-input UpdateBoardInput {
-  title: String
-  contents: String
-  boardImg: [String!]
+  boardId: String!
+  userId: String!
 }

@@ -36,6 +36,7 @@ export class BoardsResolver {
     const email = context.req.user.email;
     return this.boardsService.userFind({ email });
   }
+
   @Query(() => Board)
   fetchBoard(
     @Args('id') id: string, //
