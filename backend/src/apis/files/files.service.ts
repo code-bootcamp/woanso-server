@@ -24,7 +24,7 @@ export class FilesService {
 
             el.createReadStream()
               .pipe(storage.file(el.filename).createWriteStream())
-              .on('finish', () => resolve(`woanso-storage/${fname}`))
+              .on('finish', () => resolve(`woanso/${fname}`))
               .on('error', () => reject('업로드 실패'));
           }),
       ),
