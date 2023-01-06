@@ -13,7 +13,7 @@ export class FilesService {
     const storage = new Storage({
       projectId: 'woanso',
       keyFilename: '/my-secret/gcp-file-storage.json',
-    }).bucket('woanso');
+    }).bucket('woanso-storage');
 
     // 1-2) 스토리지에 파일 올리기
     const results = await Promise.all(

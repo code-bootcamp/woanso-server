@@ -36,7 +36,7 @@ export class AuthService {
     );
     res.setHeader(
       'Set-Cookie',
-      `refreshToken=${refreshToken}; path=/; domain=.woanso.shop; SameSite=None; Secure; httpOnly;`,
+      `refreshToken=${refreshToken}; domain=.examplezi.shop; SameSite=None; Secure; httpOnly; path=/;`,
     );
 
     return refreshToken;
