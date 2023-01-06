@@ -55,7 +55,7 @@ export class User {
   phone: string;
 
   @Field(() => USER_INTEREST_ENUM)
-  @Column({ type: 'enum', enum: USER_INTEREST_ENUM })
+  @Column({ type: 'enum', enum: USER_INTEREST_ENUM, nullable: true })
   interest: string;
 
   @Field(() => USER_ROLE_ENUM)
@@ -63,17 +63,17 @@ export class User {
   role: string;
 
   @Field(() => Int)
-  @Column({ default: 3000 })
+  @Column({ default: 3000, nullable: true })
   balance: number;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt?: Date;
 
   @DeleteDateColumn()
-  deletedAt: Date;
+  deletedAt?: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt?: Date;
 
   // @OneToMany(() => UserAuthority, (userAuthority) => userAuthority.user, {
   //   eager: true,
