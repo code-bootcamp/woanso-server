@@ -1,10 +1,13 @@
 import { Field, ObjectType, Int, registerEnumType } from '@nestjs/graphql';
+import { UserImg } from 'src/apis/usersImgs/entities/usersImg.entity';
 
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -74,6 +77,11 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt?: Date;
+
+  @JoinColumn()
+  @Field(() => UserImg)
+  @OneToOne(() => UserImg)
+  userImg: UserImg;
 
   // @OneToMany(() => UserAuthority, (userAuthority) => userAuthority.user, {
   //   eager: true,
