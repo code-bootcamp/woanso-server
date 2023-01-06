@@ -13,7 +13,7 @@ export class FilesService {
     const storage = new Storage({
       projectId: 'woanso',
       keyFilename: '/my-secret/gcp-file-storage.json',
-    }).bucket('woanso-storage');
+    }).bucket('woanso');
 
     // 1-2) 스토리지에 파일 올리기
     const results = await Promise.all(
@@ -25,7 +25,7 @@ export class FilesService {
             el.createReadStream()
               .pipe(storage.file(el.filename).createWriteStream())
               .on('finish', () => resolve(`woanso-storage/${fname}`))
-              .on('error', () => reject('실패'));
+              .on('error', () => reject('업로드 실패'));
           }),
       ),
     );
@@ -45,7 +45,7 @@ export class FilesService {
         .createReadStream()
         .pipe(storage.file(fname).createWriteStream())
         .on('finish', () => resolve(`woanso-storage/${fname}`))
-        .on('error', () => reject('false'));
+        .on('error', () => reject('업로드 실패'));
     });
     if (result === 'false') {
       throw new HttpException('이미지 업로드 오류', HttpStatus.CONFLICT);
