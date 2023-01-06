@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Repository } from 'typeorm';
-import { User } from './entities/user.entity';
+import { User, USER_ROLE_ENUM } from './entities/user.entity';
 import {
   IUsersServiceCreate,
   IUsersServiceCreateAdmin,
@@ -68,7 +68,7 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { email } });
   }
 
-  //------------------------**[Find one user for update password]**-------------------------------
+  //--------------------**[Find one user for update password]**--------------------
   findOneForUpdate({
     email,
     phone,
@@ -81,10 +81,18 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { phone } });
   }
 
-  //------------------------**[Fetch all users for admin]**-------------------------------
+  //----------------------**[Fetch all users for admin]**---------------------------
   async findAll(email): Promise<User[]> {
     return this.usersRepository.find(email);
   }
+
+  // async findAll() {
+  //   return await this.usersRepository
+  //     .createQueryBuilder('user')
+  //     .skip(6 * (1 - 1))
+  //     .take(6)
+  //     .getMany();
+  // }
 
   //------------------------**[Update user]**-------------------------------
   update({ user, updateUserInput }: IUsersServiceUpdate): Promise<User> {

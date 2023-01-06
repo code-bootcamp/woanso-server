@@ -115,7 +115,7 @@ export class UsersResolver {
     return this.usersService.findEmail({ phone });
   }
 
-  //Update user
+  //------------------------------------**[Update User info]**----------------------------------------------
   @Mutation(() => User)
   async updateUser(
     @Args('email') email: string,
@@ -129,7 +129,7 @@ export class UsersResolver {
     });
   }
 
-  //------------------------------------**[Update password]**----------------------------------------------
+  //-------------------------------**[Update password]**-------------------------------
   @Mutation(() => String)
   async updatePassword(
     @Args('email') email: string,
