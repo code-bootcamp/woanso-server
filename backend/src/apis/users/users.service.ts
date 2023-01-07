@@ -6,9 +6,10 @@ import {
   Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOneOptions, Repository } from 'typeorm';
-import { User, USER_ROLE_ENUM } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
 import {
+  IAdminServiceUserDelete,
   IUsersServiceCreate,
   IUsersServiceCreateAdmin,
   IUsersServiceDelete,
@@ -20,7 +21,6 @@ import {
 import coolsms from 'coolsms-node-sdk';
 import { Cache } from 'cache-manager';
 import * as bcrypt from 'bcrypt';
-import { UserDTO } from '../auth/dto/user.dto';
 
 @Injectable()
 export class UsersService {
@@ -118,14 +118,19 @@ export class UsersService {
       where: { email },
     });
 
-    if (user.role !== 'ADMIN') {
-      throw new ConflictException('권한없음');
-    }
-
     const result = await this.usersRepository.softDelete({ email });
     return result.affected ? true : false;
   }
 
+  //------------------------**[Delete user For Admin]**-------------------------------
+  async deleteUser({ email }: IAdminServiceUserDelete): Promise<boolean> {
+    const user = await this.usersRepository.findOne({
+      where: { email },
+    });
+
+    const result = await this.usersRepository.softDelete({ email });
+    return result.affected ? true : false;
+  }
   //------------------------**[Send token by PHONE]**-------------------------------
   async sendToken({ phone }) {
     const SMS_KEY = process.env.SMS_KEY;
@@ -164,41 +169,5 @@ export class UsersService {
     else {
       throw new UnprocessableEntityException('인증번호가 잘못 되었습니다.');
     }
-  }
-
-  //------------------------**[Block user]**-------------------------------
-
-  async blockUser({ email, id }) {
-    const admin = await this.usersRepository.findOne({
-      where: { email },
-    });
-
-    this.userRole({ admin });
-  }
-
-  userRole({ admin }) {
-    if (!admin) {
-      throw new ConflictException('존재하지 않는 계정입니다.');
-    }
-    if (admin.role !== 'ADMIN') {
-      throw new ConflictException('관리자가 아닙니다.');
-    }
-  }
-  //------------------------**[ROLE LOGIC]**-------------------------------
-  async findByFields(
-    options: FindOneOptions<UserDTO>,
-  ): Promise<User | undefined> {
-    return await this.usersRepository.findOne(options);
-  }
-
-  async save(userDTO: UserDTO): Promise<UserDTO | undefined> {
-    await this.transformPassword(userDTO);
-    console.log(userDTO);
-    return await this.usersRepository.save(userDTO);
-  }
-
-  async transformPassword(user: UserDTO): Promise<void> {
-    user.password = await bcrypt.hash(user.password, 10);
-    return Promise.resolve();
   }
 }

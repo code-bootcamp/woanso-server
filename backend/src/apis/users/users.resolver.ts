@@ -13,6 +13,7 @@ import {
 import { IContext } from 'src/commons/types/context';
 import { Cache } from 'cache-manager';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
+import { GqlAdminGuard } from '../../commons/auth/gql-auth.guard';
 
 @Resolver()
 export class UsersResolver {
@@ -22,7 +23,7 @@ export class UsersResolver {
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
-  //--------------------------------**[Sign up for USER]**--------------------------------
+  //--------------------------------**[Sign Up]**--------------------------------
   @Mutation(() => User)
   async signUp(
     @Args('email') email: string,
@@ -32,36 +33,16 @@ export class UsersResolver {
     @Args('interest') interest: string,
   ): Promise<User> {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const role = 'USER';
     return this.usersService.create({
       email,
       hashedPassword,
       nickname,
       phone,
       interest,
-      role,
     });
   }
 
-  //--------------------------------**[Sign up for ADMIN]**--------------------------------
-  @Mutation(() => User)
-  async signUpAdmin(
-    @Args('email') email: string,
-    @Args('password') password: string,
-    @Args('phone') phone?: string,
-  ) {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const role = 'ADMIN';
-
-    return this.usersService.createAdmin({
-      email,
-      hashedPassword,
-      phone,
-      role,
-    });
-  }
-
-  //--------------------------------**[Find user by EMAIL]**--------------------------------
+  //----------------------**[Find User by EMAIL]**----------------------
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => User)
   fetchUser(
@@ -70,16 +51,84 @@ export class UsersResolver {
     return this.usersService.findOne({ email });
   }
 
-  //--------------------------------**[Find all user]**--------------------------------
-  @UseGuards(GqlAuthAccessGuard)
-  @Query(() => [User])
-  fetchUsers(email): Promise<User[]> {
-    return this.usersService.findAll(email);
+  //----------------------**[Find User email]**----------------------
+  @Query(() => User)
+  findEmail(@Args('phone') phone: string): Promise<User> {
+    return this.usersService.findEmail({ phone });
   }
 
-  //-------------------------------------**[SEARCH users]**----------------------------------------------
+  //----------------------**[Update User info]**----------------------
+  @Mutation(() => User)
+  async updateUser(
+    @Args('email') email: string,
+    @Args('updateUserInput') updateUserInput: UpdateUserInput,
+  ): Promise<User> {
+    const user = await this.usersService.findOne({ email });
+
+    return this.usersService.update({
+      user,
+      updateUserInput,
+    });
+  }
+
+  //----------------------**[Update Password]**----------------------
+  @Mutation(() => String)
+  async updatePassword(
+    @Args('email') email: string,
+    @Args('phone') phone: string,
+    @Args('newPassword') password: string,
+  ) {
+    const myToken = await this.cache.get(phone);
+    if (!myToken) {
+      console.log(myToken);
+      throw new UnprocessableEntityException('인증 미실시');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    return await this.usersService.updatePassword({ email, hashedPassword });
+  }
+
+  //----------------------**[Delete user]**----------------------
+  @UseGuards(GqlAuthAccessGuard)
+  @Mutation(() => Boolean)
+  deleteUser(
+    @Args('email') email: string,
+    @Args('password') password: string,
+  ): Promise<boolean> {
+    return this.usersService.delete({ email, password });
+  }
+
+  //----------------------**[Auth user]**----------------------
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => String)
+  authUser(
+    @Context() context: IContext, //
+  ): string {
+    console.log(context.req.user);
+    console.log(context);
+    return '인가 성공';
+  }
+
+  //----------------------**[Get token]**----------------------
+  @Mutation(() => String)
+  async sendToken(@Args('phone') phone: string) {
+    return await this.usersService.sendToken({ phone });
+  }
+
+  //----------------------**[Auth token]**----------------------
+  @Mutation(() => String)
+  async authToken(@Args('phone') phone: string, @Args('token') token: string) {
+    return this.usersService.authToken({ phone, token });
+  }
+
+  //----------------------**[FOR ADMIN]**----------------------
+  //----------------------**[FOR ADMIN]**----------------------
+  //----------------------**[FOR ADMIN]**----------------------
+
+  //----------------------**[SEARCH User for ADMIN]**----------------------
+  @UseGuards(GqlAdminGuard)
   @Query(() => [User])
-  async searchUsers(
+  async searchUsersForAdmin(
     @Args({
       name: 'search',
       nullable: true,
@@ -105,87 +154,23 @@ export class UsersResolver {
     // console.log(users);
 
     // 엘라스틱 조회 결과가 있다면, 레디스에 결과 캐싱
-    // await this.cache.set(`searchUsers:${search}`, users, { ttl: 30 });
+    await this.cache.set(`searchUsers:${search}`, users);
     return users;
   }
 
-  //-------------------------------------**[Find user email]**----------------------------------------------
-  @Query(() => User)
-  findEmail(@Args('phone') phone: string): Promise<User> {
-    return this.usersService.findEmail({ phone });
-  }
-
-  //------------------------------------**[Update User info]**----------------------------------------------
-  @Mutation(() => User)
-  async updateUser(
-    @Args('email') email: string,
-    @Args('updateUserInput') updateUserInput: UpdateUserInput,
-  ): Promise<User> {
-    const user = await this.usersService.findOne({ email });
-
-    return this.usersService.update({
-      user,
-      updateUserInput,
-    });
-  }
-
-  //-------------------------------**[Update password]**-------------------------------
-  @Mutation(() => String)
-  async updatePassword(
-    @Args('email') email: string,
-    @Args('phone') phone: string,
-    @Args('newPassword') password: string,
-  ) {
-    const myToken = await this.cache.get(phone);
-    if (!myToken) {
-      console.log(myToken);
-      throw new UnprocessableEntityException('인증 미실시');
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    return await this.usersService.updatePassword({ email, hashedPassword });
-  }
-
-  //-------------------------------------**[Delete user]**----------------------------------------------
-  @UseGuards(GqlAuthAccessGuard)
+  //----------------------**[Delete User For ADMIN]**----------------------
+  @UseGuards(GqlAdminGuard)
   @Mutation(() => Boolean)
-  deleteUser(
-    @Args('email') email: string,
-    @Args('password') password: string,
-  ): Promise<boolean> {
-    return this.usersService.delete({ email, password });
+  blockUserForADMIN(@Args('email') email: string): Promise<boolean> {
+    return this.usersService.deleteUser({ email });
   }
 
-  //-------------------------------------**[Auth user]**----------------------------------------------
-  @UseGuards(GqlAuthAccessGuard)
-  @Query(() => String)
-  authUser(
-    @Context() context: IContext, //
-  ): string {
-    console.log(context.req.user);
-    console.log(context);
-    return '인가 성공';
-  }
-
-  //-------------------------------------**[Get token]**----------------------------------------------
-  @Mutation(() => String)
-  async sendToken(@Args('phone') phone: string) {
-    return await this.usersService.sendToken({ phone });
-  }
-
-  //-------------------------------------**[Auth token]**----------------------------------------------
-  @Mutation(() => String)
-  async authToken(@Args('phone') phone: string, @Args('token') token: string) {
-    return this.usersService.authToken({ phone, token });
-  }
-  //-------------------------------------**[Block User]**----------------------------------------------
-  @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => Boolean)
-  blockUser(
-    @Context() context: any, //
-    @Args('id') id: string,
-  ) {
-    const email = context.req.user.email;
-    return this.usersService.blockUser({ email, id });
+  //----------------------**[Restore User For ADMIN]**----------------------
+  //----------------------**[Fetch Blocked User For ADMIN]**----------------------
+  //----------------------**[Find Users For ADMIN]**----------------------
+  @UseGuards(GqlAdminGuard)
+  @Query(() => [User])
+  fetchUsersForAdmin(email): Promise<User[]> {
+    return this.usersService.findAll(email);
   }
 }

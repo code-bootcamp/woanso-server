@@ -20,14 +20,12 @@ export interface IUsersServiceCreate {
   nickname: string;
   phone: string;
   interest?: string;
-  role?: string;
 }
 
 export interface IUsersServiceCreateAdmin {
   email: string;
   hashedPassword: string;
   phone?: string;
-  role?: string;
 }
 
 export interface IUsersServiceUpdate {
@@ -38,4 +36,13 @@ export interface IUsersServiceUpdate {
 export interface IUsersServiceDelete {
   email: string;
   password: string;
+}
+
+export interface IAdminServiceUserDelete {
+  email: string;
+}
+
+export interface IUsersServiceBlock {
+  user: User;
+  status: 'block';
 }

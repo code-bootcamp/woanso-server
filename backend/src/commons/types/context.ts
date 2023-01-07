@@ -14,3 +14,16 @@ export interface IContext {
   req: Request & IAuthUser;
   res: Response;
 }
+////////////////////
+export interface IAdminAuthUser {
+  admin?: {
+    email: string;
+    id: string;
+    exp: number;
+  };
+}
+
+export interface IAdminContext {
+  req: Request & IAdminAuthUser;
+  res: Response;
+}
