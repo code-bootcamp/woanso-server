@@ -12,11 +12,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export enum USER_ROLE_ENUM {
-  Admin = 'ADMIN',
-  User = 'USER',
-}
-
 export enum USER_INTEREST_ENUM {
   romance = '로맨스',
   drama = '드라마/일상',
@@ -25,10 +20,6 @@ export enum USER_INTEREST_ENUM {
   school = '학원',
   horror = '추리/공포',
 }
-
-registerEnumType(USER_ROLE_ENUM, {
-  name: 'USER_ROLE_ENUM',
-});
 
 registerEnumType(USER_INTEREST_ENUM, {
   name: 'USER_INTEREST_ENUM',
@@ -61,10 +52,6 @@ export class User {
   @Column({ type: 'enum', enum: USER_INTEREST_ENUM, nullable: true })
   interest: string;
 
-  @Field(() => USER_ROLE_ENUM)
-  @Column({ type: 'enum', enum: USER_ROLE_ENUM })
-  role: string;
-
   @Field(() => Int)
   @Column({ default: 3000, nullable: true })
   balance: number;
@@ -79,7 +66,7 @@ export class User {
   updatedAt?: Date;
 
   @JoinColumn()
-  @Field(() => UserImg)
+  @Field(() => UserImg, { nullable: true })
   @OneToOne(() => UserImg)
   userImg: UserImg;
 
