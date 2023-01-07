@@ -1,4 +1,10 @@
-import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
+import {
+  Field,
+  Float,
+  Int,
+  ObjectType,
+  registerEnumType,
+} from '@nestjs/graphql';
 import { ComicRating } from 'src/apis/comicsRating/entities/comicRating.entity';
 import {
   Column,
@@ -10,6 +16,19 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+export enum COMIC_CATEGORY_ENUM {
+  romance = '로맨스',
+  drama = '드라마/일상',
+  fantasy = '판타지',
+  action = '액션',
+  school = '학원',
+  horror = '추리/공포',
+}
+
+registerEnumType(COMIC_CATEGORY_ENUM, {
+  name: 'COMIC_CATEGORY_ENUM',
+});
 
 @Entity()
 @ObjectType()
@@ -66,6 +85,10 @@ export class Comic {
   @Field(() => Boolean)
   isAvailable: boolean;
 
+  @Column({ default: 0 })
+  @Field(() => Int)
+  wishListCount: number;
+
   @Column()
   //@Field(() => Int)
   stock: number;
@@ -83,6 +106,10 @@ export class Comic {
   @OneToOne(() => ComicRating)
   @Field(() => ComicRating)
   comicRating: ComicRating;
+
+  @Field(() => COMIC_CATEGORY_ENUM)
+  @Column({ type: 'enum', enum: COMIC_CATEGORY_ENUM, nullable: true })
+  category: string;
 
   // @ManyToOne(() => Category)
   // @Field(() => Category)

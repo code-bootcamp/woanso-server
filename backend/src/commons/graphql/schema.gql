@@ -45,7 +45,26 @@ type Comic {
   description: String!
   ISBN: String!
   isAvailable: Boolean!
+  wishListCount: Int!
   comicRating: ComicRating!
+  category: COMIC_CATEGORY_ENUM!
+}
+
+enum COMIC_CATEGORY_ENUM {
+  romance
+  drama
+  fantasy
+  action
+  school
+  horror
+}
+
+type Review {
+  reviewId: String!
+  content: String!
+  like: Int!
+  user: User!
+  comic: Comic!
 }
 
 type BoardImg {
@@ -71,14 +90,11 @@ type ComicImg {
   comic: Comic!
 }
 
-type Comment {
-  id: String!
-  title: String!
-  content: String!
-  createdAt: DateTime!
-  board: Board!
-  user: User!
-  isDeleted: Boolean!
+type Wishlist {
+  wishlistId: String!
+  isDib: Boolean!
+  user: User
+  comic: Comic
 }
 
 """
@@ -101,25 +117,38 @@ type Query {
   fetchUser(email: String!): User!
   findEmail(phone: String!): User!
   searchUsersForAdmin(
-    """유저 닉네임으로 검색"""
+    """
+    유저 닉네임으로 검색
+    """
     search: String
   ): [User!]!
   fetchUsersForAdmin: [User!]!
   fetchComics: [Comic!]!
   searchComics(
-    """검색어"""
+    """
+    검색어
+    """
     search: String
   ): [Comic!]!
   fetchComic(comicId: String!): Comic!
   availableComic: [Int!]!
-  fetchComments: [Comment!]!
-  fetchComment(ID: String!): Comment!
   fetchBoardImage(comicId: String!): [ComicImg!]!
   fetchAllCrewBoardImages: [ComicImg!]!
+  fetchReviews: [Review!]!
+  fetchReview(reviewId: String!): Review!
+  fetchWishlist: [Wishlist!]!
+  fetchBoards(page: Float = 1, order: String = "DESC"): [Board!]!
+  fetchUserBoards: [Board!]!
+  fetchBoard(id: String!): Board!
 }
 
 type Mutation {
-  signUpForAdmin(email: String!, password: String!, nickname: String!, phone: String!): Admin!
+  signUpForAdmin(
+    email: String!
+    password: String!
+    nickname: String!
+    phone: String!
+  ): Admin!
   updateAdmin(email: String!, updateAdminInput: UpdateAdminInput!): Admin!
   deleteAdmin(email: String!, password: String!): Boolean!
   authToken(phone: String!, token: String!): String!
@@ -131,19 +160,27 @@ type Mutation {
   deleteBoard(id: String!): Boolean!
   uploadFile(files: [Upload!]!): [String!]!
   uploadOneFile(file: Upload!): String!
-  signUp(email: String!, password: String!, nickname: String!, phone: String!, interest: String!): User!
+  signUp(
+    email: String!
+    password: String!
+    nickname: String!
+    phone: String!
+    interest: String!
+  ): User!
   updateUser(email: String!, updateUserInput: UpdateUserInput!): User!
   updatePassword(email: String!, phone: String!, newPassword: String!): String!
   deleteUser(email: String!, password: String!): Boolean!
   sendToken(phone: String!): String!
   blockUserForADMIN(email: String!): Boolean!
   login(email: String!, password: String!): String!
-  updateComic(comicId: String!, updateComicInput: UpdateComicInput!, createUrlInput: CreateUrlInput!): Comic!
+  updateComic(
+    comicId: String!
+    updateComicInput: UpdateComicInput!
+    createUrlInput: CreateUrlInput!
+  ): Comic!
   deleteComic(comicId: ID!): Boolean!
   restoreComic(comicId: ID!): Boolean!
   createComic(createComicInput: CreateComicInput!): Comic!
-  createComment(createCommentInput: CreateCommentInput!): Comment!
-  deleteComment(ID: String!): Boolean!
   uploadComicImg(url: [String!]!, comicId: String!): [ComicImg!]!
 }
 
@@ -166,7 +203,9 @@ input UpdateBoardInput {
   boardImg: [String!]
 }
 
-"""The `Upload` scalar type represents a file upload."""
+"""
+The `Upload` scalar type represents a file upload.
+"""
 scalar Upload
 
 input UpdateUserInput {
@@ -190,6 +229,7 @@ input UpdateComicInput {
   isAvailable: Boolean
   stock: Int
   url: [String!]
+  category: COMIC_CATEGORY_ENUM
 }
 
 input CreateUrlInput {
@@ -210,10 +250,29 @@ input CreateComicInput {
   isAvailable: Boolean!
   stock: Int!
   url: [String!]!
+  category: COMIC_CATEGORY_ENUM!
 }
 
-input CreateCommentInput {
-  content: String!
-  boardId: String!
+input CreateReviewInput {
+  comicId: String!
   userId: String!
+  content: String!
+  rating: Float!
+}
+
+input CreateWishInput {
+  comicId: String!
+  userId: String!
+}
+
+input CreateBoardInput {
+  title: String
+  contents: String
+  boardImg: [String!]
+}
+
+input UpdateBoardInput {
+  title: String
+  contents: String
+  boardImg: [String!]
 }
