@@ -96,7 +96,7 @@ type Query {
   findEmailForAdmin(email: String!): Admin!
   authUser: String!
   fetchBoards(page: Float = 1, order: String = "DESC"): [Board!]!
-  fetchUserBoards: [Board!]!
+  fetchBoardsByUser: [Board!]!
   fetchBoard(id: String!): Board!
   fetchUser(email: String!): User!
   findEmail(phone: String!): User!
@@ -156,13 +156,13 @@ input UpdateAdminInput {
 
 input CreateBoardInput {
   title: String
-  contents: String
+  content: String
   boardImg: [String!]
 }
 
 input UpdateBoardInput {
   title: String
-  contents: String
+  content: String
   boardImg: [String!]
 }
 

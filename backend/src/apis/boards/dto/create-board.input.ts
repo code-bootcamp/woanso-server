@@ -6,8 +6,8 @@ export class CreateBoardInput {
   title: string;
 
   @Field(() => String, { nullable: true })
-  contents: string;
+  content: string;
 
   @Field(() => [String], { nullable: true })
-  boardImg: string[];
+  boardImg?: string[];
 }
