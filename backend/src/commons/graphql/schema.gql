@@ -51,7 +51,26 @@ type Comic {
   description: String!
   ISBN: String!
   isAvailable: Boolean!
+  wishListCount: Int!
   comicRating: ComicRating!
+  category: COMIC_CATEGORY_ENUM!
+}
+
+enum COMIC_CATEGORY_ENUM {
+  romance
+  drama
+  fantasy
+  action
+  school
+  horror
+}
+
+type Review {
+  reviewId: String!
+  content: String!
+  like: Int!
+  user: User!
+  comic: Comic!
 }
 
 type BoardImg {
@@ -77,25 +96,14 @@ type ComicImg {
   comic: Comic!
 }
 
-type Comment {
-  id: String!
-  title: String!
-  content: String!
-  createdAt: DateTime!
-  board: Board!
-  user: User!
-  isDeleted: Boolean!
+type Wishlist {
+  wishlistId: String!
+  isDib: Boolean!
+  user: User
+  comic: Comic
 }
 
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
 type Query {
-  fetchBoards(page: Float = 1, order: String = "DESC"): [Board!]!
-  fetchUserBoards: [Board!]!
-  fetchBoard(id: String!): Board!
   fetchUser(email: String!): User!
   fetchUsers: [User!]!
   searchUsers(
@@ -111,16 +119,17 @@ type Query {
   ): [Comic!]!
   fetchComic(comicId: String!): Comic!
   availableComic: [Int!]!
-  fetchComments: [Comment!]!
-  fetchComment(ID: String!): Comment!
   fetchBoardImage(comicId: String!): [ComicImg!]!
   fetchAllCrewBoardImages: [ComicImg!]!
+  fetchReviews: [Review!]!
+  fetchReview(reviewId: String!): Review!
+  fetchWishlist: [Wishlist!]!
+  fetchBoards(page: Float = 1, order: String = "DESC"): [Board!]!
+  fetchUserBoards: [Board!]!
+  fetchBoard(id: String!): Board!
 }
 
 type Mutation {
-  createBoard(createBoardInput: CreateBoardInput!): Board!
-  updateBoard(id: String!, updateBoardInput: UpdateBoardInput!): Board!
-  deleteBoard(id: String!): Boolean!
   uploadFile(files: [Upload!]!): [String!]!
   uploadOneFile(file: Upload!): String!
   signUp(email: String!, password: String!, nickname: String!, phone: String!, interest: String!): User!
@@ -138,21 +147,14 @@ type Mutation {
   deleteComic(comicId: ID!): Boolean!
   restoreComic(comicId: ID!): Boolean!
   createComic(createComicInput: CreateComicInput!): Comic!
-  createComment(createCommentInput: CreateCommentInput!): Comment!
-  deleteComment(ID: String!): Boolean!
   uploadComicImg(url: [String!]!, comicId: String!): [ComicImg!]!
-}
-
-input CreateBoardInput {
-  title: String
-  contents: String
-  boardImg: [String!]
-}
-
-input UpdateBoardInput {
-  title: String
-  contents: String
-  boardImg: [String!]
+  createReview(createReviewInput: CreateReviewInput!): Review!
+  deleteReview(reviewId: ID!): Boolean!
+  restoreReview(reviewId: ID!): Boolean!
+  createWishlist(createWishInput: CreateWishInput!): Boolean!
+  createBoard(createBoardInput: CreateBoardInput!): Board!
+  updateBoard(id: String!, updateBoardInput: UpdateBoardInput!): Board!
+  deleteBoard(id: String!): Boolean!
 }
 
 """The `Upload` scalar type represents a file upload."""
@@ -179,6 +181,7 @@ input UpdateComicInput {
   isAvailable: Boolean
   stock: Int
   url: [String!]
+  category: COMIC_CATEGORY_ENUM
 }
 
 input CreateUrlInput {
@@ -199,10 +202,29 @@ input CreateComicInput {
   isAvailable: Boolean!
   stock: Int!
   url: [String!]!
+  category: COMIC_CATEGORY_ENUM!
 }
 
-input CreateCommentInput {
-  content: String!
-  boardId: String!
+input CreateReviewInput {
+  comicId: String!
   userId: String!
+  content: String!
+  rating: Float!
+}
+
+input CreateWishInput {
+  comicId: String!
+  userId: String!
+}
+
+input CreateBoardInput {
+  title: String
+  contents: String
+  boardImg: [String!]
+}
+
+input UpdateBoardInput {
+  title: String
+  contents: String
+  boardImg: [String!]
 }

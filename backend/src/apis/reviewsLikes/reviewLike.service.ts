@@ -4,6 +4,7 @@
 
 // import { Review } from '../reviews/entities/review.entity';
 // import { User } from '../users/entities/user.entity';
+// import { reviewLike } from './entities/reviewLike.entity';
 
 // @Injectable()
 // export class ReviewLikeService {
@@ -14,8 +15,8 @@
 //     @InjectRepository(User)
 //     private readonly userRepository: Repository<User>,
 
-//     @InjectRepository(ReviewLike)
-//     private readonly likeRepository: Repository<Like>,
+//     @InjectRepository(reviewLike)
+//     private readonly likeRepository: Repository<reviewLike>,
 //   ) {}
 
 //   //
@@ -26,9 +27,9 @@
 //       where: { email: user },
 //     });
 
-//     const findLike = await this.likeRepository.findOne({
+//     const findLike = await this.reviewLikeRepository.findOne({
 //       where: {
-//         reviewBoard: { id: reviewBoardId },
+//         review: { reviewId },
 //         user: { id: findUser.id },
 //       },
 //       relations: ['reviewBoard', 'user'],
