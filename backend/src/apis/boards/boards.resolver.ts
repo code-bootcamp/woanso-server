@@ -12,7 +12,7 @@ export class BoardsResolver {
     private readonly boardsService: BoardsService, //
   ) {}
 
-  //--------------------------**[Fetch boards]**--------------------------------
+  ////----------------------**[Fetch Boards]**----------------------
   @Query(() => [Board])
   fetchBoards(
     @Args({ name: 'page', defaultValue: 1, nullable: true }) page: number, //
@@ -27,9 +27,10 @@ export class BoardsResolver {
     return this.boardsService.find({ page, order });
   }
 
+  //----------------------**[Fetch Board By User]**----------------------
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Board])
-  fetchUserBoards(
+  fetchBoardsByUser(
     @Context() context: any, //
   ) {
     //유저가 쓴 게시글 목록 불러오기
@@ -37,6 +38,7 @@ export class BoardsResolver {
     return this.boardsService.userFind({ email });
   }
 
+  //----------------------**[Fetch Board Detail]**----------------------
   @Query(() => Board)
   fetchBoard(
     @Args('id') id: string, //
@@ -45,6 +47,7 @@ export class BoardsResolver {
     return this.boardsService.findOne({ id });
   }
 
+  //----------------------**[Create Board]**----------------------
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Board)
   createBoard(
@@ -56,6 +59,7 @@ export class BoardsResolver {
     return this.boardsService.create({ email, createBoardInput });
   }
 
+  //----------------------**[Update Board]**----------------------
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Board)
   updateBoard(
@@ -68,6 +72,7 @@ export class BoardsResolver {
     return this.boardsService.update({ id, email, updateBoardInput });
   }
 
+  //----------------------**[Delete Board]**----------------------
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   deleteBoard(

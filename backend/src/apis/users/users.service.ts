@@ -20,7 +20,6 @@ import {
 } from './interfaces/users-service.interface';
 import coolsms from 'coolsms-node-sdk';
 import { Cache } from 'cache-manager';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {

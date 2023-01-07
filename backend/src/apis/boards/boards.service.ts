@@ -17,6 +17,7 @@ export class BoardsService {
     private readonly boardImgRepository: Repository<BoardImg>,
   ) {}
 
+  //----------------------**[Fetch Board]**----------------------
   find({ page, order }) {
     return this.boardRepository.find({
       relations: ['user', 'user.pick', 'boardImg'],
@@ -26,6 +27,7 @@ export class BoardsService {
     });
   }
 
+  //----------------------**[Fetch Board By User]**----------------------
   async userFind({ email }) {
     const user = await this.userRepository.findOne({
       where: { email },
@@ -35,14 +37,14 @@ export class BoardsService {
       relations: ['boardImg', 'user'],
     });
   }
-
+  //----------------------**[Fetch Board Detail]**----------------------
   findOne({ id }) {
     return this.boardRepository.findOne({
       where: { id },
       relations: ['boardImg', 'user'],
     });
   }
-
+  //----------------------**[Create Board]**----------------------
   async create({ email, createBoardInput }) {
     const user = await this.userRepository.findOne({
       where: { email },
@@ -62,13 +64,12 @@ export class BoardsService {
     return board;
   }
 
+  //----------------------**[Update Board]**----------------------
   async update({ email, updateBoardInput, id }) {
-    //유저 정보 가져오기
     const user = await this.userRepository.findOne({
       where: { email },
     });
 
-    //기존 보드 데이터 가져오기
     const beforeBoard = await this.boardRepository.findOne({
       where: {
         user: { id: user.id },
