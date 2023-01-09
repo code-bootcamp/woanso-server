@@ -5,6 +5,10 @@ export interface IUsersServiceFindOne {
   email: string;
 }
 
+export interface IUsersServiceFindLogin {
+  user?: User;
+}
+
 export interface IUsersServiceFindOneForUpdate {
   email: string;
   phone: string;

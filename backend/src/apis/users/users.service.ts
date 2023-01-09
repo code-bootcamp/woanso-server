@@ -14,6 +14,7 @@ import {
   IUsersServiceCreate,
   IUsersServiceDelete,
   IUsersServiceFindEmail,
+  IUsersServiceFindLogin,
   IUsersServiceFindOne,
   IUsersServiceFindOneForUpdate,
   IUsersServiceUpdate,
@@ -55,7 +56,8 @@ export class UsersService {
   }
 
   //------------------------**[Find Login]**-------------------------------
-  async findLogin(context): Promise<User> {
+  async findLogin({ context }) {
+    console.log(context.req.user.email);
     return await this.usersRepository.findOne({
       where: { email: context.req.user.email },
     });

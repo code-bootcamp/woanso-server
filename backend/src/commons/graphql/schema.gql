@@ -67,7 +67,6 @@ type BoardImg {
 
 type Board {
   id: String!
-  title: String!
   content: String!
   like: Int!
   dislike: Int!
@@ -135,7 +134,7 @@ type Query {
     search: String
   ): [Comic!]!
   fetchComic(comicId: String!): Comic!
-  availableComic: [Int!]!
+  availableComicsForAdmin: [Int!]!
   fetchComments: [Comment!]!
   fetchComment(ID: String!): Comment!
   fetchBoardImage(comicId: String!): [ComicImg!]!
@@ -189,13 +188,11 @@ input UpdateAdminInput {
 }
 
 input CreateBoardInput {
-  title: String
   content: String
   boardImg: [String!]
 }
 
 input UpdateBoardInput {
-  title: String
   content: String
   boardImg: [String!]
 }
