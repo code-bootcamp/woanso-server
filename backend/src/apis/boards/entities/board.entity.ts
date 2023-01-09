@@ -20,11 +20,7 @@ export class Board {
   @Field(() => String)
   id: string;
 
-  @Column()
-  @Field(() => String)
-  title: string;
-
-  @Column()
+  @Column({ nullable: true })
   @Field(() => String)
   content: string;
 

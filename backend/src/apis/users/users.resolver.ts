@@ -201,6 +201,6 @@ export class UsersResolver {
   @Query(() => User)
   fetchLoginUserForAdmin(@Context() context: IContext) {
     console.log(context.req.user.email);
-    return this.usersService.findLogin({ context });
+    return this.usersService.findLogins({ context });
   }
 }
