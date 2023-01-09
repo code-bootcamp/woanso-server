@@ -1,73 +1,74 @@
-// import { Injectable } from '@nestjs/common';
-// import { InjectRepository } from '@nestjs/typeorm';
-// import { Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-// import { Review } from '../reviews/entities/review.entity';
-// import { User } from '../users/entities/user.entity';
-// import { reviewLike } from './entities/reviewLike.entity';
+import { Review } from '../reviews/entities/review.entity';
+import { User } from '../users/entities/user.entity';
 
-// @Injectable()
-// export class ReviewLikeService {
-//   constructor(
-//     @InjectRepository(Review)
-//     private readonly reviewRepository: Repository<Review>,
+import { ReviewLike } from './entities/reviewLike.entity';
 
-//     @InjectRepository(User)
-//     private readonly userRepository: Repository<User>,
+@Injectable()
+export class ReviewLikeService {
+  constructor(
+    @InjectRepository(Review)
+    private readonly reviewRepository: Repository<Review>,
 
-//     @InjectRepository(reviewLike)
-//     private readonly likeRepository: Repository<reviewLike>,
-//   ) {}
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
 
-//   //
+    @InjectRepository(ReviewLike)
+    private readonly reviewLikeRepository: Repository<ReviewLike>,
+  ) {}
 
-//   //
-//   async like({ reviewBoardId, user }) {
-//     const findUser = await this.userRepository.findOne({
-//       where: { email: user },
-//     });
+  //
 
-//     const findLike = await this.reviewLikeRepository.findOne({
-//       where: {
-//         review: { reviewId },
-//         user: { id: findUser.id },
-//       },
-//       relations: ['reviewBoard', 'user'],
-//     });
-//     console.log(findLike);
+  //
+  async like({ reviewId, user }) {
+    const findUser = await this.userRepository.findOne({
+      where: { email: user },
+    });
 
-//     if (findLike) {
-//       await this.likeRepository.delete({
-//         reviewBoard: { id: reviewBoardId },
-//         user: { id: findUser.id },
-//       });
+    const findLike = await this.reviewLikeRepository.findOne({
+      where: {
+        review: { reviewId },
+        user: { id: findUser.id },
+      },
+      relations: ['review', 'user'],
+    });
+    console.log(findLike);
 
-//       const reviewBoard = await this.reviewBoardRepository.findOne({
-//         where: { id: reviewBoardId },
-//       });
+    if (findLike) {
+      await this.reviewLikeRepository.delete({
+        review: { reviewId },
+        user: { id: findUser.id },
+      });
 
-//       await this.reviewBoardRepository.update(
-//         { id: reviewBoardId },
-//         { like: reviewBoard.like - 1 },
-//       );
+      const reviewBoard = await this.reviewRepository.findOne({
+        where: { reviewId },
+      });
 
-//       return '좋아요 취소';
-//     } else {
-//       await this.likeRepository.save({
-//         reviewBoard: { id: reviewBoardId },
-//         user: { id: findUser.id },
-//       });
+      await this.reviewRepository.update(
+        { reviewId },
+        { like: reviewBoard.like - 1 },
+      );
 
-//       const reviewBoard = await this.reviewBoardRepository.findOne({
-//         where: { id: reviewBoardId },
-//       });
+      return '좋아요 취소';
+    } else {
+      await this.reviewLikeRepository.save({
+        reviewBoard: { id: reviewId },
+        user: { id: findUser.id },
+      });
 
-//       await this.reviewBoardRepository.update(
-//         { id: reviewBoardId },
-//         { like: reviewBoard.like + 1 },
-//       );
+      const reviewBoard = await this.reviewRepository.findOne({
+        where: { reviewId },
+      });
 
-//       return '좋아요 추가';
-//     }
-//   }
-// }
+      await this.reviewRepository.update(
+        { reviewId },
+        { like: reviewBoard.like + 1 },
+      );
+
+      return '좋아요 추가';
+    }
+  }
+}
