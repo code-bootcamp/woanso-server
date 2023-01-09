@@ -48,9 +48,9 @@ export class Board {
   @JoinColumn()
   @OneToMany(() => BoardImg, (boardImg) => boardImg.board)
   @Field(() => [BoardImg])
-  boardImg: BoardImg[];
+  boardImg?: BoardImg[];
 
   @ManyToOne(() => User)
   @Field(() => User)
-  user: User;
+  user?: User;
 }

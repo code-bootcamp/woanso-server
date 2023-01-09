@@ -15,7 +15,8 @@ export class BoardsResolver {
   ////----------------------**[Fetch Boards]**----------------------
   @Query(() => [Board])
   fetchBoards(
-    @Args({ name: 'page', defaultValue: 1, nullable: true }) page: number, //
+    @Args({ name: 'page', defaultValue: 1, nullable: true })
+    page: number, //
     @Args({
       name: 'order',
       defaultValue: 'DESC',
@@ -77,10 +78,7 @@ export class BoardsResolver {
   @Mutation(() => Boolean)
   deleteBoard(
     @Args('id') id: string, //
-    @Context() context: any, //
   ) {
-    //게시글 삭제
-    const email = context.req.user.email;
-    return this.boardsService.delete({ id, email });
+    return this.boardsService.delete({ id });
   }
 }

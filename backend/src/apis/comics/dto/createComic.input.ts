@@ -37,8 +37,8 @@ export class CreateComicInput {
   @Field(() => String)
   ISBN: string;
 
-  @Field(() => Boolean)
-  isAvailable?: boolean;
+  // @Field(() => Boolean)
+  // isAvailable?: boolean;
 
   @Field(() => Int)
   stock: number;
