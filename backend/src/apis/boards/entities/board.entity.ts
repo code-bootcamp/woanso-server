@@ -28,11 +28,11 @@ export class Board {
   @Field(() => String)
   content: string;
 
-  @Column()
+  @Column({ nullable: true, default: 0 })
   @Field(() => Int)
   like?: number;
 
-  @Column()
+  @Column({ nullable: true, default: 0 })
   @Field(() => Int)
   dislike?: number;
 

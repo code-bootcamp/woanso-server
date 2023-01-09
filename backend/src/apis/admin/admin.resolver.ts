@@ -65,7 +65,7 @@ export class AdminResolver {
   //------------------**[Auth ADMIN]**------------------
   @UseGuards(GqlAdminGuard)
   @Query(() => String)
-  authUser(
+  authAdmin(
     @Context() context: IContext, //
   ): string {
     console.log(context.req.user);
@@ -75,7 +75,10 @@ export class AdminResolver {
 
   //------------------**[Auth Token]**------------------
   @Mutation(() => String)
-  async authToken(@Args('phone') phone: string, @Args('token') token: string) {
+  async authTokenForAdmin(
+    @Args('phone') phone: string,
+    @Args('token') token: string,
+  ) {
     return this.adminService.authToken({ phone, token });
   }
 }

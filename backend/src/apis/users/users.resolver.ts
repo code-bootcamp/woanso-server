@@ -76,7 +76,7 @@ export class UsersResolver {
   async updatePassword(
     @Args('email') email: string,
     @Args('phone') phone: string,
-    @Args('newPassword') password: string,
+    @Args('updateUserPwdInput') updateUserPwdInput: string,
   ) {
     const myToken = await this.cache.get(phone);
     if (!myToken) {
@@ -84,7 +84,7 @@ export class UsersResolver {
       throw new UnprocessableEntityException('인증 미실시');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(updateUserPwdInput, 10);
     return await this.usersService.updatePassword({ email, hashedPassword });
   }
 
@@ -161,16 +161,38 @@ export class UsersResolver {
   //----------------------**[Delete User For ADMIN]**----------------------
   @UseGuards(GqlAdminGuard)
   @Mutation(() => Boolean)
-  blockUserForADMIN(@Args('email') email: string): Promise<boolean> {
+  blockUserForAdmin(@Args('email') email: string): Promise<boolean> {
     return this.usersService.deleteUser({ email });
   }
 
   //----------------------**[Restore User For ADMIN]**----------------------
+  @UseGuards(GqlAdminGuard)
+  @Mutation(() => Boolean)
+  unblockUserForAdmin(
+    @Args('email') email: string, //
+  ): Promise<boolean> {
+    return this.usersService.restoreUser({ email });
+  }
+
   //----------------------**[Fetch Blocked User For ADMIN]**----------------------
+  @UseGuards(GqlAdminGuard)
+  @Query(() => [User])
+  fetchBlockedUsersForAdmin(email): Promise<User[]> {
+    return this.usersService.findBlocked(email);
+  }
+
   //----------------------**[Find Users For ADMIN]**----------------------
   @UseGuards(GqlAdminGuard)
   @Query(() => [User])
   fetchUsersForAdmin(email): Promise<User[]> {
     return this.usersService.findAll(email);
+  }
+
+  //----------------------**[Find Login Users For ADMIN]**----------------------
+  @UseGuards(GqlAdminGuard)
+  @Query(() => User)
+  fetchLoginUserForAdmin(@Context() context: IContext) {
+    console.log(context.req.user.email);
+    return this.usersService.findLogin({ context });
   }
 }

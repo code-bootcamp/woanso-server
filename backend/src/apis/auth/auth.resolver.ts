@@ -16,6 +16,7 @@ import {
 } from 'src/commons/auth/gql-auth.guard';
 import { Cache } from 'cache-manager';
 import * as jwt from 'jsonwebtoken';
+import { GqlAdminGuard } from '../../commons/auth/gql-auth.guard';
 
 @Resolver()
 export class AuthResolver {
@@ -57,7 +58,7 @@ export class AuthResolver {
   }
 
   //-----------------**[Restore access token]**------------------
-  @UseGuards(GqlAuthRefreshGuard)
+  @UseGuards(GqlAdminGuard)
   @Mutation(() => String)
   restoreAccessToken(
     @Context() context: IContext, //
@@ -72,7 +73,7 @@ export class AuthResolver {
   }
 
   //-----------------**[Logout]**------------------
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlAdminGuard)
   @Mutation(() => String)
   async logout(
     @Context() context: IContext, //any, // 왜 굳이 any로 받지? 타입체크 안하려고?
