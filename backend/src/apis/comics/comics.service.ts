@@ -30,6 +30,7 @@ export class ComicsService {
 
   //전체조회
   findAll(): Promise<Comic[]> {
+    //페이지네이션? 24개씩
     return this.comicsRepository.find({ relations: ['comicRating'] });
   }
 
@@ -90,8 +91,10 @@ export class ComicsService {
     let nonAvailableCount = 0;
     for (let i = 0; i < result.length; i++) {
       if (result[i].isAvailable === true) {
+        //대여가능하다면
         availableCount++;
       } else {
+        //대여불가능한것
         nonAvailableCount++;
       }
     }

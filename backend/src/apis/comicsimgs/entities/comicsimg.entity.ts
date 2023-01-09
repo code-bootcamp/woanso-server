@@ -34,8 +34,9 @@ export class ComicImg {
   // @JoinColumn()
   // comic: Comic;
 
-  @JoinTable()
-  @ManyToOne(() => Comic)
+  // @JoinTable()
+  @JoinColumn()
+  @OneToOne(() => Comic)
   @Field(() => Comic)
   comic: Comic;
 

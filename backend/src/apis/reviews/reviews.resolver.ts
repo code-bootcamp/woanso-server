@@ -14,8 +14,17 @@ export class ReviewsResolver {
   ) {}
 
   @Query(() => [Review])
-  fetchReviews() {
-    return this.reviewsService.findAll();
+  async fetchReviews() {
+    // return this.reviewsService.findAll();
+    const result = [];
+    const review = await this.reviewsService.findAll();
+    review.sort((a, b) => Number(b.createdAt) - Number(a.createdAt));
+
+    while (review.length > 0) {
+      result.push(review.splice(0, 10));
+    }
+
+    return result;
   }
 
   @Query(() => Review)
