@@ -211,7 +211,6 @@ input UpdateComicInput {
   totalBooks: Int
   description: String
   ISBN: String
-  isAvailable: Boolean
   stock: Int
   url: [String!]
   category: COMIC_CATEGORY_ENUM
@@ -232,7 +231,6 @@ input CreateComicInput {
   totalBooks: Int!
   description: String!
   ISBN: String!
-  isAvailable: Boolean!
   stock: Int!
   url: [String!]!
   category: COMIC_CATEGORY_ENUM!
