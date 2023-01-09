@@ -16,11 +16,9 @@ export interface IContext {
 }
 ////////////////////
 export interface IAdminAuthUser {
-  admin?: {
-    email: string;
-    id: string;
-    exp: number;
-  };
+  email: string;
+  id: string;
+  exp: number;
 }
 
 export interface IAdminContext {

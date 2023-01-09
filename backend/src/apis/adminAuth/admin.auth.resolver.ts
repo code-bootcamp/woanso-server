@@ -9,13 +9,10 @@ import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import * as bcrypt from 'bcrypt';
 import { AdminAuthService } from './admin.auth.service';
 import { IContext } from 'src/commons/types/context';
-import {
-  GqlAuthAccessGuard,
-  GqlAuthRefreshGuard,
-} from 'src/commons/auth/gql-auth.guard';
 import * as jwt from 'jsonwebtoken';
 import { Cache } from 'cache-manager';
 import { AdminService } from '../admin/admin.service';
+import { GqlAdminGuard } from '../../commons/auth/gql-auth.guard';
 
 @Resolver()
 export class AdminAuthResolver {
@@ -56,9 +53,9 @@ export class AdminAuthResolver {
   }
 
   //----------------------**[Access token for ADMIN]**-----------------------------
-  @UseGuards(GqlAuthRefreshGuard)
+  @UseGuards(GqlAdminGuard)
   @Mutation(() => String)
-  restoreAccessToken(
+  restoreAccessTokenForAdmin(
     @Context() context: IContext, //
   ): string {
     return this.adminAuthService.getAccessToken({
@@ -67,9 +64,9 @@ export class AdminAuthResolver {
   }
 
   //----------------------**[ADMIN logout]**-----------------------------
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlAdminGuard)
   @Mutation(() => String)
-  async logout(
+  async logoutForAdmin(
     @Context() context: IContext, //
   ) {
     const refresh_token = context.req.headers.cookie.replace(

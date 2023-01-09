@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import {
+  IAdminServiceUnblock,
   IAdminServiceUserDelete,
   IUsersServiceCreate,
   IUsersServiceCreateAdmin,
@@ -49,25 +50,12 @@ export class UsersService {
     });
   }
 
-  //------------------------**[Create ADMIN user]**-------------------------------
-  async createAdmin({
-    email,
-    hashedPassword: password,
-    phone,
-  }: IUsersServiceCreateAdmin) {
-    return this.usersRepository.save({
-      email,
-      password,
-      phone,
-    });
-  }
-
-  //------------------------**[Find one user by EMAIL]**-------------------------------
+  //------------------------**[Find User by EMAIL]**-------------------------------
   findOne({ email }: IUsersServiceFindOne): Promise<User> {
     return this.usersRepository.findOne({ where: { email } });
   }
 
-  //--------------------**[Find one user for update password]**--------------------
+  //--------------------**[Find User for update PWD]**--------------------
   findOneForUpdate({
     email,
     phone,
@@ -75,23 +63,10 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { email, phone } });
   }
 
-  //------------------------**[Find email by PHONE]**-------------------------------
+  //------------------------**[Find email by Phone]**-------------------------------
   findEmail({ phone }: IUsersServiceFindEmail): Promise<User> {
     return this.usersRepository.findOne({ where: { phone } });
   }
-
-  //----------------------**[Fetch all users for admin]**---------------------------
-  async findAll(email): Promise<User[]> {
-    return this.usersRepository.find(email);
-  }
-
-  // async findAll() {
-  //   return await this.usersRepository
-  //     .createQueryBuilder('user')
-  //     .skip(6 * (1 - 1))
-  //     .take(6)
-  //     .getMany();
-  // }
 
   //------------------------**[Update user]**-------------------------------
   update({ user, updateUserInput }: IUsersServiceUpdate): Promise<User> {
@@ -103,33 +78,29 @@ export class UsersService {
   }
 
   //------------------------**[Update password]**-------------------------------
-  async updatePassword({ email, hashedPassword }) {
-    const user = this.usersRepository.findOne({ where: email });
-    await this.usersRepository.save({
-      password: hashedPassword,
-      ...user,
-    });
+  async updatePassword({ email, hashedPassword: newPassword }) {
+    try {
+      const user = await this.usersRepository.findOne({ where: { email } });
+      await this.usersRepository.save({
+        ...user,
+        password: newPassword,
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   //------------------------**[Delete user]**-------------------------------
   async delete({ email }: IUsersServiceDelete): Promise<boolean> {
-    const user = await this.usersRepository.findOne({
-      where: { email },
-    });
+    // const user = await this.usersRepository.findOne({
+    //   where: { email },
+    // });
 
-    const result = await this.usersRepository.softDelete({ email });
+    const result = await this.usersRepository.delete({ email });
     return result.affected ? true : false;
   }
 
-  //------------------------**[Delete user For Admin]**-------------------------------
-  async deleteUser({ email }: IAdminServiceUserDelete): Promise<boolean> {
-    const user = await this.usersRepository.findOne({
-      where: { email },
-    });
-
-    const result = await this.usersRepository.softDelete({ email });
-    return result.affected ? true : false;
-  }
   //------------------------**[Send token by PHONE]**-------------------------------
   async sendToken({ phone }) {
     const SMS_KEY = process.env.SMS_KEY;
@@ -159,7 +130,6 @@ export class UsersService {
       return token;
     }
   }
-
   //------------------------**[Auth token]**-------------------------------
   async authToken({ phone, token }) {
     const myToken = await this.cache.get(phone);
@@ -168,5 +138,50 @@ export class UsersService {
     else {
       throw new UnprocessableEntityException('인증번호가 잘못 되었습니다.');
     }
+  }
+
+  //----------------------**[FOR ADMIN]**----------------------
+  //----------------------**[FOR ADMIN]**----------------------
+  //----------------------**[FOR ADMIN]**----------------------
+
+  //----------------------**[Fetch all users for admin]**---------------------------
+  async findAll(email): Promise<User[]> {
+    return this.usersRepository.find(email);
+  }
+
+  // async findAll() {
+  //   return await this.usersRepository
+  //     .createQueryBuilder('user')
+  //     .skip(6 * (1 - 1))
+  //     .take(6)
+  //     .getMany();
+  // }
+
+  //------------------------**[Block User]**-------------------------------
+  async deleteUser({ email }: IAdminServiceUserDelete): Promise<boolean> {
+    // const user = await this.usersRepository.findOne({
+    //   where: { email },
+    // });
+
+    const result = await this.usersRepository.softDelete({ email });
+    return result.affected ? true : false;
+  }
+  //----------------------**[Restore User]**----------------------
+  async restoreUser({ email }: IAdminServiceUnblock): Promise<boolean> {
+    const result = await this.usersRepository.restore({ email });
+    return result.affected ? true : false;
+  }
+
+  //----------------------**[Fetch Blocked for admin]**---------------------------
+  async findBlocked(email): Promise<User[]> {
+    return this.usersRepository.find(email);
+  }
+
+  //------------------------**[Find Login Users]**-------------------------------
+  async findLogin({ context }) {
+    console.log(context.req.user.email);
+    return await this.usersRepository.findOne({
+      where: { email: context.req.user.email },
+    });
   }
 }

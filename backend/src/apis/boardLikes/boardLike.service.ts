@@ -87,16 +87,22 @@ export class BoardLikeService {
         board: { id: id },
         user: { id: findUser.id },
       });
-      await this.boardRepository.update({ id: id }, { like: board.like - 1 });
+      await this.boardRepository.update(
+        { id: id },
+        { dislike: board.dislike - 1 },
+      );
       return '싫어요 취소!';
     } else {
-      await this.likeRepository.save({
+      await this.dislikeRepository.save({
         board: { id: id },
         user: { id: findUser.id },
       });
 
       //싫어요가 없다면
-      await this.boardRepository.update({ id: id }, { like: board.like + 1 });
+      await this.boardRepository.update(
+        { id: id },
+        { dislike: board.dislike + 1 },
+      );
       return '싫어요!';
     }
   }

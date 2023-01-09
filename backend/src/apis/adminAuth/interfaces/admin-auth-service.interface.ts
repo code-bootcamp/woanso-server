@@ -3,11 +3,11 @@ import { Admin } from 'src/apis/admin/entities/admin.entity';
 import { IAdminAuthUser } from 'src/commons/types/context';
 
 export interface IAdminAuthServiceGetAccessToken {
-  admin: Admin | IAdminAuthUser['admin'];
+  admin: Admin | IAdminAuthUser;
 }
 
 export interface IAdminAuthServiceSetRefreshToken {
   admin: Admin;
   res: Response;
-  req: Request;
+  req?: Request;
 }
