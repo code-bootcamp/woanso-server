@@ -77,15 +77,62 @@ export class PointsTransactionsService {
   }
 
   //////////////////////////////////////////////////////////////////////
-  async cancel({ impUid, amount, user, comicId }) {
-    const pointTransaction = await this.create({
-      impUid,
-      amount: -amount,
-      user,
-      status: POINT_TRANSACTION_STATUS_ENUM.CANCEL,
-      comicId,
-    });
-    return pointTransaction;
+  async cancel({ impUid, amount, _user, comicId }) {
+    // const pointTransaction = await this.create({
+    //   impUid,
+    //   amount: -amount,
+    //   user,
+    //   status: POINT_TRANSACTION_STATUS_ENUM.CANCEL,
+    //   comicId,
+    // });
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect(); // DB접속, promise 필수
+    await queryRunner.startTransaction('SERIALIZABLE'); // Transaction 시작
+    try {
+      const pointTransaction = this.pointsTransactionsRepository.create({
+        impUid,
+        amount: -amount,
+        user: _user,
+        status: POINT_TRANSACTION_STATUS_ENUM.CANCEL,
+      });
+
+      await queryRunner.manager.save(pointTransaction);
+
+      // await this.pointsTransactionsRepository.save(pointTransaction);
+
+      // 2. 유저의 돈 찾아오기
+      // const user = await this.usersRepository.findOne({
+      //   where: { id: _user.id }, //
+      //   lock: { mode: 'pessimistic_partial_write' },
+      // });
+
+      //
+      const stock = await this.comicRepository.findOne({ where: comicId });
+      await this.comicRepository.update(
+        { comicId },
+        { stock: stock.stock + 1 },
+      );
+      const stock2 = await this.comicRepository.findOne({ where: comicId });
+
+      if (stock2.stock !== 0) {
+        await this.comicRepository.update({ comicId }, { isAvailable: true });
+      }
+      // 3. 유저의 돈 업데이트하기
+      // await this.usersRepository.update(
+      //   { id: user.id },
+      //   { balance: user.balance + amount },
+      // );
+      // await queryRunner.manager.save(updatedUser);
+      await queryRunner.commitTransaction();
+      // 4, 최종 결과 브라우저에 돌려주기
+      return pointTransaction;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+    // return pointTransaction;
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -132,10 +179,10 @@ export class PointsTransactionsService {
         await this.comicRepository.update({ comicId }, { isAvailable: false });
       }
       // 3. 유저의 돈 업데이트하기
-      await this.usersRepository.update(
-        { id: user.id },
-        { balance: user.balance + amount },
-      );
+      // await this.usersRepository.update(
+      //   { id: user.id },
+      //   { balance: user.balance + amount },
+      // );
       // await queryRunner.manager.save(updatedUser);
       await queryRunner.commitTransaction();
       // 4, 최종 결과 브라우저에 돌려주기

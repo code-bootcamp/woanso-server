@@ -68,7 +68,7 @@ export class ComicsResolver {
 
   //대여가능 , 대여불가 수량 조회
   @Query(() => [Int])
-  availableComic() {
+  availableComicsForAdmin() {
     return this.comicsService.findAll1();
   }
 

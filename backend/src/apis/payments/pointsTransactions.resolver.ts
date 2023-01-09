@@ -55,10 +55,10 @@ export class PointsTransactionsResolver {
     await this.pointsTransactionsService.isCancelled({ impUid });
 
     //2. 취소하기에 충분한 포인트 잔액이 남아있는 지   ///////////////////////
-    await this.pointsTransactionsService.checkHasCancelablePoint({
-      impUid,
-      user,
-    });
+    // await this.pointsTransactionsService.checkHasCancelablePoint({
+    //   impUid,
+    //   user,
+    // });
 
     //3. 실제로 아임포트에 취소 요청  //////////////////////////////////
     const token = await this.iamportService.getToken();
@@ -68,7 +68,7 @@ export class PointsTransactionsResolver {
     return await this.pointsTransactionsService.cancel({
       impUid,
       amount: cancelledAmount,
-      user,
+      _user: user,
       comicId,
     });
   }

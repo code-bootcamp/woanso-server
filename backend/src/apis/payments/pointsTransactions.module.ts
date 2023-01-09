@@ -7,6 +7,7 @@ import { IamportService } from './iamport.service';
 import { PointTransaction } from './entities/payment.entity';
 import { ComicsService } from '../comics/comics.service';
 import { Comic } from '../comics/entities/comic.entity';
+import { ComicRating } from '../comicsRating/entities/comicRating.entity';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { Comic } from '../comics/entities/comic.entity';
       PointTransaction, //
       User,
       Comic,
+      ComicRating,
     ]),
   ],
 
