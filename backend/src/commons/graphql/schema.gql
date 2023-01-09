@@ -59,14 +59,6 @@ enum COMIC_CATEGORY_ENUM {
   horror
 }
 
-type Review {
-  reviewId: String!
-  content: String!
-  like: Int!
-  user: User!
-  comic: Comic!
-}
-
 type BoardImg {
   boardImgID: String!
   url: String
@@ -90,16 +82,8 @@ type ComicImg {
   comic: Comic!
 }
 
-type Wishlist {
-  wishlistId: String!
-  isDib: Boolean!
-  user: User
-  comic: Comic
-}
-
 type Comment {
   id: String!
-  title: String!
   content: String!
   createdAt: DateTime!
   board: Board!
@@ -118,8 +102,22 @@ type Admin {
   phone: String!
 }
 
+type Review {
+  reviewId: String!
+  content: String!
+  like: Int!
+  user: User!
+  comic: Comic!
+}
+
 type Query {
+  findEmailForAdmin(email: String!): Admin!
+  authAdmin: String!
+  fetchBoards(page: Float = 1, order: String = "DESC"): [Board!]!
+  fetchBoardsByUser: [Board!]!
+  fetchBoard(id: String!): Board!
   fetchUser(email: String!): User!
+  fetchUserLoggedIn: User!
   findEmail(phone: String!): User!
   authUser: String!
   searchUsersForAdmin(
@@ -129,6 +127,8 @@ type Query {
   fetchBlockedUsersForAdmin: [User!]!
   fetchUsersForAdmin: [User!]!
   fetchLoginUserForAdmin: User!
+  fetchReviews: [Review!]!
+  fetchReview(reviewId: String!): Review!
   fetchComics: [Comic!]!
   searchComics(
     """검색어"""
@@ -136,21 +136,25 @@ type Query {
   ): [Comic!]!
   fetchComic(comicId: String!): Comic!
   availableComic: [Int!]!
-  fetchBoardImage(comicId: String!): [ComicImg!]!
-  fetchAllCrewBoardImages: [ComicImg!]!
-  fetchReviews: [Review!]!
-  fetchReview(reviewId: String!): Review!
-  fetchWishlist: [Wishlist!]!
-  fetchBoards(page: Float = 1, order: String = "DESC"): [Board!]!
-  fetchBoardsByUser: [Board!]!
-  fetchBoard(id: String!): Board!
   fetchComments: [Comment!]!
   fetchComment(ID: String!): Comment!
-  findEmailForAdmin(email: String!): Admin!
-  authAdmin: String!
+  fetchBoardImage(comicId: String!): [ComicImg!]!
+  fetchAllCrewBoardImages: [ComicImg!]!
 }
 
 type Mutation {
+  signUpForAdmin(email: String!, password: String!, nickname: String!, phone: String!): Admin!
+  updateAdmin(email: String!, updateAdminInput: UpdateAdminInput!): Admin!
+  deleteAdmin(email: String!, password: String!): Boolean!
+  authTokenForAdmin(phone: String!, token: String!): String!
+  adminLogin(email: String!, password: String!): String!
+  restoreAccessTokenForAdmin: String!
+  logoutForAdmin: String!
+  createBoard(createBoardInput: CreateBoardInput!): Board!
+  updateBoard(id: String!, updateBoardInput: UpdateBoardInput!): Board!
+  deleteBoard(id: String!): Boolean!
+  likeBoard(id: String!): String!
+  dislikeBoard(id: String!): String!
   uploadFile(files: [Upload!]!): [String!]!
   uploadOneFile(file: Upload!): String!
   signUp(email: String!, password: String!, nickname: String!, phone: String!, interest: String!): User!
@@ -164,30 +168,36 @@ type Mutation {
   login(email: String!, password: String!): String!
   restoreAccessToken: String!
   logout: String!
+  createReview(createReviewInput: CreateReviewInput!): Review!
+  deleteReview(reviewId: ID!): Boolean!
+  restoreReview(reviewId: ID!): Boolean!
+  likeReviewBoard(reviewId: String!): String!
   updateComic(comicId: String!, updateComicInput: UpdateComicInput!, createUrlInput: CreateUrlInput!): Comic!
   deleteComic(comicId: ID!): Boolean!
   restoreComic(comicId: ID!): Boolean!
   createComic(createComicInput: CreateComicInput!): Comic!
-  uploadComicImg(url: [String!]!, comicId: String!): [ComicImg!]!
-  createReview(createReviewInput: CreateReviewInput!): Review!
-  deleteReview(reviewId: ID!): Boolean!
-  restoreReview(reviewId: ID!): Boolean!
-  createWishlist(createWishInput: CreateWishInput!): Boolean!
-  createBoard(createBoardInput: CreateBoardInput!): Board!
-  updateBoard(id: String!, updateBoardInput: UpdateBoardInput!): Board!
-  deleteBoard(id: String!): Boolean!
-  likeReviewBoard(reviewId: String!): String!
   createComment(createCommentInput: CreateCommentInput!): Comment!
   deleteComment(ID: String!): Boolean!
-  likeBoard(id: String!): String!
-  dislikeBoard(id: String!): String!
-  adminLogin(email: String!, password: String!): String!
-  restoreAccessTokenForAdmin: String!
-  logoutForAdmin: String!
-  signUpForAdmin(email: String!, password: String!, nickname: String!, phone: String!): Admin!
-  updateAdmin(email: String!, updateAdminInput: UpdateAdminInput!): Admin!
-  deleteAdmin(email: String!, password: String!): Boolean!
-  authTokenForAdmin(phone: String!, token: String!): String!
+  uploadComicImg(url: [String!]!, comicId: String!): [ComicImg!]!
+}
+
+input UpdateAdminInput {
+  email: String
+  password: String
+  nickname: String
+  phone: String
+}
+
+input CreateBoardInput {
+  title: String
+  content: String
+  boardImg: [String!]
+}
+
+input UpdateBoardInput {
+  title: String
+  content: String
+  boardImg: [String!]
 }
 
 """The `Upload` scalar type represents a file upload."""
@@ -201,6 +211,13 @@ input UpdateUserInput {
   interest: String
 }
 
+input CreateReviewInput {
+  comicId: String!
+  userId: String!
+  content: String!
+  rating: Float!
+}
+
 input UpdateComicInput {
   title: String
   deliveryFee: Int
@@ -211,10 +228,9 @@ input UpdateComicInput {
   totalBooks: Int
   description: String
   ISBN: String
-  isAvailable: Boolean
   stock: Int
   url: [String!]
-  category: COMIC_CATEGORY_ENUM
+  category: String
 }
 
 input CreateUrlInput {
@@ -232,45 +248,13 @@ input CreateComicInput {
   totalBooks: Int!
   description: String!
   ISBN: String!
-  isAvailable: Boolean!
   stock: Int!
   url: [String!]!
-  category: COMIC_CATEGORY_ENUM!
-}
-
-input CreateReviewInput {
-  comicId: String!
-  userId: String!
-  content: String!
-  rating: Float!
-}
-
-input CreateWishInput {
-  comicId: String!
-  userId: String!
-}
-
-input CreateBoardInput {
-  title: String
-  content: String
-  boardImg: [String!]
-}
-
-input UpdateBoardInput {
-  title: String
-  content: String
-  boardImg: [String!]
+  category: String!
 }
 
 input CreateCommentInput {
   content: String!
   boardId: String!
   userId: String!
-}
-
-input UpdateAdminInput {
-  email: String
-  password: String
-  nickname: String
-  phone: String
 }

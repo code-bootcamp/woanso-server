@@ -51,6 +51,14 @@ export class UsersResolver {
     return this.usersService.findOne({ email });
   }
 
+  //----------------------**[Find Login User]**----------------------
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => User)
+  fetchUserLoggedIn(@Context() context: IContext) {
+    console.log(context.req.user.email);
+    return this.usersService.findLogin({ context });
+  }
+
   //----------------------**[Find User email]**----------------------
   @Query(() => User)
   findEmail(@Args('phone') phone: string): Promise<User> {
