@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { AdminService } from '../admin/admin.service';
 import {
   IAdminAuthServiceGetAccessToken,
   IAdminAuthServiceSetRefreshToken,
@@ -9,6 +10,7 @@ import {
 export class AdminAuthService {
   constructor(
     private readonly jwtService: JwtService, //
+    private readonly adminService: AdminService,
   ) {}
 
   setRefreshToken({
@@ -27,6 +29,7 @@ export class AdminAuthService {
       'https://examplezi.shop',
       'https://woanso.shop',
     ];
+
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
       res.setHeader('Access-Control-Allow-Origin', origin);
@@ -43,6 +46,22 @@ export class AdminAuthService {
     );
 
     return refreshToken;
+  }
+
+  async loginOAuth({ req, res }) {
+    //프로필을 받아온 다음, 로그인 처리해야 하는 곳
+    // 회원 조회(찾기)
+    let admin = await this.adminService.findOne({ email: req.admin.email });
+    // 회원가입이 안되어있다면 => 회원 등록(가입)
+    if (!admin) {
+      admin = await this.adminService.create({ ...req.admin });
+      //로그인
+      this.setRefreshToken({ admin, res });
+      res.redirect('https://woanso.shop/join');
+    } else {
+      this.setRefreshToken({ admin, res, req });
+      res.redirect('https://woanso.shop');
+    }
   }
 
   getAccessToken({ admin }: IAdminAuthServiceGetAccessToken): string {

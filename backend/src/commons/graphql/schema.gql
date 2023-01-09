@@ -59,14 +59,6 @@ enum COMIC_CATEGORY_ENUM {
   horror
 }
 
-type Review {
-  reviewId: String!
-  content: String!
-  like: Int!
-  user: User!
-  comic: Comic!
-}
-
 type BoardImg {
   boardImgID: String!
   url: String
@@ -90,11 +82,14 @@ type ComicImg {
   comic: Comic!
 }
 
-type Wishlist {
-  wishlistId: String!
-  isDib: Boolean!
-  user: User
-  comic: Comic
+type Comment {
+  id: String!
+  title: String!
+  content: String!
+  createdAt: DateTime!
+  board: Board!
+  user: User!
+  isDeleted: Boolean!
 }
 
 type Comment {
@@ -119,51 +114,89 @@ type Admin {
 }
 
 type Query {
+  findEmailForAdmin(email: String!): Admin!
+  authAdmin: String!
+  fetchBoards(page: Float = 1, order: String = "DESC"): [Board!]!
+  fetchBoardsByUser: [Board!]!
+  fetchBoard(id: String!): Board!
   fetchUser(email: String!): User!
   findEmail(phone: String!): User!
   authUser: String!
   searchUsersForAdmin(
-    """유저 닉네임으로 검색"""
+    """
+    유저 닉네임으로 검색
+    """
     search: String
   ): [User!]!
+  fetchBlockedUsersForAdmin: [User!]!
   fetchUsersForAdmin: [User!]!
+  fetchLoginUserForAdmin: User!
   fetchComics: [Comic!]!
   searchComics(
-    """검색어"""
+    """
+    검색어
+    """
     search: String
   ): [Comic!]!
   fetchComic(comicId: String!): Comic!
   availableComic: [Int!]!
-  fetchBoardImage(comicId: String!): [ComicImg!]!
-  fetchAllCrewBoardImages: [ComicImg!]!
-  fetchReviews: [Review!]!
-  fetchReview(reviewId: String!): Review!
-  fetchWishlist: [Wishlist!]!
-  fetchBoards(page: Float = 1, order: String = "DESC"): [Board!]!
-  fetchBoardsByUser: [Board!]!
-  fetchBoard(id: String!): Board!
   fetchComments: [Comment!]!
   fetchComment(ID: String!): Comment!
-  findEmailForAdmin(email: String!): Admin!
+  fetchBoardImage(comicId: String!): [ComicImg!]!
+  fetchAllCrewBoardImages: [ComicImg!]!
 }
 
 type Mutation {
+  signUpForAdmin(
+    email: String!
+    password: String!
+    nickname: String!
+    phone: String!
+  ): Admin!
+  updateAdmin(email: String!, updateAdminInput: UpdateAdminInput!): Admin!
+  deleteAdmin(email: String!, password: String!): Boolean!
+  authTokenForAdmin(phone: String!, token: String!): String!
+  adminLogin(email: String!, password: String!): String!
+  restoreAccessTokenForAdmin: String!
+  logoutForAdmin: String!
+  createBoard(createBoardInput: CreateBoardInput!): Board!
+  updateBoard(id: String!, updateBoardInput: UpdateBoardInput!): Board!
+  deleteBoard(id: String!): Boolean!
+  likeBoard(id: String!): String!
+  dislikeBoard(id: String!): String!
   uploadFile(files: [Upload!]!): [String!]!
   uploadOneFile(file: Upload!): String!
-  signUp(email: String!, password: String!, nickname: String!, phone: String!, interest: String!): User!
+  signUp(
+    email: String!
+    password: String!
+    nickname: String!
+    phone: String!
+    interest: String!
+  ): User!
   updateUser(email: String!, updateUserInput: UpdateUserInput!): User!
-  updatePassword(email: String!, phone: String!, newPassword: String!): String!
+  updatePassword(
+    email: String!
+    phone: String!
+    updateUserPwdInput: String!
+  ): String!
   deleteUser(email: String!, password: String!): Boolean!
   sendToken(phone: String!): String!
   authToken(phone: String!, token: String!): String!
-  blockUserForADMIN(email: String!): Boolean!
+  blockUserForAdmin(email: String!): Boolean!
+  unblockUserForAdmin(email: String!): Boolean!
   login(email: String!, password: String!): String!
   restoreAccessToken: String!
   logout: String!
-  updateComic(comicId: String!, updateComicInput: UpdateComicInput!, createUrlInput: CreateUrlInput!): Comic!
+  updateComic(
+    comicId: String!
+    updateComicInput: UpdateComicInput!
+    createUrlInput: CreateUrlInput!
+  ): Comic!
   deleteComic(comicId: ID!): Boolean!
   restoreComic(comicId: ID!): Boolean!
   createComic(createComicInput: CreateComicInput!): Comic!
+  createComment(createCommentInput: CreateCommentInput!): Comment!
+  deleteComment(ID: String!): Boolean!
   uploadComicImg(url: [String!]!, comicId: String!): [ComicImg!]!
   createReview(createReviewInput: CreateReviewInput!): Review!
   deleteReview(reviewId: ID!): Boolean!
@@ -178,12 +211,38 @@ type Mutation {
   likeBoard(id: String!): String!
   dislikeBoard(id: String!): String!
   adminLogin(email: String!, password: String!): String!
-  signUpForAdmin(email: String!, password: String!, nickname: String!, phone: String!): Admin!
+  signUpForAdmin(
+    email: String!
+    password: String!
+    nickname: String!
+    phone: String!
+  ): Admin!
   updateAdmin(email: String!, updateAdminInput: UpdateAdminInput!): Admin!
   deleteAdmin(email: String!, password: String!): Boolean!
 }
 
-"""The `Upload` scalar type represents a file upload."""
+input UpdateAdminInput {
+  email: String
+  password: String
+  nickname: String
+  phone: String
+}
+
+input CreateBoardInput {
+  title: String
+  content: String
+  boardImg: [String!]
+}
+
+input UpdateBoardInput {
+  title: String
+  content: String
+  boardImg: [String!]
+}
+
+"""
+The `Upload` scalar type represents a file upload.
+"""
 scalar Upload
 
 input UpdateUserInput {
@@ -231,39 +290,8 @@ input CreateComicInput {
   category: COMIC_CATEGORY_ENUM!
 }
 
-input CreateReviewInput {
-  comicId: String!
-  userId: String!
-  content: String!
-  rating: Float!
-}
-
-input CreateWishInput {
-  comicId: String!
-  userId: String!
-}
-
-input CreateBoardInput {
-  title: String
-  content: String
-  boardImg: [String!]
-}
-
-input UpdateBoardInput {
-  title: String
-  content: String
-  boardImg: [String!]
-}
-
 input CreateCommentInput {
   content: String!
   boardId: String!
   userId: String!
-}
-
-input UpdateAdminInput {
-  email: String
-  password: String
-  nickname: String
-  phone: String
 }

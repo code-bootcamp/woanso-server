@@ -41,8 +41,6 @@ export interface IUsersServiceDelete {
 export interface IAdminServiceUserDelete {
   email: string;
 }
-
-export interface IUsersServiceBlock {
-  user: User;
-  status: 'block';
+export interface IAdminServiceUnblock {
+  email: string;
 }
