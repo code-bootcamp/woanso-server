@@ -20,7 +20,7 @@ export class BoardsService {
   //----------------------**[Fetch Board]**----------------------
   find({ page, order }) {
     return this.boardRepository.find({
-      relations: ['user', 'user.pick', 'boardImg'],
+      relations: ['user', 'boardImg'],
       skip: (page - 1) * 6,
       take: 6,
       order: { createdAt: order },
@@ -107,25 +107,26 @@ export class BoardsService {
     }
     return board;
   }
+  //----------------------**[Delete Board]**----------------------
+  async delete({ id }) {
+    // const user = await this.userRepository.findOne({
+    //   where: { email },
+    // });
+    // const board = await this.boardRepository.findOne({
+    //   where: {
+    //     id,
+    //     user: { id: user.id },
+    //   },
+    // });
+    // if (!board) {
+    //   throw new ConflictException('잘못된 시도입니다.');
+    // }
 
-  async delete({ id, email }) {
-    const user = await this.userRepository.findOne({
-      where: { email },
-    });
-    const board = await this.boardRepository.findOne({
-      where: {
-        id,
-        user: { id: user.id },
-      },
-    });
-    if (!board) {
-      throw new ConflictException('잘못된 시도입니다.');
-    }
-
-    await this.boardImgRepository.softDelete({ board: { id } });
-    const result = await this.boardRepository.delete({
+    const result = await this.boardRepository.softDelete({
       id,
     });
+    this.boardImgRepository.softDelete({ board: { id } });
+
     return result.affected ? true : false;
   }
 }

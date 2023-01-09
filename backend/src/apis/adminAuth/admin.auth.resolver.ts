@@ -12,7 +12,10 @@ import { IContext } from 'src/commons/types/context';
 import * as jwt from 'jsonwebtoken';
 import { Cache } from 'cache-manager';
 import { AdminService } from '../admin/admin.service';
-import { GqlAdminGuard } from '../../commons/auth/gql-auth.guard';
+import {
+  GqlAdminGuard,
+  GqlAuthRefreshGuard,
+} from '../../commons/auth/gql-auth.guard';
 
 @Resolver()
 export class AdminAuthResolver {
@@ -53,7 +56,7 @@ export class AdminAuthResolver {
   }
 
   //----------------------**[Access token for ADMIN]**-----------------------------
-  @UseGuards(GqlAdminGuard)
+  @UseGuards(GqlAuthRefreshGuard)
   @Mutation(() => String)
   restoreAccessTokenForAdmin(
     @Context() context: IContext, //
@@ -69,32 +72,25 @@ export class AdminAuthResolver {
   async logoutForAdmin(
     @Context() context: IContext, //
   ) {
-    const refresh_token = context.req.headers.cookie.replace(
-      'refreshToken=',
-      '',
-    );
-    const access_token = context.req.headers.authorization.replace(
-      'Bearer ',
-      '',
-    );
-    console.log(refresh_token);
+    const refresh = context.req.headers.cookie.replace('refreshToken=', '');
+    const access = context.req.headers.authorization.replace('Bearer ', '');
 
     try {
-      const decoded = jwt.verify(access_token, process.env.JWT_ACCESS_KEY);
-      await this.cacheManager.set(
-        `access_token:${access_token}`,
-        'accessToken',
-        context.req.user.exp,
-      );
-      const decodedR = jwt.verify(refresh_token, process.env.JWT_REFRESH_KEY);
+      const changedAcc = jwt.verify(access, process.env.JWT_ADMIN_KEY);
+      const changedRef = jwt.verify(refresh, process.env.JWT_REFRESH_KEY);
+      const time = new Date().getTime();
+      const accessTtl = changedAcc['exp'] - Number(String(time).slice(0, -3));
+      const refreshTtl = changedRef['exp'] - Number(String(time).slice(0, -3));
 
+      //await this.cacheManager.set(`accessToken:${access}`, 'access', 3600);
+      await this.cacheManager.set(`accessToken:${access}`, 'access', accessTtl);
       await this.cacheManager.set(
-        `refresh_token:${refresh_token}`,
-        'refreshToken',
-        context.req.user.exp,
+        `refreshToken:${refresh}`,
+        'refresh',
+        refreshTtl,
       );
-    } catch (error) {
-      throw new UnauthorizedException('유효하지 않은 토큰입니다.');
+    } catch {
+      throw new UnauthorizedException('에러발생');
     }
 
     return '로그아웃에 성공하였습니다.';
