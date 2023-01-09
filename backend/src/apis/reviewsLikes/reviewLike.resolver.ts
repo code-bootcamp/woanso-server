@@ -1,31 +1,23 @@
-// import { UseGuards } from '@nestjs/common';
-// import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
-// import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
-// import { IContext } from 'src/commons/type/context';
-// import { Like } from './entities/like.entity';
-// import { LikeService } from './like.service';
+import { UseGuards } from '@nestjs/common';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
+import { IContext } from 'src/commons/types/context';
 
-// @Resolver()
-// export class ReviewLikeResolver {
-//   constructor(
-//     private readonly likeService: LikeService, //
-//   ) {}
+import { ReviewLikeService } from './reviewLike.service';
 
-//   //   @Query(() => [Like])
-//   //   fetchLikeReviewBoard(
-//   //     @Args('userId') userId: string, //
-//   //     @Args('reviewBoardId') reviewBoardId: string,
-//   //   ) {
-//   //     return;
-//   //   }
+@Resolver()
+export class ReviewLikeResolver {
+  constructor(
+    private readonly reviewLikeService: ReviewLikeService, //
+  ) {}
 
-//   @UseGuards(GqlAuthAccessGuard)
-//   @Mutation(() => String)
-//   likeReviewBoard(
-//     @Args('reviewBoardId') reviewBoardId: string, //
-//     @Context() context: IContext,
-//   ) {
-//     const user = context.req.user.email;
-//     return this.likeService.like({ reviewBoardId, user });
-//   }
-// }
+  @UseGuards(GqlAuthAccessGuard)
+  @Mutation(() => String)
+  likeReviewBoard(
+    @Args('reviewId') reviewId: string, //
+    @Context() context: IContext,
+  ) {
+    const user = context.req.user.email;
+    return this.reviewLikeService.like({ reviewId, user });
+  }
+}
