@@ -1,4 +1,6 @@
+import { UseGuards } from '@nestjs/common';
 import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 
 import { CreateReviewInput } from './dto/createReview.input';
 
@@ -24,20 +26,16 @@ export class ReviewsResolver {
     return this.reviewsService.findOne({ reviewId });
   }
 
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Review)
   createReview(
     @Args('createReviewInput') createReviewInput: CreateReviewInput,
   ): Promise<Review> {
     return this.reviewsService.create({ createReviewInput });
   }
-  // 좋아요
-  // @Mutation(() => Int)
-  // createlikes(
-  //   @Args('createReviewLikeInput') createReviewLikeInput: CreateReviewLikeInput,
-  // ) {
-  //   return this.reviewsService.create2({ createReviewLikeInput });
-  // }
+
   //삭제
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   deleteReview(@Args('reviewId', { type: () => ID }) reviewId: string) {
     return this.reviewsService.delete({ reviewId });

@@ -11,8 +11,8 @@ export interface IAuthUser {
 }
 
 export interface IContext {
-  req: Request & IAuthUser;
-  res: Response;
+  req?: Request & IAuthUser;
+  res?: Response;
 }
 ////////////////////
 export interface IAdminAuthUser {

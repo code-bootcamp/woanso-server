@@ -58,7 +58,7 @@ export class AuthResolver {
   }
 
   //-----------------**[Restore access token]**------------------
-  @UseGuards(GqlAdminGuard)
+  @UseGuards(GqlAuthRefreshGuard)
   @Mutation(() => String)
   restoreAccessToken(
     @Context() context: IContext, //
@@ -73,7 +73,7 @@ export class AuthResolver {
   }
 
   //-----------------**[Logout]**------------------
-  @UseGuards(GqlAdminGuard)
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => String)
   async logout(
     @Context() context: IContext, //any, // 왜 굳이 any로 받지? 타입체크 안하려고?

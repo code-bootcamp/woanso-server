@@ -6,7 +6,8 @@ import { UpdateComicInput } from './dto/update-comic.input';
 import { Comic } from './entities/comic.entity';
 import { Cache } from 'cache-manager';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
-import { CACHE_MANAGER, Inject } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, UseGuards } from '@nestjs/common';
+import { GqlAdminGuard } from 'src/commons/auth/gql-auth.guard';
 
 @Resolver()
 export class ComicsResolver {
@@ -76,6 +77,7 @@ export class ComicsResolver {
   //생성;
 
   //수정
+  @UseGuards(GqlAdminGuard)
   @Mutation(() => Comic)
   async updateComic(
     @Args('comicId') comicId: string,
@@ -88,15 +90,18 @@ export class ComicsResolver {
   }
 
   //삭제
+  @UseGuards(GqlAdminGuard)
   @Mutation(() => Boolean)
   deleteComic(@Args('comicId', { type: () => ID }) comicId: string) {
     return this.comicsService.delete({ comicId });
   }
 
+  @UseGuards(GqlAdminGuard)
   @Mutation(() => Boolean)
   restoreComic(@Args('comicId', { type: () => ID }) comicId: string) {
     return this.comicsService.restore({ comicId });
   }
+  @UseGuards(GqlAdminGuard)
   @Mutation(() => Comic)
   createComic(
     @Args('createComicInput') createComicInput: CreateComicInput, //
