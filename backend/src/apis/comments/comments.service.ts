@@ -26,14 +26,14 @@ export class CommentsService {
   //-------------------------**[코멘트 조회]**-------------------------
   findAll(): Promise<Comment[]> {
     return this.commentsRepository.find({
-      relations: ['user'],
+      relations: ['user', 'board'],
     });
   }
 
   findOne({ id }: ICommentsServiceFindOne): Promise<Comment> {
     return this.commentsRepository.findOne({
       where: { id: id },
-      relations: ['user'],
+      relations: ['user', 'board'],
     });
   }
 

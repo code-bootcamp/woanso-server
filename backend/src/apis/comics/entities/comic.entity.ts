@@ -1,10 +1,4 @@
-import {
-  Field,
-  Float,
-  Int,
-  ObjectType,
-  registerEnumType,
-} from '@nestjs/graphql';
+import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { ComicRating } from 'src/apis/comicsRating/entities/comicRating.entity';
 import {
   Column,

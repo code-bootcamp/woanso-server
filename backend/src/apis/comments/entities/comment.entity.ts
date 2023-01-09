@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Board } from 'src/apis/boards/entities/board.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 
@@ -18,10 +18,6 @@ export class Comment {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
   id: string;
-
-  @Column()
-  @Field(() => String)
-  title: string;
 
   @Column()
   @Field(() => String)

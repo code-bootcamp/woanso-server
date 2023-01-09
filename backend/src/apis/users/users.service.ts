@@ -12,7 +12,6 @@ import {
   IAdminServiceUnblock,
   IAdminServiceUserDelete,
   IUsersServiceCreate,
-  IUsersServiceCreateAdmin,
   IUsersServiceDelete,
   IUsersServiceFindEmail,
   IUsersServiceFindOne,
@@ -53,6 +52,13 @@ export class UsersService {
   //------------------------**[Find User by EMAIL]**-------------------------------
   findOne({ email }: IUsersServiceFindOne): Promise<User> {
     return this.usersRepository.findOne({ where: { email } });
+  }
+
+  //------------------------**[Find Login]**-------------------------------
+  async findLogin(context): Promise<User> {
+    return await this.usersRepository.findOne({
+      where: { email: context.req.user.email },
+    });
   }
 
   //--------------------**[Find User for update PWD]**--------------------
@@ -178,7 +184,7 @@ export class UsersService {
   }
 
   //------------------------**[Find Login Users]**-------------------------------
-  async findLogin({ context }) {
+  async findLogins({ context }) {
     console.log(context.req.user.email);
     return await this.usersRepository.findOne({
       where: { email: context.req.user.email },

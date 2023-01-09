@@ -1,5 +1,4 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
-import { COMIC_CATEGORY_ENUM } from '../entities/comic.entity';
 
 @InputType()
 export class CreateComicInput {
@@ -46,6 +45,6 @@ export class CreateComicInput {
   @Field(() => [String])
   url: string[];
 
-  @Field(() => COMIC_CATEGORY_ENUM)
+  @Field(() => String)
   category: string;
 }
