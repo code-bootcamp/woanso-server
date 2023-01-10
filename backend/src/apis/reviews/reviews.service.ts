@@ -29,7 +29,8 @@ export class ReviewsService {
   //전체조회
   findAll(): Promise<Review[]> {
     return this.reviewRepository.find({
-      relations: ['user', 'comic', 'reviewRating'],
+      //relations: ['user', 'comic', 'reviewRating'],
+      relations: ['user', 'comic', 'comicRating'],
     });
   }
 

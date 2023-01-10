@@ -42,7 +42,7 @@ export class CreateComicInput {
   @Field(() => Int)
   stock: number;
 
-  @Field(() => [String])
+  @Field(() => [String], { nullable: true })
   url: string[];
 
   @Field(() => String)

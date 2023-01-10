@@ -24,7 +24,8 @@ export class ReviewsResolver {
       result.push(review.splice(0, 10));
     }
 
-    return result;
+    //return result;
+    return this.reviewsService.findAll();
   }
 
   @Query(() => Review)
