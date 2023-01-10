@@ -37,7 +37,7 @@ export class ReviewsService {
   findOne({ reviewId }: IReviewsServiceFindOne): Promise<Review> {
     return this.reviewRepository.findOne({
       where: { reviewId },
-      relations: ['user', 'comic', 'reviewRating'],
+      relations: ['user', 'comic', 'comicRating'],
     });
   }
 
