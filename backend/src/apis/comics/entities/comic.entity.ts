@@ -12,12 +12,12 @@ import {
 } from 'typeorm';
 
 export enum COMIC_CATEGORY_ENUM {
-  romance = '로맨스',
-  drama = '드라마/일상',
-  fantasy = '판타지',
-  action = '액션',
-  school = '학원',
-  horror = '추리/공포',
+  romance = 'romance',
+  drama = 'drama',
+  fantasy = 'fantasy',
+  action = 'action',
+  school = 'school',
+  horror = 'horror',
 }
 
 registerEnumType(COMIC_CATEGORY_ENUM, {

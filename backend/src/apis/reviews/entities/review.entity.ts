@@ -1,5 +1,6 @@
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import { Comic } from 'src/apis/comics/entities/comic.entity';
+import { ComicRating } from 'src/apis/comicsRating/entities/comicRating.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
@@ -16,7 +17,7 @@ import {
 @ObjectType()
 export class Review {
   @PrimaryGeneratedColumn('uuid')
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   reviewId: string;
 
   @Column()
@@ -40,4 +41,9 @@ export class Review {
   @ManyToOne(() => Comic)
   @Field(() => Comic)
   comic: Comic;
+
+  @JoinColumn()
+  @OneToOne(() => ComicRating)
+  @Field(() => ComicRating)
+  comicRating: ComicRating;
 }
