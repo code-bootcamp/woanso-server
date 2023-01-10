@@ -69,11 +69,11 @@ export class PointsTransactionsService {
     if (!pointTransaction)
       throw new UnprocessableEntityException('결제 기록이 존재하지 않습니다.');
 
-    const currentUser = await this.usersRepository.findOne({
-      where: { id: user.id },
-    });
-    if (currentUser.balance < pointTransaction.amount)
-      throw new UnprocessableEntityException('포인트가 부족합니다.');
+    // const currentUser = await this.usersRepository.findOne({
+    //   where: { id: user.id },
+    // });
+    // if (currentUser.balance < pointTransaction.amount)
+    //   throw new UnprocessableEntityException('포인트가 부족합니다.');
   }
 
   //////////////////////////////////////////////////////////////////////

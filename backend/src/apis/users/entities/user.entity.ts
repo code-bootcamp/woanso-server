@@ -1,4 +1,4 @@
-import { Field, ObjectType, Int, registerEnumType } from '@nestjs/graphql';
+import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { UserImg } from 'src/apis/usersImgs/entities/usersImg.entity';
 
 import {
@@ -13,12 +13,12 @@ import {
 } from 'typeorm';
 
 export enum USER_INTEREST_ENUM {
-  romance = '로맨스',
-  drama = '드라마/일상',
-  fantasy = '판타지',
-  action = '액션',
-  school = '학원',
-  horror = '추리/공포',
+  romance = 'romance',
+  drama = 'drama',
+  fantasy = 'fantasy',
+  action = 'action',
+  school = 'school',
+  horror = 'horror',
 }
 
 registerEnumType(USER_INTEREST_ENUM, {
@@ -51,10 +51,6 @@ export class User {
   @Field(() => USER_INTEREST_ENUM)
   @Column({ type: 'enum', enum: USER_INTEREST_ENUM, nullable: true })
   interest: string;
-
-  @Field(() => Int)
-  @Column({ default: 3000, nullable: true })
-  balance: number;
 
   @CreateDateColumn()
   createdAt?: Date;

@@ -14,7 +14,6 @@ import {
   IUsersServiceCreate,
   IUsersServiceDelete,
   IUsersServiceFindEmail,
-  IUsersServiceFindLogin,
   IUsersServiceFindOne,
   IUsersServiceFindOneForUpdate,
   IUsersServiceUpdate,
@@ -121,6 +120,7 @@ export class UsersService {
 
     // prettier-ignore
       if (digit) {throw new ConflictException('이미 등록된 번호입니다.')}
+
     // prettier-ignore
       const token = String(Math.floor(Math.random() * 1000000)).padStart(6, '0')
       const SMSservice = new coolsms(SMS_KEY, SMS_SECRET);
