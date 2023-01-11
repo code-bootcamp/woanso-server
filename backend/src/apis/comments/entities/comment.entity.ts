@@ -35,7 +35,6 @@ export class Comment {
   @Field(() => Board)
   board: Board;
 
-  @JoinColumn()
   @ManyToOne(() => User)
   @Field(() => User)
   user: User;
