@@ -49,12 +49,12 @@ export class UsersService {
     });
   }
 
-  //------------------------**[Find User by EMAIL]**-------------------------------
+  //--------------------**[Find User by EMAIL]**--------------------
   findOne({ email }: IUsersServiceFindOne): Promise<User> {
     return this.usersRepository.findOne({ where: { email } });
   }
 
-  //------------------------**[Find Login]**-------------------------------
+  //--------------------**[Find Login]**--------------------
   async findLogin({ context }) {
     console.log(context.req.user.email);
     return await this.usersRepository.findOne({
@@ -70,12 +70,12 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { email, phone } });
   }
 
-  //------------------------**[Find email by Phone]**-------------------------------
+  //--------------------**[Find email by Phone]**--------------------
   findEmail({ phone }: IUsersServiceFindEmail): Promise<User> {
     return this.usersRepository.findOne({ where: { phone } });
   }
 
-  //------------------------**[Update user]**-------------------------------
+  //--------------------**[Update user]**--------------------
   update({ user, updateUserInput }: IUsersServiceUpdate): Promise<User> {
     const result = this.usersRepository.save({
       ...user, //
@@ -84,7 +84,7 @@ export class UsersService {
     return result;
   }
 
-  //------------------------**[Update password]**-------------------------------
+  //--------------------**[Update password]**--------------------
   async updatePassword({ email, hashedPassword: newPassword }) {
     try {
       const user = await this.usersRepository.findOne({ where: { email } });
@@ -108,7 +108,7 @@ export class UsersService {
     return result.affected ? true : false;
   }
 
-  //------------------------**[Send token by PHONE]**-------------------------------
+  //--------------------**[Send token by PHONE]**--------------------
   async sendToken({ phone }) {
     const SMS_KEY = process.env.SMS_KEY;
     const SMS_SECRET = process.env.SMS_SECRET;
@@ -138,7 +138,7 @@ export class UsersService {
       return token;
     }
   }
-  //------------------------**[Auth token]**-------------------------------
+  //--------------------**[Auth token]**--------------------
   async authToken({ phone, token }) {
     const myToken = await this.cache.get(phone);
 
@@ -152,7 +152,7 @@ export class UsersService {
   //----------------------**[FOR ADMIN]**----------------------
   //----------------------**[FOR ADMIN]**----------------------
 
-  //----------------------**[Fetch all users for admin]**---------------------------
+  //----------------------**[Fetch all users for admin]**--------------------
   async findAll(email): Promise<User[]> {
     return this.usersRepository.find(email);
   }
