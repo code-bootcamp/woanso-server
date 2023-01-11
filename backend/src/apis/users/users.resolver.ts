@@ -23,7 +23,7 @@ export class UsersResolver {
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
-  //--------------------------------**[Sign Up]**--------------------------------
+  //--------------------**[Sign Up]**--------------------
   @Mutation(() => User)
   async signUp(
     @Args('email') email: string,
@@ -42,7 +42,7 @@ export class UsersResolver {
     });
   }
 
-  //----------------------**[Find User by EMAIL]**----------------------
+  //--------------------**[Find User by EMAIL]**--------------------
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => User)
   fetchUser(
@@ -51,7 +51,7 @@ export class UsersResolver {
     return this.usersService.findOne({ email });
   }
 
-  //----------------------**[Find Login User]**----------------------
+  //--------------------**[Find Login User]**--------------------
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => User)
   fetchUserLoggedIn(@Context() context: IContext) {
@@ -79,7 +79,7 @@ export class UsersResolver {
     });
   }
 
-  //----------------------**[Update Password]**----------------------
+  //--------------------**[Update Password]**--------------------
   @Mutation(() => String)
   async updatePassword(
     @Args('email') email: string,
@@ -96,7 +96,7 @@ export class UsersResolver {
     return await this.usersService.updatePassword({ email, hashedPassword });
   }
 
-  //----------------------**[Delete user]**----------------------
+  //--------------------**[Delete user]**--------------------
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   deleteUser(
@@ -106,7 +106,7 @@ export class UsersResolver {
     return this.usersService.delete({ email, password });
   }
 
-  //----------------------**[Auth user]**----------------------
+  //--------------------**[Auth user]**--------------------
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => String)
   authUser(
@@ -117,14 +117,13 @@ export class UsersResolver {
     return '인가 성공';
   }
 
-  //----------------------**[Get token]**----------------------
+  //--------------------**[Send token]**--------------------
   @Mutation(() => String)
   async sendToken(@Args('phone') phone: string) {
     return await this.usersService.sendToken({ phone });
   }
 
-  //----------------------**[Auth token]**----------------------
-  @Mutation(() => String)
+  //--------------------**[Auth token]**--------------------
   async authToken(@Args('phone') phone: string, @Args('token') token: string) {
     return this.usersService.authToken({ phone, token });
   }
