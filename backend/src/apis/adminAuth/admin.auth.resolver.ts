@@ -72,6 +72,7 @@ export class AdminAuthResolver {
   async logoutForAdmin(
     @Context() context: IContext, //
   ) {
+    console.log(context.req);
     const refresh = context.req.headers.cookie.replace('refreshToken=', '');
     const access = context.req.headers.authorization.replace('Bearer ', '');
 

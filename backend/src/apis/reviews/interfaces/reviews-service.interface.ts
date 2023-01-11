@@ -7,7 +7,7 @@ export interface IReviewsServiceCreate {
 }
 
 export interface IReviewsServiceFindOne {
-  reviewId: string;
+  reviewId?: string;
 }
 
 export interface IReviewsServiceUpdate {

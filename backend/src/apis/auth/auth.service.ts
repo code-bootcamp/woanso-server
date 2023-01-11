@@ -46,7 +46,7 @@ export class AuthService {
   }
 
   //개발환경
-
+  // dklgjdkhdj
   //   res.setHeader('Set-Cookie', `refreshToken=${refreshToken};path=/;`);
   //   // 배포환경
   //   // res.setHeader('Set-Cookie', refreshToken=${refreshToken}; path=/; domain=.mybacksite.com; SameSite=None; Secure; httpOnly;)

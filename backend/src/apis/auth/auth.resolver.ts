@@ -81,7 +81,6 @@ export class AuthResolver {
     const access = context.req.headers.authorization.replace('Bearer ', '');
 
     const refresh = context.req.headers.cookie.replace('refreshToken=', '');
-    console.log(refresh);
 
     try {
       const changedAcc = jwt.verify(access, process.env.JWT_ACCESS_KEY);
