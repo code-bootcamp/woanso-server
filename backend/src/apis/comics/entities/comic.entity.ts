@@ -1,5 +1,5 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { ComicImg } from 'src/apis/comicsimgs/entities/comicsImg.entity';
+import { ComicImg } from '../../comicsImgs/entities/comicsimg.entity';
 import { ComicRating } from 'src/apis/comicsRating/entities/comicRating.entity';
 import { PointTransaction } from 'src/apis/payments/entities/payment.entity';
 import { Wishlist } from 'src/apis/wishlists/entities/wishlish.entity';
@@ -61,7 +61,7 @@ export class Comic {
 
   // @Column({ default: 0, nullable: true })
   // @Field(() => Float) // 별점을 줄 수 있도록 0.5 단위로 제한
-  // rating: number;
+  // rating: number;dilgfh
 
   // @Column()
   // @Field(() => String) // 시리즈이기 떄문에 각각 발행일이 다르기 때문에

@@ -8,7 +8,7 @@ import { PointTransaction } from './entities/payment.entity';
 import { ComicsService } from '../comics/comics.service';
 import { Comic } from '../comics/entities/comic.entity';
 import { ComicRating } from '../comicsRating/entities/comicRating.entity';
-import { ComicImg } from '../comicsImgs/entities/comicsImg.entity';
+import { ComicImg } from '../comicsImgs/entities/comicsimg.entity';
 
 @Module({
   imports: [
