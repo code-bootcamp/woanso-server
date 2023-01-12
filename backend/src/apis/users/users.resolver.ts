@@ -19,7 +19,7 @@ import { GqlAdminGuard } from '../../commons/auth/gql-auth.guard';
 export class UsersResolver {
   constructor(
     private readonly usersService: UsersService,
-    private readonly elasticsearchService: ElasticsearchService,
+    //private readonly elasticsearchService: ElasticsearchService,
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
@@ -133,37 +133,37 @@ export class UsersResolver {
   //----------------------**[FOR ADMIN]**----------------------
 
   //----------------------**[SEARCH User for ADMIN]**----------------------
-  @UseGuards(GqlAdminGuard)
-  @Query(() => [User])
-  async searchUsersForAdmin(
-    @Args({
-      name: 'search',
-      nullable: true,
-      description: '유저 닉네임으로 검색',
-    })
-    search: string, //
-  ) {
-    // REDIS 캐시 조회
-    const userCache = await this.cache.get(`searchUsers:${search}`);
-    if (userCache) return userCache;
-    // 엘라스틱서치에서 조회
-    const result = await this.elasticsearchService.search({
-      index: 'user',
-      query: { match: { nickname: search } },
-    });
-    // console.log(JSON.stringify(result, null, ' '));
-    const users = result.hits.hits.map((el: any) => ({
-      id: el._source.id,
-      nickname: el._source.nickname,
-      email: el._source.email,
-    }));
+  // @UseGuards(GqlAdminGuard)
+  // @Query(() => [User])
+  // async searchUsersForAdmin(
+  //   @Args({
+  //     name: 'search',
+  //     nullable: true,
+  //     description: '유저 닉네임으로 검색',
+  //   })
+  //   search: string, //
+  // ) {
+  //   // REDIS 캐시 조회
+  //   const userCache = await this.cache.get(`searchUsers:${search}`);
+  //   if (userCache) return userCache;
+  //   // 엘라스틱서치에서 조회
+  //   const result = await this.elasticsearchService.search({
+  //     index: 'user',
+  //     query: { match: { nickname: search } },
+  //   });
+  //   // console.log(JSON.stringify(result, null, ' '));
+  //   const users = result.hits.hits.map((el: any) => ({
+  //     id: el._source.id,
+  //     nickname: el._source.nickname,
+  //     email: el._source.email,
+  //   }));
 
-    // console.log(users);
+  //   // console.log(users);
 
-    // 엘라스틱 조회 결과가 있다면, 레디스에 결과 캐싱
-    await this.cache.set(`searchUsers:${search}`, users);
-    return users;
-  }
+  //   // 엘라스틱 조회 결과가 있다면, 레디스에 결과 캐싱
+  //   await this.cache.set(`searchUsers:${search}`, users);
+  //   return users;
+  // }
 
   //----------------------**[Delete User For ADMIN]**----------------------
   @UseGuards(GqlAdminGuard)

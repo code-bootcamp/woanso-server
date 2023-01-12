@@ -10,11 +10,11 @@ export class BoardLike {
   @Field(() => String)
   id: string;
 
-  @ManyToOne(() => Board, { cascade: true })
+  @ManyToOne(() => Board, { onDelete: 'CASCADE' })
   @Field(() => Board)
   board: Board;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @Field(() => User)
   user: User;
 }

@@ -32,8 +32,8 @@ export class ComicRating {
 
   //  comicId: string;
 
-  @JoinColumn()
-  @OneToOne(() => Comic, { cascade: true })
-  @Field(() => Comic)
+  // @JoinColumn()
+  @OneToOne(() => Comic, { onDelete: 'CASCADE' })
+  //@Field(() => Comic)
   comic: Comic;
 }
