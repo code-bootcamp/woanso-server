@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ComicImgResolver } from './comicImg.resolver';
 import { ComicImgService } from './comicImg.service';
-import { ComicImg } from './entities/comicsImg.entity';
+import { ComicImg } from './entities/comicsimg.entity';
 
 @Module({
   imports: [

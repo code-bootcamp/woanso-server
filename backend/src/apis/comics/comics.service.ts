@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ComicImg } from 'src/apis/comicsImgs/entities/comicsImg.entity';
+import { ComicImg } from '../comicsImgs/entities/comicsimg.entity';
 import { ComicRating } from '../comicsRating/entities/comicRating.entity';
 import { Review } from '../reviews/entities/review.entity';
 import { User } from '../users/entities/user.entity';
