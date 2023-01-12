@@ -1,6 +1,13 @@
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
+import { Comic } from 'src/apis/comics/entities/comic.entity';
 
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -24,4 +31,9 @@ export class ComicRating {
   comicRating: number;
 
   //  comicId: string;
+
+  @JoinColumn()
+  @OneToOne(() => Comic, { cascade: true })
+  @Field(() => Comic)
+  comic: Comic;
 }

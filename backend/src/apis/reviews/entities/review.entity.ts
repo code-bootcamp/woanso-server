@@ -1,6 +1,7 @@
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import { Comic } from 'src/apis/comics/entities/comic.entity';
 import { ComicRating } from 'src/apis/comicsRating/entities/comicRating.entity';
+import { ReviewLike } from 'src/apis/reviewsLikes/entities/reviewLike.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
@@ -9,6 +10,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -39,11 +41,11 @@ export class Review {
   @Field(() => Float)
   rating: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { cascade: true })
   @Field(() => User)
   user: User;
 
-  @ManyToOne(() => Comic)
+  @ManyToOne(() => Comic, { cascade: true })
   @Field(() => Comic)
   comic: Comic;
 
@@ -51,4 +53,10 @@ export class Review {
   @OneToOne(() => ComicRating)
   @Field(() => ComicRating)
   comicRating: ComicRating;
+
+  @OneToMany(() => ReviewLike, (reviewLike) => reviewLike.review, {
+    onDelete: 'CASCADE',
+  })
+  @Field(() => [ReviewLike])
+  reviewLike?: ReviewLike[];
 }

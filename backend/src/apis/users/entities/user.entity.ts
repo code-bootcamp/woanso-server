@@ -74,31 +74,39 @@ export class User {
   thumbnail: string;
 
   ///---------------------------------------
-  @OneToMany(() => Comment, (comment) => comment.user)
+  @OneToMany(() => Comment, (comment) => comment.user, { onDelete: 'CASCADE' })
   @Field(() => [Comment])
   comment: Comment[];
 
-  @OneToMany(() => Review, (review) => review.user)
+  @OneToMany(() => Review, (review) => review.user, { onDelete: 'CASCADE' })
   @Field(() => [Review])
   review: Review[];
 
-  @OneToMany(() => ReviewLike, (reviewLike) => reviewLike.user)
+  @OneToMany(() => ReviewLike, (reviewLike) => reviewLike.user, {
+    onDelete: 'CASCADE',
+  })
   @Field(() => [ReviewLike])
   reviewLike: ReviewLike[];
 
-  @OneToMany(() => BoardDislike, (boardDislike) => boardDislike.user)
+  @OneToMany(() => BoardDislike, (boardDislike) => boardDislike.user, {
+    onDelete: 'CASCADE',
+  })
   @Field(() => [BoardDislike])
   boardDislike: BoardDislike[];
 
-  @OneToMany(() => BoardLike, (boardLike) => boardLike.user)
+  @OneToMany(() => BoardLike, (boardLike) => boardLike.user, {
+    onDelete: 'CASCADE',
+  })
   @Field(() => [BoardLike])
   boardlLike: BoardLike[];
 
-  @OneToMany(() => Board, (board) => board.user)
+  @OneToMany(() => Board, (board) => board.user, { onDelete: 'CASCADE' })
   @Field(() => [Board])
   board: Board[];
 
-  @OneToMany(() => Wishlist, (wishlist) => wishlist.user)
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.user, {
+    onDelete: 'CASCADE',
+  })
   @Field(() => [Wishlist])
   wishlist: Wishlist[];
 

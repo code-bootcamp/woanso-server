@@ -27,7 +27,7 @@ export class ComicImg {
   @Field(() => Boolean)
   isMain: boolean;
 
-  @ManyToOne(() => Comic)
+  @ManyToOne(() => Comic, { cascade: true })
   @Field(() => Comic)
   comic: Comic;
 

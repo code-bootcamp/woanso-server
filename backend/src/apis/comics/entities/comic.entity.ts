@@ -14,6 +14,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Review } from 'src/apis/reviews/entities/review.entity';
 
 export enum COMIC_CATEGORY_ENUM {
   romance = 'romance',
@@ -101,7 +102,7 @@ export class Comic {
   updatedAt: Date;
 
   @JoinColumn()
-  @OneToOne(() => ComicRating)
+  @OneToOne(() => ComicRating, { onDelete: 'CASCADE' })
   @Field(() => ComicRating)
   comicRating: ComicRating;
 
@@ -115,11 +116,19 @@ export class Comic {
   category: string;
 
   //@JoinColumn()
-  @OneToMany(() => ComicImg, (comicImg) => comicImg.comic)
+  @OneToMany(() => ComicImg, (comicImg) => comicImg.comic, {
+    onDelete: 'CASCADE',
+  })
   @Field(() => [ComicImg])
   comicImg?: ComicImg[];
 
-  @OneToMany(() => Wishlist, (wishlist) => wishlist.comic)
+  @OneToMany(() => Review, (review) => review.comic, { onDelete: 'CASCADE' })
+  @Field(() => [Review])
+  review?: Review[];
+
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.comic, {
+    onDelete: 'CASCADE',
+  })
   @Field(() => [Wishlist])
   wishlist?: Wishlist[];
 }
