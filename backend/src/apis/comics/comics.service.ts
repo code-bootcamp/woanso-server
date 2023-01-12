@@ -32,15 +32,19 @@ export class ComicsService {
   // }
 
   //전체조회
-  findAll(): Promise<Comic[]> {
+  findAll({ page }): Promise<Comic[]> {
     //페이지네이션? 24개씩
-    return this.comicsRepository.find({ relations: ['comicRating'] });
+    return this.comicsRepository.find({
+      relations: ['comicRating', 'comicImg'],
+      take: 24,
+      skip: (page - 1) * 24,
+    });
   }
 
   findOne({ comicId }: IComicsServiceFindOne): Promise<Comic> {
     return this.comicsRepository.findOne({
       where: { comicId },
-      relations: ['comicRating'],
+      relations: ['comicRating', 'comicImg'],
     });
   }
 

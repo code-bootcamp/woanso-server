@@ -27,17 +27,20 @@ export class ReviewsService {
   ) {}
 
   //전체조회
-  findAll(): Promise<Review[]> {
+  findAll({ page, order }): Promise<Review[]> {
     return this.reviewRepository.find({
       //relations: ['user', 'comic', 'reviewRating'],
-      relations: ['user', 'comic', 'comicRating'],
+      relations: ['user', 'comic'],
+      skip: (page - 1) * 4,
+      take: 4,
+      order: { createdAt: order },
     });
   }
 
-  findOne({ reviewId }: IReviewsServiceFindOne): Promise<Review> {
-    return this.reviewRepository.findOne({
-      where: { reviewId },
-      relations: ['user', 'comic', 'comicRating'],
+  findOne({ comicId }: IReviewsServiceFindOne): Promise<Review[]> {
+    return this.reviewRepository.find({
+      where: { comic: { comicId } },
+      relations: ['user', 'comic'],
     });
   }
 

@@ -1,4 +1,6 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { BoardDislike } from 'src/apis/boardLikes/entities/boardDislike.entity';
+import { BoardLike } from 'src/apis/boardLikes/entities/boardLike.entity';
 import { BoardImg } from 'src/apis/boardsImgs/entities/boardsimg.entity';
 import { Comment } from 'src/apis/comments/entities/comment.entity';
 import { User } from 'src/apis/users/entities/user.entity';
@@ -50,6 +52,18 @@ export class Board {
   @OneToMany(() => Comment, (comment) => comment.board, { onDelete: 'CASCADE' })
   @Field(() => [Comment])
   comment?: Comment[];
+
+  @OneToMany(() => BoardLike, (boardLike) => boardLike.board, {
+    onDelete: 'CASCADE',
+  })
+  @Field(() => [BoardLike])
+  boardLike?: BoardLike[];
+
+  @OneToMany(() => BoardDislike, (boardDislike) => boardDislike.board, {
+    onDelete: 'CASCADE',
+  })
+  @Field(() => [BoardDislike])
+  boardDislike?: BoardDislike[];
 
   @ManyToOne(() => User)
   @Field(() => User)
