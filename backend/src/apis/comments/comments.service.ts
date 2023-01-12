@@ -44,12 +44,13 @@ export class CommentsService {
   //-------------------------**[코멘트 작성]**-------------------------
   async create({
     createCommentInput,
+    context,
   }: ICommentsServiceCreate): Promise<Comment> {
-    const { boardId, userId } = createCommentInput;
+    const { boardId } = createCommentInput;
     const result = await this.commentsRepository.save({
       ...createCommentInput,
+      user: { id: context.req.user.id },
       board: { id: boardId },
-      user: { id: userId },
     });
 
     return result;
