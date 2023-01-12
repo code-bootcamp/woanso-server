@@ -1,5 +1,5 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { ComicImg } from 'src/apis/comicsImgs/entities/comicsimg.entity';
+import { ComicImg } from 'src/apis/comicsimgs/entities/comicsImg.entity';
 import { ComicRating } from 'src/apis/comicsRating/entities/comicRating.entity';
 import { PointTransaction } from 'src/apis/payments/entities/payment.entity';
 import { Wishlist } from 'src/apis/wishlists/entities/wishlish.entity';

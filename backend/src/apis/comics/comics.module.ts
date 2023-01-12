@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ComicImg } from '../comicsImgs/entities/comicsimg.entity';
+import { ComicImg } from '../comicsImgs/entities/comicsImg.entity';
 import { ComicRating } from '../comicsRating/entities/comicRating.entity';
 import { ComicsResolver } from './comics.resolver';
 import { ComicsService } from './comics.service';

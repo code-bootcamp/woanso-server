@@ -153,17 +153,13 @@ export class UsersService {
   //----------------------**[FOR ADMIN]**----------------------
 
   //----------------------**[Fetch all users for admin]**--------------------
-  async findAll(email): Promise<User[]> {
-    return this.usersRepository.find(email);
+  async findAll({ page, order }): Promise<User[]> {
+    return this.usersRepository.find({
+      skip: (page - 1) * 6,
+      take: 12,
+      order: { createdAt: order },
+    });
   }
-
-  // async findAll() {
-  //   return await this.usersRepository
-  //     .createQueryBuilder('user')
-  //     .skip(6 * (1 - 1))
-  //     .take(6)
-  //     .getMany();
-  // }
 
   //------------------------**[Block User]**-------------------------------
   async deleteUser({ email }: IAdminServiceUserDelete): Promise<boolean> {
@@ -187,7 +183,6 @@ export class UsersService {
 
   //------------------------**[Find Login Users]**-------------------------------
   async findLogins({ context }) {
-    console.log(context.req.user.email);
     return await this.usersRepository.find({
       where: { email: context.req.user.email },
     });
