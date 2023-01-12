@@ -17,7 +17,7 @@ export class BoardsService {
     private readonly boardImgRepository: Repository<BoardImg>,
   ) {}
 
-  //----------------------**[Fetch Board]**----------------------
+  //----------------------**[Fetch Boards]**----------------------
   find({ page, order }) {
     return this.boardRepository.find({
       relations: ['user', 'boardImg'],
@@ -110,7 +110,7 @@ export class BoardsService {
   //----------------------**[Delete Board]**----------------------
   async delete({ id }) {
     // const user = await this.userRepository.findOne({
-    //   where: { email },
+    //   where: { id },
     // });
     // const board = await this.boardRepository.findOne({
     //   where: {
@@ -126,7 +126,6 @@ export class BoardsService {
       id,
     });
     this.boardImgRepository.softDelete({ board: { id } });
-
     return result.affected ? true : false;
   }
 }

@@ -42,8 +42,8 @@ export class AdminResolver {
   @UseGuards(GqlAdminGuard)
   @Mutation(() => Admin)
   async updateAdmin(
-    @Args('email') email: string,
-    @Args('updateAdminInput') updateAdminInput: UpdateAdminInput,
+    @Args('email') email?: string,
+    @Args('updateAdminInput') updateAdminInput?: UpdateAdminInput,
   ): Promise<Admin> {
     const admin = await this.adminService.findOne({ email });
 

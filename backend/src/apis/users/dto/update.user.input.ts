@@ -1,5 +1,5 @@
 import { InputType, PartialType } from '@nestjs/graphql';
-import { SignUpInput } from './signup.input';
+import { UpdateUserClass } from './updateUser';
 
 @InputType()
-export class UpdateUserInput extends PartialType(SignUpInput) {}
+export class UpdateUserInput extends PartialType(UpdateUserClass) {}

@@ -8,7 +8,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import coolsms from 'coolsms-node-sdk';
 import { Cache } from 'cache-manager';
-import * as bcrypt from 'bcrypt';
 import { Admin } from './entities/admin.entity';
 import { Repository } from 'typeorm';
 import {
@@ -98,13 +97,14 @@ export class AdminService {
 
     // prettier-ignore
       if (digit) {throw new ConflictException('이미 등록된 번호입니다.')}
+      
     // prettier-ignore
       const token = String(Math.floor(Math.random() * 1000000)).padStart(6, '0')
       const SMSservice = new coolsms(SMS_KEY, SMS_SECRET);
       await SMSservice.sendOne({
         to: phone,
         from: SMS_SENDER,
-        text: `[관리자 전용] 회원가입 인증번호는 [${token}] 입니다.`,
+        text: `[관리자 전용] 관리자 가입 인증번호는 [${token}] 입니다.`,
         type: 'SMS',
         autoTypeDetect: false,
       });

@@ -10,7 +10,7 @@ import { Comic } from './entities/comic.entity';
   imports: [
     TypeOrmModule.forFeature([Comic, ComicRating]),
     ElasticsearchModule.register({
-      node: 'http://elasticsearch:9200',
+      node: 'https://elasticsearch:9200',
     }),
   ],
   providers: [ComicsService, ComicsResolver],

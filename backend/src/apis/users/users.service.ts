@@ -188,7 +188,7 @@ export class UsersService {
   //------------------------**[Find Login Users]**-------------------------------
   async findLogins({ context }) {
     console.log(context.req.user.email);
-    return await this.usersRepository.findOne({
+    return await this.usersRepository.find({
       where: { email: context.req.user.email },
     });
   }
