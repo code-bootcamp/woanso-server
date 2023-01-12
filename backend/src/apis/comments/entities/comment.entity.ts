@@ -30,8 +30,7 @@ export class Comment {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  @JoinColumn()
-  @ManyToOne(() => Board)
+  @ManyToOne(() => Board, { onDelete: 'CASCADE' })
   @Field(() => Board)
   board: Board;
 

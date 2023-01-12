@@ -1,12 +1,12 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { BoardImg } from 'src/apis/boardsImgs/entities/boardsimg.entity';
+import { Comment } from 'src/apis/comments/entities/comment.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -41,10 +41,15 @@ export class Board {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @JoinColumn()
-  @OneToMany(() => BoardImg, (boardImg) => boardImg.board)
+  @OneToMany(() => BoardImg, (boardImg) => boardImg.board, {
+    onDelete: 'CASCADE',
+  })
   @Field(() => [BoardImg])
   boardImg?: BoardImg[];
+
+  @OneToMany(() => Comment, (comment) => comment.board, { onDelete: 'CASCADE' })
+  @Field(() => [Comment])
+  comment?: Comment[];
 
   @ManyToOne(() => User)
   @Field(() => User)

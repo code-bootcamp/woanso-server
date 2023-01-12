@@ -109,23 +109,8 @@ export class BoardsService {
   }
   //----------------------**[Delete Board]**----------------------
   async delete({ id }) {
-    // const user = await this.userRepository.findOne({
-    //   where: { id },
-    // });
-    // const board = await this.boardRepository.findOne({
-    //   where: {
-    //     id,
-    //     user: { id: user.id },
-    //   },
-    // });
-    // if (!board) {
-    //   throw new ConflictException('잘못된 시도입니다.');
-    // }
-
-    const result = await this.boardRepository.softDelete({
-      id,
-    });
-    this.boardImgRepository.softDelete({ board: { id } });
+    const result = await this.boardRepository.delete({ id });
+    this.boardImgRepository.delete({ board: { id } });
     return result.affected ? true : false;
   }
 }
