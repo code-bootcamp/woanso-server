@@ -118,22 +118,18 @@ export class UsersService {
     // prettier-ignore
     if (phone.length < 10 || phone.length > 11) {
       const digit = await this.usersRepository.findOne({where: { phone: phone },});
-
-    // prettier-ignore
       if (digit) {throw new ConflictException('이미 등록된 번호입니다.')}
-
-    // prettier-ignore
-      const token = String(Math.floor(Math.random() * 1000000)).padStart(6, '0')
-      const SMSservice = new mysms(SMS_KEY, SMS_SECRET);
-      await SMSservice.sendOne({
-        to: phone,
-        from: SMS_SENDER,
-        text: `[완소] 안녕하세요. 회원가입 인증번호는 [${token}] 입니다.`,
-        autoTypeDetect: true
-      });
-
-      return token;
     }
+    // prettier-ignore
+    const token = String(Math.floor(Math.random() * 1000000)).padStart(6, '0')
+    const SMSservice = new mysms(SMS_KEY, SMS_SECRET);
+    await SMSservice.sendOne({
+      to: phone,
+      from: SMS_SENDER,
+      text: `[완소] 안녕하세요. 회원가입 인증번호는 [${token}] 입니다.`,
+      autoTypeDetect: true,
+    });
+    return token;
   }
   //--------------------**[Auth token]**--------------------
   async authToken({ phone, token }) {
