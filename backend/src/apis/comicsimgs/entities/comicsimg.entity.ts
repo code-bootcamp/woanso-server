@@ -27,7 +27,7 @@ export class ComicImg {
   @Field(() => Boolean)
   isMain: boolean;
 
-  @ManyToOne(() => Comic, { cascade: true })
+  @ManyToOne(() => Comic, { onDelete: 'CASCADE' })
   @Field(() => Comic)
   comic: Comic;
 

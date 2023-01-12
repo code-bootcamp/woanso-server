@@ -102,7 +102,7 @@ export class Comic {
   updatedAt: Date;
 
   @JoinColumn()
-  @OneToOne(() => ComicRating, { onDelete: 'CASCADE' })
+  @OneToOne(() => ComicRating, { eager: true, onDelete: 'CASCADE' })
   @Field(() => ComicRating)
   comicRating: ComicRating;
 

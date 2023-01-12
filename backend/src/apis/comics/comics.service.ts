@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { ComicImg } from '../comicsImgs/entities/comicsimg.entity';
 import { ComicRating } from '../comicsRating/entities/comicRating.entity';
 import { Review } from '../reviews/entities/review.entity';
@@ -25,11 +25,15 @@ export class ComicsService {
   ) {}
 
   //검색기능
-  // async findWithTitle({ title }) {
-  //   const result = await this.comicsRepository.find();
-
-  //   return result.filter((el) => el.title.includes(title));
-  // }
+  async findWithTitle({ title, page }) {
+    const result = await this.comicsRepository.find({
+      where: { title: Like(`%${title}%`) },
+      take: 24,
+      skip: (page - 1) * 24,
+      relations: ['comicRating', 'comicImg'],
+    });
+    return result;
+  }
 
   //전체조회
   findAll({ page }): Promise<Comic[]> {
@@ -131,7 +135,17 @@ export class ComicsService {
   }
   //삭제
   async delete({ comicId }) {
-    const result = await this.comicsRepository.softDelete({ comicId });
+    const resultComic = await this.comicsRepository.findOne({
+      where: {
+        comicId,
+      },
+      relations: ['comicRating'],
+    });
+    const result = await this.comicsRepository.delete({ comicId });
+
+    await this.comicsRatingRepository.delete({
+      comicRatingId: resultComic.comicRating.comicRatingId,
+    });
 
     return result.affected ? true : false;
   }

@@ -30,4 +30,6 @@ export class Wishlist {
   @ManyToOne(() => Comic, { cascade: true })
   @Field(() => Comic, { nullable: true })
   comic: Comic;
+
+  //fgjfiljdfgjdljytrlkj
 }
