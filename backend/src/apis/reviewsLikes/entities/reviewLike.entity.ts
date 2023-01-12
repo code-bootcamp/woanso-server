@@ -10,11 +10,11 @@ export class ReviewLike {
   @Field(() => String)
   reviewLikeId: string;
 
-  @ManyToOne(() => Review)
+  @ManyToOne(() => Review, { cascade: true })
   @Field(() => Review)
   review: Review;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { cascade: true })
   @Field(() => User)
   user: User;
 }

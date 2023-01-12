@@ -10,11 +10,11 @@ export class BoardDislike {
   @Field(() => String)
   id: string;
 
-  @ManyToOne(() => Board)
+  @ManyToOne(() => Board, { cascade: true })
   @Field(() => Board)
   board: Board;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { cascade: true })
   @Field(() => User)
   user: User;
 }

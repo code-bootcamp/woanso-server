@@ -34,7 +34,7 @@ export class Comment {
   @Field(() => Board)
   board: Board;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { cascade: true })
   @Field(() => User)
   user: User;
 

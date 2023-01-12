@@ -10,7 +10,7 @@ export class BoardLike {
   @Field(() => String)
   id: string;
 
-  @ManyToOne(() => Board)
+  @ManyToOne(() => Board, { cascade: true })
   @Field(() => Board)
   board: Board;
 

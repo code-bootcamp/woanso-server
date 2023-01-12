@@ -35,6 +35,7 @@ export class Board {
   dislike?: number;
 
   @CreateDateColumn()
+  @Field(() => Date)
   createdAt: Date;
 
   @DeleteDateColumn()
@@ -65,7 +66,7 @@ export class Board {
   @Field(() => [BoardDislike])
   boardDislike?: BoardDislike[];
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @Field(() => User)
   user?: User;
 }

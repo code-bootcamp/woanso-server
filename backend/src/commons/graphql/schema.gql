@@ -33,6 +33,7 @@ type Board {
   content: String!
   like: Int!
   dislike: Int!
+  createdAt: DateTime!
   boardImg: [BoardImg!]!
   comment: [Comment!]!
   boardLike: [BoardLike!]!
@@ -57,6 +58,7 @@ type ComicRating {
   comicRatingId: String!
   totalRating: Int!
   comicRating: Float!
+  comic: Comic!
 }
 
 type Wishlist {
@@ -64,6 +66,24 @@ type Wishlist {
   isDib: Boolean!
   user: User
   comic: Comic
+}
+
+type ReviewLike {
+  reviewLikeId: String!
+  review: Review!
+  user: User!
+}
+
+type Review {
+  reviewId: String
+  content: String!
+  like: Int!
+  createdAt: DateTime!
+  rating: Float!
+  user: User!
+  comic: Comic!
+  comicRating: ComicRating!
+  reviewLike: [ReviewLike!]!
 }
 
 type Comic {
@@ -83,6 +103,7 @@ type Comic {
   pointTransaction: PointTransaction!
   category: COMIC_CATEGORY_ENUM!
   comicImg: [ComicImg!]!
+  review: [Review!]!
   wishlist: [Wishlist!]!
 }
 
@@ -111,23 +132,6 @@ type PointTransaction {
 enum POINT_TRANSACTION_STATUS_ENUM {
   PAYMENT
   CANCEL
-}
-
-type Review {
-  reviewId: String
-  content: String!
-  like: Int!
-  createdAt: DateTime!
-  rating: Float!
-  user: User!
-  comic: Comic!
-  comicRating: ComicRating!
-}
-
-type ReviewLike {
-  reviewLikeId: String!
-  review: Review!
-  user: User!
 }
 
 type User {
@@ -181,8 +185,6 @@ type Query {
   ): [Comic!]!
   fetchComic(comicId: String!): Comic!
   availableComicsForAdmin: [Int!]!
-  fetchBoardImage(comicId: String!): [ComicImg!]!
-  fetchAllCrewBoardImages: [ComicImg!]!
   fetchReviews(page: Float = 1, order: String = "DESC"): [Review!]!
   fetchReview(comicId: String!): [Review!]!
   fetchWishlist: [Wishlist!]!
@@ -212,7 +214,6 @@ type Mutation {
   deleteComic(comicId: ID!): Boolean!
   restoreComic(comicId: ID!): Boolean!
   createComic(createComicInput: CreateComicInput!): Comic!
-  uploadComicImg(url: [String!]!, comicId: String!): [ComicImg!]!
   createReview(createReviewInput: CreateReviewInput!): Review!
   deleteReview(reviewId: ID!): Boolean!
   restoreReview(reviewId: ID!): Boolean!
@@ -302,7 +303,6 @@ input UpdateBoardInput {
 input CreateCommentInput {
   content: String!
   boardId: String!
-  userId: String!
 }
 
 input UpdateAdminInput {
