@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ComicImg } from '../comicsImgs/entities/comicsimg.entity';
 import { ComicRating } from '../comicsRating/entities/comicRating.entity';
 import { Review } from '../reviews/entities/review.entity';
 import { User } from '../users/entities/user.entity';
@@ -19,6 +20,8 @@ export class ComicsService {
     private readonly comicsRepository: Repository<Comic>,
     @InjectRepository(ComicRating)
     private readonly comicsRatingRepository: Repository<ComicRating>,
+    @InjectRepository(ComicImg)
+    private readonly comicImgRepository: Repository<ComicImg>,
   ) {}
 
   //검색기능
@@ -42,7 +45,7 @@ export class ComicsService {
   }
 
   async create({ createComicInput }: IComicsServiceCreate): Promise<Comic> {
-    const { reviewId, ...comic } = createComicInput;
+    const { url, ...comic } = createComicInput;
     // const user = await this.userRepository.findOne({
     //   where: {
     //     id: userId,
@@ -67,13 +70,24 @@ export class ComicsService {
       comicRating: 0,
       totalRating: 0,
     });
-    const result = this.comicsRepository.save({
+    const result = await this.comicsRepository.save({
       comicRating: {
         ...result2,
       },
       ...createComicInput,
     });
 
+    await Promise.all(
+      url.map((el, i) =>
+        this.comicImgRepository.save({
+          url: el,
+          isMain: i === 0 ? true : false,
+          comic: {
+            ...result,
+          },
+        }),
+      ),
+    );
     return result;
   }
 

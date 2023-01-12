@@ -1,5 +1,12 @@
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { UserImg } from 'src/apis/usersImgs/entities/usersImg.entity';
+import { BoardDislike } from 'src/apis/boardLikes/entities/boardDislike.entity';
+import { BoardLike } from 'src/apis/boardLikes/entities/boardLike.entity';
+import { Board } from 'src/apis/boards/entities/board.entity';
+import { Comment } from 'src/apis/comments/entities/comment.entity';
+import { PointTransaction } from 'src/apis/payments/entities/payment.entity';
+import { Review } from 'src/apis/reviews/entities/review.entity';
+import { ReviewLike } from 'src/apis/reviewsLikes/entities/reviewLike.entity';
+import { Wishlist } from 'src/apis/wishlists/entities/wishlish.entity';
 
 import {
   Column,
@@ -7,6 +14,7 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -62,13 +70,49 @@ export class User {
   updatedAt?: Date;
 
   @Field(() => String)
-  @Column({ nullable: true })
-  phone: string;
+  @Column({ nullable: true, default: '' })
+  thumbnail: string;
 
-  @JoinColumn()
-  @Field(() => UserImg, { nullable: true })
-  @OneToOne(() => UserImg)
-  userImg: UserImg;
+  ///---------------------------------------
+  @OneToMany(() => Comment, (comment) => comment.user)
+  @Field(() => [Comment])
+  comment: Comment[];
+
+  @OneToMany(() => Review, (review) => review.user)
+  @Field(() => [Review])
+  review: Review[];
+
+  @OneToMany(() => ReviewLike, (reviewLike) => reviewLike.user)
+  @Field(() => [ReviewLike])
+  reviewLike: ReviewLike[];
+
+  @OneToMany(() => BoardDislike, (boardDislike) => boardDislike.user)
+  @Field(() => [BoardDislike])
+  boardDislike: BoardDislike[];
+
+  @OneToMany(() => BoardLike, (boardLike) => boardLike.user)
+  @Field(() => [BoardLike])
+  boardlLike: BoardLike[];
+
+  @OneToMany(() => Board, (board) => board.user)
+  @Field(() => [Board])
+  board: Board[];
+
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.user)
+  @Field(() => [Wishlist])
+  wishlist: Wishlist[];
+
+  @OneToMany(
+    () => PointTransaction,
+    (pointTransaction) => pointTransaction.user,
+  )
+  @Field(() => [PointTransaction])
+  pointTransaction: PointTransaction[];
+
+  // @JoinColumn()
+  // @Field(() => UserImg, { nullable: true })
+  // @OneToOne(() => UserImg)
+  // userImg: UserImg;
 
   // @OneToMany(() => UserAuthority, (userAuthority) => userAuthority.user, {
   //   eager: true,
