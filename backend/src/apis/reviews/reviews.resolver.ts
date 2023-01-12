@@ -30,7 +30,7 @@ export class ReviewsResolver {
 
   @Query(() => Review)
   fetchReview(
-    @Args('reviewId') reviewId: string, //
+    @Args('reviewId') reviewId: string, // args 를 comicId
     // @Args('reviewRatingId') reviewRatingId: string, //
   ): Promise<Review> {
     return this.reviewsService.findOne({ reviewId });

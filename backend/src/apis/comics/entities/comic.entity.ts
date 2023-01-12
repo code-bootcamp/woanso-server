@@ -1,6 +1,8 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { ComicImg } from 'src/apis/comicsImgs/entities/comicsimg.entity';
 import { ComicRating } from 'src/apis/comicsRating/entities/comicRating.entity';
+import { PointTransaction } from 'src/apis/payments/entities/payment.entity';
+import { Wishlist } from 'src/apis/wishlists/entities/wishlish.entity';
 import {
   Column,
   CreateDateColumn,
@@ -103,12 +105,21 @@ export class Comic {
   @Field(() => ComicRating)
   comicRating: ComicRating;
 
+  @JoinColumn()
+  @OneToOne(() => PointTransaction)
+  @Field(() => PointTransaction)
+  pointTransaction: PointTransaction;
+
   @Field(() => COMIC_CATEGORY_ENUM)
   @Column({ type: 'enum', enum: COMIC_CATEGORY_ENUM, nullable: true })
   category: string;
 
-  @JoinColumn()
+  //@JoinColumn()
   @OneToMany(() => ComicImg, (comicImg) => comicImg.comic)
   @Field(() => [ComicImg])
   comicImg?: ComicImg[];
+
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.comic)
+  @Field(() => [Wishlist])
+  wishlist?: Wishlist[];
 }

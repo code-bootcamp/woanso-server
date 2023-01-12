@@ -34,6 +34,10 @@ export class Review {
   @DeleteDateColumn()
   deletedAt: Date;
 
+  @Column()
+  @Field(() => Float)
+  rating: number;
+
   @ManyToOne(() => User)
   @Field(() => User)
   user: User;
