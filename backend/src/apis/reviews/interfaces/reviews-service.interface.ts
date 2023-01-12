@@ -7,7 +7,7 @@ export interface IReviewsServiceCreate {
 }
 
 export interface IReviewsServiceFindOne {
-  reviewId?: string;
+  comicId?: string;
 }
 
 export interface IReviewsServiceUpdate {

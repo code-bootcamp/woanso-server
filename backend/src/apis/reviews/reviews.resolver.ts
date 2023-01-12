@@ -14,26 +14,25 @@ export class ReviewsResolver {
   ) {}
 
   @Query(() => [Review])
-  async fetchReviews() {
-    // return this.reviewsService.findAll();
-    const result = [];
-    const review = await this.reviewsService.findAll();
-    review.sort((a, b) => Number(b.createdAt) - Number(a.createdAt));
-
-    while (review.length > 0) {
-      result.push(review.splice(0, 10));
-    }
-
-    //return result;
-    return this.reviewsService.findAll();
+  async fetchReviews(
+    @Args({ name: 'page', defaultValue: 1, nullable: true })
+    page: number, //
+    @Args({
+      name: 'order',
+      defaultValue: 'DESC',
+      nullable: true,
+    })
+    order: string,
+  ) {
+    return this.reviewsService.findAll({ page, order });
   }
 
-  @Query(() => Review)
+  @Query(() => [Review])
   fetchReview(
-    @Args('reviewId') reviewId: string, // args 를 comicId
+    @Args('comicId') comicId: string, // args 를 comicId
     // @Args('reviewRatingId') reviewRatingId: string, //
-  ): Promise<Review> {
-    return this.reviewsService.findOne({ reviewId });
+  ): Promise<Review[]> {
+    return this.reviewsService.findOne({ comicId });
   }
 
   @UseGuards(GqlAuthAccessGuard)

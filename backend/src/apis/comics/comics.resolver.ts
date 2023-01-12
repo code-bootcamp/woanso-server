@@ -1,7 +1,7 @@
 import { Args, Resolver, Query, Mutation, ID, Int } from '@nestjs/graphql';
 import { ComicsService } from './comics.service';
 import { CreateComicInput } from './dto/createComic.input';
-import { CreateUrlInput } from './dto/createUrl.input';
+
 import { UpdateComicInput } from './dto/update-comic.input';
 import { Comic } from './entities/comic.entity';
 import { Cache } from 'cache-manager';
@@ -19,8 +19,11 @@ export class ComicsResolver {
 
   //조회
   @Query(() => [Comic])
-  fetchComics() {
-    return this.comicsService.findAll();
+  fetchComics(
+    @Args({ name: 'page', defaultValue: 1, nullable: true })
+    page: number, //
+  ) {
+    return this.comicsService.findAll({ page });
   }
 
   // 검색기능
@@ -82,7 +85,6 @@ export class ComicsResolver {
   async updateComic(
     @Args('comicId') comicId: string,
     @Args('updateComicInput') updateComicInput: UpdateComicInput, //
-    @Args('createUrlInput') CreateUrlInput: CreateUrlInput,
   ): Promise<Comic> {
     const comic = await this.comicsService.findOne({ comicId });
 

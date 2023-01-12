@@ -29,6 +29,7 @@ export class Review {
   like: number;
 
   @CreateDateColumn()
+  @Field(() => Date)
   createdAt: Date;
 
   @DeleteDateColumn()
