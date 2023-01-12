@@ -1,4 +1,5 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { ComicImg } from 'src/apis/comicsImgs/entities/comicsimg.entity';
 import { ComicRating } from 'src/apis/comicsRating/entities/comicRating.entity';
 import {
   Column,
@@ -6,6 +7,7 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -105,35 +107,8 @@ export class Comic {
   @Column({ type: 'enum', enum: COMIC_CATEGORY_ENUM, nullable: true })
   category: string;
 
-  // @ManyToOne(() => Category)
-  // @Field(() => Category)
-  // category: Category;
-
-  ///////
-
-  // @OneToMany(() => Image, (image) => image.comic)
-  // @Field(() => [Image]) //graphql 방식
-  // image: Image[];
-
-  //   @ManyToOne(() => Origin)
-  //   @Field(() => Origin)
-  //   origin: Origin;
-
-  //   @ManyToOne(() => Seller)
-  //   @Field(() => Seller)
-  //   seller: Seller;
-
-  //   @ManyToOne(() => ProductSub)
-  //   @Field(() => ProductSub)
-  //   productsub: ProductSub;
-
-  //   @JoinColumn() //FK키로 가져와서 참조할 때, 한쪽 테이블에만 적어주기 / 1대 1
-  //   @OneToOne(() => Order)
-  //   @Field(() => Order)
-  //   order: Order;
-
-  //   @JoinTable()
-  //   @ManyToMany(() => Color, (colors) => colors.products)
-  //   @Field(() => [Color])
-  //   colors: Color[];
+  @JoinColumn()
+  @OneToMany(() => ComicImg, (comicImg) => comicImg.comic)
+  @Field(() => [ComicImg])
+  comicImg?: ComicImg[];
 }

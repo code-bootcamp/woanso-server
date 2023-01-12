@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   my-backend:
-    image: asia.gcr.io/woanso/woanso:3.0
+    image: asia.gcr.io/woanso/woanso:3.2
     platform: linux/x86_64
     build:
       context: .
@@ -14,3 +14,17 @@ services:
       - ./.env.prod
     ports:
       - 3000:3000
+
+  elasticsearch:
+    image: elasticsearch:7.17.0
+    environment:
+      discovery.type: single-node
+    ports:
+      - 9200:9200
+
+  logstash:
+    image: logstash:7.17.0
+    volumes:
+      - ./elk/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./elk/logstash/mysql-connector-java-8.0.28.jar:/usr/share/logstash/mysql-connector-java-8.0.28.jar
+      - ./elk/logstash/template.json:/usr/share/logstash/template.json

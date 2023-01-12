@@ -61,6 +61,10 @@ export class User {
   @UpdateDateColumn()
   updatedAt?: Date;
 
+  @Field(() => String)
+  @Column({ nullable: true })
+  phone: string;
+
   @JoinColumn()
   @Field(() => UserImg, { nullable: true })
   @OneToOne(() => UserImg)

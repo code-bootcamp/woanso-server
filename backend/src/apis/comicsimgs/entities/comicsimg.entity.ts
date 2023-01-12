@@ -7,6 +7,7 @@ import {
   JoinColumn,
   JoinTable,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -18,8 +19,8 @@ export class ComicImg {
   @Field(() => String)
   id: string;
 
-  @Column()
-  @Field(() => String)
+  @Column({ default: '' })
+  @Field(() => String, { nullable: true })
   url: string;
 
   @Column()
@@ -35,11 +36,15 @@ export class ComicImg {
   // comic: Comic;
 
   // @JoinTable()
-  @JoinColumn()
-  @OneToOne(() => Comic)
-  @Field(() => Comic)
-  comic: Comic;
+  // @JoinColumn()
+  // @OneToOne(() => Comic)
+  // @Field(() => Comic)
+  // comic: Comic;
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @ManyToOne(() => Comic, (comic) => comic.comicImg)
+  @Field(() => Comic)
+  comic: Comic;
 }
