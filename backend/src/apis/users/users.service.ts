@@ -18,9 +18,10 @@ import {
   IUsersServiceFindOneForUpdate,
   IUsersServiceUpdate,
 } from './interfaces/users-service.interface';
-import coolsms from 'coolsms-node-sdk';
+import * as coolsms from 'coolsms-node-sdk';
 import { Cache } from 'cache-manager';
 
+const mysms = coolsms.default;
 @Injectable()
 export class UsersService {
   constructor(
@@ -123,18 +124,14 @@ export class UsersService {
 
     // prettier-ignore
       const token = String(Math.floor(Math.random() * 1000000)).padStart(6, '0')
-      const SMSservice = new coolsms(SMS_KEY, SMS_SECRET);
+      const SMSservice = new mysms(SMS_KEY, SMS_SECRET);
       await SMSservice.sendOne({
         to: phone,
         from: SMS_SENDER,
         text: `[완소] 안녕하세요. 회원가입 인증번호는 [${token}] 입니다.`,
-        type: 'SMS',
-        autoTypeDetect: false,
+        autoTypeDetect: true
       });
 
-      const myToken = await this.cache.get(phone);
-      if (myToken) {await this.cache.del(phone)}
-      await this.cache.set(phone, token);
       return token;
     }
   }
