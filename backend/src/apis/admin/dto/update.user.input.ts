@@ -1,5 +1,5 @@
 import { InputType, PartialType } from '@nestjs/graphql';
-import { SignUpAdminInput } from './signup.input';
+import { AdminUpdate } from './updateAdmin';
 
 @InputType()
-export class UpdateAdminInput extends PartialType(SignUpAdminInput) {}
+export class UpdateAdminInput extends PartialType(AdminUpdate) {}

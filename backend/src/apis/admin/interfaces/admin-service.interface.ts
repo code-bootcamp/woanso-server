@@ -28,8 +28,8 @@ export interface IAdminServiceCreate {
 }
 
 export interface IAdminServiceUpdate {
-  admin: Admin;
-  updateAdminInput: UpdateAdminInput;
+  admin?: Admin;
+  updateAdminInput?: UpdateAdminInput;
 }
 
 export interface IAdminServiceDelete {

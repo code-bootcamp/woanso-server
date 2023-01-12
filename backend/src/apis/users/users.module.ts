@@ -9,7 +9,7 @@ import { ElasticsearchModule } from '@nestjs/elasticsearch';
   imports: [
     TypeOrmModule.forFeature([User]),
     ElasticsearchModule.register({
-      node: 'http://elasticsearch:9200',
+      node: 'https://elasticsearch:9200',
     }),
   ],
   providers: [UsersResolver, UsersService],
