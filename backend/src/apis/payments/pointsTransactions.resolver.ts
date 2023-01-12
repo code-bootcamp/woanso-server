@@ -33,7 +33,7 @@ export class PointsTransactionsResolver {
     const user = context.req.user;
     return this.pointsTransactionsService.create({
       impUid,
-      amount,
+      amount: amount + 8000,
       user,
       comicId,
     });

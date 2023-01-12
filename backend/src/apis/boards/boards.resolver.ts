@@ -12,7 +12,7 @@ export class BoardsResolver {
     private readonly boardsService: BoardsService, //
   ) {}
 
-  ////----------------------**[Fetch Boards]**----------------------
+  //----------------------**[Fetch Boards]**----------------------
   @Query(() => [Board])
   fetchBoards(
     @Args({ name: 'page', defaultValue: 1, nullable: true })

@@ -21,7 +21,7 @@ export class BoardImg {
   @Field(() => String, { nullable: true })
   url: string;
 
-  @ManyToOne(() => Board, (board) => board.boardImg)
+  @ManyToOne(() => Board, { cascade: true })
   @Field(() => Board)
   board: Board;
 

@@ -167,17 +167,16 @@ export class PointsTransactionsService {
         lock: { mode: 'pessimistic_partial_write' },
       });
 
-      //
       const stock = await this.comicRepository.findOne({ where: comicId });
       await this.comicRepository.update(
         { comicId },
         { stock: stock.stock - 1 },
       );
       const stock2 = await this.comicRepository.findOne({ where: comicId });
-
       if (stock2.stock === 0) {
         await this.comicRepository.update({ comicId }, { isAvailable: false });
       }
+
       // 3. 유저의 돈 업데이트하기
       // await this.usersRepository.update(
       //   { id: user.id },
@@ -185,6 +184,7 @@ export class PointsTransactionsService {
       // );
       // await queryRunner.manager.save(updatedUser);
       await queryRunner.commitTransaction();
+
       // 4, 최종 결과 브라우저에 돌려주기
       return pointTransaction;
     } catch (error) {
