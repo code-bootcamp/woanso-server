@@ -191,15 +191,23 @@ export class UsersResolver {
   //----------------------**[Find Users For ADMIN]**----------------------
   @UseGuards(GqlAdminGuard)
   @Query(() => [User])
-  fetchUsersForAdmin(email): Promise<User[]> {
-    return this.usersService.findAll(email);
+  fetchUsersForAdmin(
+    @Args({ name: 'page', defaultValue: 1, nullable: true })
+    page: number, //
+    @Args({
+      name: 'order',
+      defaultValue: 'DESC',
+      nullable: true,
+    })
+    order: string,
+  ) {
+    return this.usersService.findAll({ page, order });
   }
 
   //----------------------**[Find Login Users For ADMIN]**----------------------
   @UseGuards(GqlAdminGuard)
   @Query(() => User)
   fetchLoginUserForAdmin(@Context() context: IContext) {
-    console.log(context.req.user.email);
     return this.usersService.findLogins({ context });
   }
 }

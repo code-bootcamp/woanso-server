@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ComicImgService } from './comicImg.service';
-import { ComicImg } from './entities/comicsimg.entity';
+import { ComicImg } from './entities/comicsImg.entity';
 
 @Resolver()
 export class ComicImgResolver {
