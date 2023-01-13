@@ -47,13 +47,11 @@ export class ReviewsResolver {
   //------------------**[리뷰 삭제]**------------------
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
-  deleteReview(@Args('reviewId', { type: () => ID }) reviewId: string) {
-    return this.reviewsService.delete({ reviewId });
+  deleteReview(
+    @Args('reviewId', { type: () => ID }) reviewId: string,
+    @Args('comicId', { type: () => ID }) comicId: string,
+  ) {
+    console.log('resolver');
+    return this.reviewsService.delete({ reviewId, comicId });
   }
-
-  //------------------**[리뷰 복구]**------------------
-  // @Mutation(() => Boolean)
-  // restoreReview(@Args('reviewId', { type: () => ID }) reviewId: string) {
-  //   return this.reviewsService.restore({ reviewId });
-  // }
 }

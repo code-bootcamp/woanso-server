@@ -172,6 +172,7 @@ export class ReviewsService {
   //     throw new Error('Review Like Create Server Error');
   //   }
   // }
+
   //------------------**[리뷰 업데이트]**------------------
   update({
     review,
@@ -185,15 +186,45 @@ export class ReviewsService {
   }
 
   //------------------**[리뷰 삭제]**------------------
-  async delete({ reviewId }) {
+  async delete({ reviewId, comicId }): Promise<any> {
+    const relatedReview = await this.reviewRepository.findOne({
+      where: { reviewId },
+    });
+
+    const numberOfComic = await this.reviewRepository.find({
+      where: {
+        comic: { comicId },
+      },
+      relations: ['comic'],
+    });
+
+    const relatedComic = await this.comicRepository.findOne({
+      where: { comicId },
+      relations: ['comicRating'],
+    });
+
+    await this.comicRatingRepository.update(
+      { comicRatingId: relatedComic.comicRating.comicRatingId },
+      {
+        totalRating:
+          relatedComic.comicRating.totalRating - relatedReview.rating,
+      },
+    );
+
+    const relatedComic2 = await this.comicRepository.findOne({
+      where: { comicId },
+      relations: ['comicRating'],
+    });
+
+    await this.comicRatingRepository.update(
+      { comicRatingId: relatedComic2.comicRating.comicRatingId },
+      {
+        comicRating:
+          relatedComic2.comicRating.totalRating / numberOfComic.length,
+      },
+    );
+
     const result = await this.reviewRepository.delete({ reviewId });
-    return result.affected ? true : false;
-  }
-
-  //------------------**[리뷰 복구]**------------------
-  async restore({ reviewId }) {
-    const result = await this.reviewRepository.restore({ reviewId });
-
     return result.affected ? true : false;
   }
 }
