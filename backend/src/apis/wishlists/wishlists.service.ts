@@ -61,6 +61,8 @@ export class WishlistService {
   }
 
   findAll(): Promise<Wishlist[]> {
-    return this.wishlistRepository.find({});
+    return this.wishlistRepository.find({
+      relations: ['user', 'comic'],
+    });
   }
 }
