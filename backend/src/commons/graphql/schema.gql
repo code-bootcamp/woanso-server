@@ -170,11 +170,11 @@ type Query {
   fetchUserLoggedIn: User!
   findEmail(phone: String!): User!
   authUser: String!
+  fetchComicsWithTitle(title: String!, page: Float!): [Comic!]!
   fetchBlockedUsersForAdmin: [User!]!
   fetchUsersForAdmin(page: Float = 1, order: String = "DESC"): [User!]!
   fetchLoginUserForAdmin: User!
   fetchComics(page: Float = 1): [Comic!]!
-  fetchComicsWithTitle(title: String!, page: Float!): [Comic!]!
   fetchComic(comicId: String!): Comic!
   availableComicsForAdmin: [Int!]!
   fetchReviews(page: Float = 1, order: String = "DESC"): [Review!]!
@@ -204,11 +204,9 @@ type Mutation {
   logout: String!
   updateComic(comicId: String!, updateComicInput: UpdateComicInput!): Comic!
   deleteComic(comicId: ID!): Boolean!
-  restoreComic(comicId: ID!): Boolean!
   createComic(createComicInput: CreateComicInput!): Comic!
   createReview(createReviewInput: CreateReviewInput!): Review!
   deleteReview(reviewId: ID!): Boolean!
-  restoreReview(reviewId: ID!): Boolean!
   createWishlist(createWishInput: CreateWishInput!): Boolean!
   createPointTransaction(impUid: String!, comicId: String!, amount: Int!, address: String!): PointTransaction!
   cancelPointTransaction(impUid: String!, comicId: String!): PointTransaction!
@@ -226,7 +224,6 @@ type Mutation {
   signUpForAdmin(email: String!, password: String!, nickname: String!, phone: String!): Admin!
   updateAdmin(email: String!, updateAdminInput: UpdateAdminInput!): Admin!
   deleteAdmin(email: String!, password: String!): Boolean!
-  authTokenForAdmin(phone: String!, token: String!): String!
 }
 
 """The `Upload` scalar type represents a file upload."""

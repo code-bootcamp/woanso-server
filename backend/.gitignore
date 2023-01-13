@@ -3,6 +3,7 @@ README.md
 app.module.ts
 gcp-file-storage.json
 schema.gql
+meongtopia.ts
 
 # compiled output
 /dist
