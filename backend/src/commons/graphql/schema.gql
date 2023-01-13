@@ -58,7 +58,6 @@ type ComicRating {
   comicRatingId: String!
   totalRating: Int!
   comicRating: Float!
-  comic: Comic!
 }
 
 type Wishlist {
@@ -171,18 +170,11 @@ type Query {
   fetchUserLoggedIn: User!
   findEmail(phone: String!): User!
   authUser: String!
-  searchUsersForAdmin(
-    """유저 닉네임으로 검색"""
-    search: String
-  ): [User!]!
   fetchBlockedUsersForAdmin: [User!]!
   fetchUsersForAdmin(page: Float = 1, order: String = "DESC"): [User!]!
   fetchLoginUserForAdmin: User!
   fetchComics(page: Float = 1): [Comic!]!
-  searchComics(
-    """검색어"""
-    search: String
-  ): [Comic!]!
+  fetchComicsWithTitle(title: String!, page: Float!): [Comic!]!
   fetchComic(comicId: String!): Comic!
   availableComicsForAdmin: [Int!]!
   fetchReviews(page: Float = 1, order: String = "DESC"): [Review!]!

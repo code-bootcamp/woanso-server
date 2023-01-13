@@ -28,6 +28,10 @@ export class ReviewLikeService {
       where: { email: user },
     });
 
+    const review = await this.reviewRepository.findOne({
+      where: { reviewId },
+    });
+
     const findLike = await this.reviewLikeRepository.findOne({
       where: {
         review: { reviewId },
@@ -37,35 +41,36 @@ export class ReviewLikeService {
     });
     console.log(findLike);
 
+    // 좋아요가 있다면 삭제
     if (findLike) {
       await this.reviewLikeRepository.delete({
         review: { reviewId },
         user: { id: findUser.id },
       });
 
-      const reviewBoard = await this.reviewRepository.findOne({
-        where: { reviewId },
-      });
+      // const reviewBoard = await this.reviewRepository.findOne({
+      //   where: { reviewId },
+      // });
 
       await this.reviewRepository.update(
         { reviewId },
-        { like: reviewBoard.like - 1 },
+        { like: review.like - 1 },
       );
 
       return '좋아요 취소';
     } else {
       await this.reviewLikeRepository.save({
-        reviewBoard: { id: reviewId },
+        review: { reviewId },
         user: { id: findUser.id },
       });
 
-      const reviewBoard = await this.reviewRepository.findOne({
-        where: { reviewId },
-      });
+      // const reviewBoard = await this.reviewRepository.findOne({
+      //   where: { reviewId },
+      // });
 
       await this.reviewRepository.update(
         { reviewId },
-        { like: reviewBoard.like + 1 },
+        { like: review.like + 1 },
       );
 
       return '좋아요 추가';
