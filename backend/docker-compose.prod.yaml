@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   my-backend:
-    image: asia.gcr.io/woanso/woanso:4.1
+    image: asia.gcr.io/woanso/woanso:4.2
     platform: linux/x86_64
     build:
       context: .

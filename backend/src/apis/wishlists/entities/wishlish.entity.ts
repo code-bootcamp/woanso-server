@@ -27,7 +27,7 @@ export class Wishlist {
   @Field(() => User, { nullable: true })
   user: User;
 
-  @ManyToOne(() => Comic, { cascade: true })
+  @ManyToOne(() => Comic, { onDelete: 'CASCADE' })
   @Field(() => Comic, { nullable: true })
   comic: Comic;
 

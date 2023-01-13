@@ -10,7 +10,7 @@ export class BoardDislike {
   @Field(() => String)
   id: string;
 
-  @ManyToOne(() => Board, { cascade: true })
+  @ManyToOne(() => Board, { onDelete: 'CASCADE' })
   @Field(() => Board)
   board: Board;
 

@@ -45,7 +45,7 @@ export class Review {
   @Field(() => User)
   user: User;
 
-  @ManyToOne(() => Comic, { cascade: true })
+  @ManyToOne(() => Comic, { onDelete: 'CASCADE' })
   @Field(() => Comic)
   comic: Comic;
 
