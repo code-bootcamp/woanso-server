@@ -26,7 +26,9 @@ export class PointsTransactionsResolver {
     context: IContext,
   ): Promise<any> {
     // 1. 아임포트에 요청해서 결제 완료 기록이 존재하는지 확인.
+    console.log(impUid, comicId, amount, address);
     const token = await this.iamportService.getToken();
+    console.log(token);
     await this.iamportService.checkPaid({ impUid, amount, token });
     console.log(impUid, '111');
     console.log(amount, '222');
@@ -61,7 +63,10 @@ export class PointsTransactionsResolver {
 
     //2. 아임포트에 취소 요청  //////////////////////////////////
     const token = await this.iamportService.getToken();
-    const cancelledAmount = await this.iamportService.cancel({ impUid, token });
+    const cancelledAmount = await this.iamportService.cancel({
+      impUid,
+      token,
+    });
 
     //3. 테이블에 결제 취소 등록 /////////////////////
     return await this.pointsTransactionsService.cancel({
