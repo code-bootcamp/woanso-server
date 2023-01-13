@@ -40,11 +40,11 @@ export class PointTransaction {
   address: string;
 
   @Column()
-  @Field(() => Int)
+  // @Field(() => Int)
   totalPrice: number;
 
   @Column()
-  @Field(() => Int)
+  // @Field(() => Int)
   deliveryFee: number;
 
   @Field(() => POINT_TRANSACTION_STATUS_ENUM)
