@@ -43,7 +43,7 @@ export class PointTransaction {
   @Field(() => Int)
   totalPrice: number;
 
-  @Column()
+  @Column() //8000
   @Field(() => Int)
   deliveryFee: number;
 
