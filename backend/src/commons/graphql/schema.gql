@@ -120,8 +120,6 @@ type PointTransaction {
   impUid: String!
   amount: Int!
   address: String!
-  totalPrice: Int!
-  deliveryFee: Int!
   status: POINT_TRANSACTION_STATUS_ENUM!
   user: User!
   createdAt: DateTime!
@@ -210,7 +208,7 @@ type Mutation {
   deleteReview(reviewId: ID!): Boolean!
   restoreReview(reviewId: ID!): Boolean!
   createWishlist(createWishInput: CreateWishInput!): Boolean!
-  createPointTransaction(impUid: String!, comicId: String!, amount: Int!): PointTransaction!
+  createPointTransaction(impUid: String!, comicId: String!, amount: Int!, address: String!): PointTransaction!
   cancelPointTransaction(impUid: String!, comicId: String!): PointTransaction!
   createBoard(createBoardInput: CreateBoardInput!): Board!
   updateBoard(id: String!, updateBoardInput: UpdateBoardInput!): Board!

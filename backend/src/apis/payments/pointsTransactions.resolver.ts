@@ -13,7 +13,7 @@ export class PointsTransactionsResolver {
     private readonly iamportService: IamportService,
   ) {}
 
-  ///////////////////////////
+  //--------------------**[결제 생성]**--------------------
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => PointTransaction)
@@ -21,9 +21,10 @@ export class PointsTransactionsResolver {
     @Args('impUid') impUid: string,
     @Args('comicId') comicId: string,
     @Args({ name: 'amount', type: () => Int }) amount: number,
-    @Context() context: IContext,
+    @Args('address') address: string,
+    @Context()
+    context: IContext,
   ): Promise<any> {
-    //검증 로직
     // 1. 아임포트에 요청해서 결제 완료 기록이 존재하는지 확인.
     const token = await this.iamportService.getToken();
     await this.iamportService.checkPaid({ impUid, amount, token });
@@ -36,10 +37,11 @@ export class PointsTransactionsResolver {
       amount: amount + 8000,
       user,
       comicId,
+      address,
     });
   }
 
-  ////////////////////////
+  //--------------------**[결제 취소]**--------------------
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => PointTransaction)
