@@ -23,11 +23,12 @@ export class IamportService {
     }
   }
 
+  //결제기록이 존재하는지 확인
   async checkPaid({ impUid, amount, token }) {
     try {
       const result = await axios.get(
         `https://api.iamport.kr/payments/${impUid}`,
-        { headers: { Authorization: token } },
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       if (result.data.response.status !== 'paid')

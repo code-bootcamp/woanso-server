@@ -120,6 +120,8 @@ type PointTransaction {
   impUid: String!
   amount: Int!
   address: String!
+  totalPrice: Int!
+  deliveryFee: Int!
   status: POINT_TRANSACTION_STATUS_ENUM!
   user: User!
   createdAt: DateTime!
