@@ -187,7 +187,7 @@ export class ReviewsService {
 
   //삭제
   async delete({ reviewId }) {
-    const result = await this.reviewRepository.softDelete({ reviewId });
+    const result = await this.reviewRepository.delete({ reviewId });
 
     return result.affected ? true : false;
   }
