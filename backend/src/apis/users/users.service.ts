@@ -6,7 +6,7 @@ import {
   Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import {
   IAdminServiceUnblock,
@@ -30,7 +30,7 @@ export class UsersService {
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
-  //------------------------**[Create]**-------------------------------
+  //------------------------**[회원가입]**-------------------------------
   async create({
     email,
     hashedPassword: password,
@@ -142,8 +142,6 @@ export class UsersService {
   }
 
   //----------------------**[FOR ADMIN]**----------------------
-  //----------------------**[FOR ADMIN]**----------------------
-  //----------------------**[FOR ADMIN]**----------------------
 
   //----------------------**[Fetch all users for admin]**--------------------
   async findAll({ page, order }): Promise<User[]> {
@@ -152,6 +150,17 @@ export class UsersService {
       take: 12,
       order: { createdAt: order },
     });
+  }
+
+  //----------------------**[Fetch all users for admin]**--------------------
+  async findUserForAdmin({ nickname, page }) {
+    const result = await this.usersRepository.find({
+      where: { nickname: Like(`%${nickname}%`) },
+      take: 12,
+      skip: (page - 1) * 12,
+      relations: ['board'],
+    });
+    return result;
   }
 
   //------------------------**[Block User]**-------------------------------

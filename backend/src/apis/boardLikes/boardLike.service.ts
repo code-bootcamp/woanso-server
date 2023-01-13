@@ -21,7 +21,7 @@ export class BoardLikeService {
     @InjectRepository(BoardDislike)
     private readonly dislikeRepository: Repository<BoardDislike>,
   ) {}
-  //------------------------**[LIKE]**-------------------------------
+  //------------------**[좋아요]**------------------
   async like({ id, user }) {
     //유저
     const findUser = await this.userRepository.findOne({
@@ -61,7 +61,7 @@ export class BoardLikeService {
     }
   }
 
-  //------------------------**[DISLIKE]**-------------------------------
+  //------------------**[싫어요]**------------------
   async dislike({ id, user }) {
     //유저
     const findUser = await this.userRepository.findOne({

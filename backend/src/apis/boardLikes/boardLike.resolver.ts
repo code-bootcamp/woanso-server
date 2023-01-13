@@ -10,6 +10,7 @@ export class BoardLikeResolver {
     private readonly likeService: BoardLikeService, //
   ) {}
 
+  //------------------**[좋아요]**------------------
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => String)
   likeBoard(
@@ -19,7 +20,7 @@ export class BoardLikeResolver {
     const user = context.req.user.email;
     return this.likeService.like({ id, user });
   }
-
+  //------------------**[싫어요]**------------------
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => String)
   dislikeBoard(

@@ -1,9 +1,7 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
-
 import { CreateReviewInput } from './dto/createReview.input';
-
 import { Review } from './entities/review.entity';
 import { ReviewsService } from './reviews.service';
 
@@ -13,6 +11,7 @@ export class ReviewsResolver {
     private readonly reviewsService: ReviewsService, // // private readonly reviewsRatingService: ReviewsRatingService, //
   ) {}
 
+  //------------------**[모든 리뷰 조회]**------------------
   @Query(() => [Review])
   async fetchReviews(
     @Args({ name: 'page', defaultValue: 1, nullable: true })
@@ -27,6 +26,7 @@ export class ReviewsResolver {
     return this.reviewsService.findAll({ page, order });
   }
 
+  //------------------**[리뷰 조회]**------------------
   @Query(() => [Review])
   fetchReview(
     @Args('comicId') comicId: string, // args 를 comicId
@@ -35,6 +35,7 @@ export class ReviewsResolver {
     return this.reviewsService.findOne({ comicId });
   }
 
+  //------------------**[리뷰 생성]**------------------
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Review)
   createReview(
@@ -43,15 +44,16 @@ export class ReviewsResolver {
     return this.reviewsService.create({ createReviewInput });
   }
 
-  //삭제
+  //------------------**[리뷰 삭제]**------------------
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   deleteReview(@Args('reviewId', { type: () => ID }) reviewId: string) {
     return this.reviewsService.delete({ reviewId });
   }
 
-  @Mutation(() => Boolean)
-  restoreReview(@Args('reviewId', { type: () => ID }) reviewId: string) {
-    return this.reviewsService.restore({ reviewId });
-  }
+  //------------------**[리뷰 복구]**------------------
+  // @Mutation(() => Boolean)
+  // restoreReview(@Args('reviewId', { type: () => ID }) reviewId: string) {
+  //   return this.reviewsService.restore({ reviewId });
+  // }
 }
