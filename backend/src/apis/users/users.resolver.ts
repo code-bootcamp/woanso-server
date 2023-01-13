@@ -158,6 +158,10 @@ export class UsersResolver {
   //   return users;
   // }
 
+  // @UseGuards(GqlAdminGuard)
+  // @Query(() => [User])
+  // async searchUsersForAdmin(
+
   //----------------------**[Delete User For ADMIN]**----------------------
   @UseGuards(GqlAdminGuard)
   @Mutation(() => Boolean)

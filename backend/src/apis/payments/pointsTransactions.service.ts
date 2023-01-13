@@ -34,32 +34,24 @@ export class PointsTransactionsService {
     impUid,
     amount,
     user: _user,
-    status = POINT_TRANSACTION_STATUS_ENUM.PAYMENT,
     comicId,
     address,
   }): Promise<any> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect(); // DB접속, promise 필수
-
     await queryRunner.startTransaction('SERIALIZABLE'); // Transaction 시작
+
     try {
       const pointTransaction = this.pointsTransactionsRepository.create({
         impUid,
         amount,
         user: _user,
-        status,
+        status: POINT_TRANSACTION_STATUS_ENUM.PAYMENT,
         address,
       });
 
       await queryRunner.manager.save(pointTransaction);
-
-      await this.pointsTransactionsRepository.save(pointTransaction);
-
-      // 2. 유저의 돈 찾아오기
-      // const user = await this.usersRepository.findOne({
-      //   where: { id: _user.id }, //
-      //   lock: { mode: 'pessimistic_partial_write' },
-      // });
+      // await this.pointsTransactionsRepository.save(pointTransaction);
 
       const stock = await this.comicRepository.findOne({ where: comicId });
       await this.comicRepository.update(
@@ -71,12 +63,6 @@ export class PointsTransactionsService {
         await this.comicRepository.update({ comicId }, { isAvailable: false });
       }
 
-      // 3. 유저의 돈 업데이트하기
-      // await this.usersRepository.update(
-      //   { id: user.id },
-      //   { balance: user.balance + amount },
-      // );
-      // await queryRunner.manager.save(updatedUser);
       await queryRunner.commitTransaction();
 
       // 4, 최종 결과 브라우저에 돌려주기
@@ -112,12 +98,6 @@ export class PointsTransactionsService {
       await queryRunner.manager.save(pointTransaction);
       await this.pointsTransactionsRepository.save(pointTransaction);
 
-      // 2. 유저의 돈 찾아오기
-      // const user = await this.usersRepository.findOne({
-      //   where: { id: _user.id }, //
-      //   lock: { mode: 'pessimistic_partial_write' },
-      // });
-
       const stock = await this.comicRepository.findOne({ where: comicId });
       await this.comicRepository.update(
         { comicId },
@@ -129,12 +109,6 @@ export class PointsTransactionsService {
         await this.comicRepository.update({ comicId }, { isAvailable: true });
       }
 
-      // 3. 유저의 돈 업데이트하기
-      // await this.usersRepository.update(
-      //   { id: user.id },
-      //   { balance: user.balance + amount },
-      // );
-      // await queryRunner.manager.save(updatedUser);
       await queryRunner.commitTransaction();
 
       // 4, 최종 결과 브라우저에 돌려주기
