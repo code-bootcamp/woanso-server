@@ -80,18 +80,11 @@ export class UsersResolver {
   }
 
   //--------------------**[Update Password]**--------------------
-  @Mutation(() => String)
+  @Mutation(() => Boolean)
   async updatePassword(
     @Args('email') email: string,
-    @Args('phone') phone: string,
     @Args('updateUserPwdInput') updateUserPwdInput: string,
   ) {
-    const myToken = await this.cache.get(phone);
-    if (!myToken) {
-      console.log(myToken);
-      throw new UnprocessableEntityException('인증 미실시');
-    }
-
     const hashedPassword = await bcrypt.hash(updateUserPwdInput, 10);
     return await this.usersService.updatePassword({ email, hashedPassword });
   }

@@ -1,6 +1,7 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
+import { IContext } from 'src/commons/types/context';
 import { CommentsService } from './comments.service';
 import { CreateCommentInput } from './dto/create-comment.input';
 import { Comment } from './entities/comment.entity';
@@ -25,8 +26,9 @@ export class CommentsResolver {
   @Mutation(() => Comment)
   createComment(
     @Args('createCommentInput') createCommentInput: CreateCommentInput,
+    @Context() context: IContext,
   ): Promise<Comment> {
-    return this.commentsService.create({ createCommentInput });
+    return this.commentsService.create({ createCommentInput, context });
   }
 
   //-------------------------*삭제*----------------------------//
