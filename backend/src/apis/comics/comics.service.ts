@@ -24,7 +24,7 @@ export class ComicsService {
     private readonly comicImgRepository: Repository<ComicImg>,
   ) {}
 
-  //검색기능
+  //------------------**[만화 검색]**------------------
   async findWithTitle({ title, page }) {
     const result = await this.comicsRepository.find({
       where: { title: Like(`%${title}%`) },
@@ -35,7 +35,7 @@ export class ComicsService {
     return result;
   }
 
-  //전체조회
+  //------------------**[모든 만화 조회]**------------------
   findAll({ page }): Promise<Comic[]> {
     //페이지네이션? 24개씩
     return this.comicsRepository.find({
@@ -44,7 +44,7 @@ export class ComicsService {
       skip: (page - 1) * 24,
     });
   }
-
+  //------------------**[만화 조회]**------------------
   findOne({ comicId }: IComicsServiceFindOne): Promise<Comic> {
     return this.comicsRepository.findOne({
       where: { comicId },
@@ -52,6 +52,7 @@ export class ComicsService {
     });
   }
 
+  //------------------**[만화 등록]**------------------
   async create({ createComicInput }: IComicsServiceCreate): Promise<Comic> {
     const { url, ...comic } = createComicInput;
     // const user = await this.userRepository.findOne({
@@ -106,7 +107,7 @@ export class ComicsService {
   //   return this.comicsRepository.findOne({ where: { isAvailable } });
   // }
 
-  //대여가능 , 대여불가 수량 조회
+  //------------------**[대여 가능/불가능 만화 수량 학인]**------------------
   async findAll1() {
     const result = await this.comicsRepository.find();
     let availableCount = 0;
@@ -133,7 +134,8 @@ export class ComicsService {
       ...updateComicInput,
     });
   }
-  //삭제
+
+  //------------------**[만화 삭제]**------------------
   async delete({ comicId }) {
     const resultComic = await this.comicsRepository.findOne({
       where: {
@@ -150,6 +152,7 @@ export class ComicsService {
     return result.affected ? true : false;
   }
 
+  //------------------**[만화 복구]**------------------
   async restore({ comicId }) {
     const result = await this.comicsRepository.restore({ comicId });
 

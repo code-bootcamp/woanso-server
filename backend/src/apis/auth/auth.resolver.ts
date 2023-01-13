@@ -16,7 +16,6 @@ import {
 } from 'src/commons/auth/gql-auth.guard';
 import { Cache } from 'cache-manager';
 import * as jwt from 'jsonwebtoken';
-import { GqlAdminGuard } from '../../commons/auth/gql-auth.guard';
 
 @Resolver()
 export class AuthResolver {
@@ -27,7 +26,7 @@ export class AuthResolver {
     private readonly cacheManager: Cache,
   ) {}
 
-  //-----------------**[LOGIN normal]**------------------
+  //-----------------**[회원 로그인]**------------------
   @Mutation(() => String)
   async login(
     @Args('email') email: string, //
@@ -57,7 +56,7 @@ export class AuthResolver {
     return this.authService.getAccessToken({ user });
   }
 
-  //-----------------**[Restore access token]**------------------
+  //-----------------**[회원 엑세스 토큰]**------------------
   @UseGuards(GqlAuthRefreshGuard)
   @Mutation(() => String)
   restoreAccessToken(
@@ -72,7 +71,7 @@ export class AuthResolver {
     return this.authService.getAccessToken({ user: context.req.user });
   }
 
-  //-----------------**[Logout]**------------------
+  //-----------------**[회원 로그아웃]**------------------
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => String)
   async logout(

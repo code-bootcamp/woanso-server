@@ -26,10 +26,9 @@ export class ReviewsService {
     private readonly comicRatingRepository: Repository<ComicRating>,
   ) {}
 
-  //전체조회
+  //------------------**[리뷰 조회]**------------------
   findAll({ page, order }): Promise<Review[]> {
     return this.reviewRepository.find({
-      //relations: ['user', 'comic', 'reviewRating'],
       relations: ['user', 'comic'],
       skip: (page - 1) * 4,
       take: 4,
@@ -43,7 +42,7 @@ export class ReviewsService {
       relations: ['user', 'comic'],
     });
   }
-
+  //------------------**[리뷰 생성]**------------------
   async create({ createReviewInput }: IReviewsServiceCreate): Promise<Review> {
     const { comicId, userId, ...review } = createReviewInput;
     const user = await this.userRepository.findOne({
@@ -173,7 +172,7 @@ export class ReviewsService {
   //     throw new Error('Review Like Create Server Error');
   //   }
   // }
-  //---------------------------------------------------------------//
+  //------------------**[리뷰 업데이트]**------------------
   update({
     review,
     updateReviewInput,
@@ -185,13 +184,13 @@ export class ReviewsService {
     });
   }
 
-  //삭제
+  //------------------**[리뷰 삭제]**------------------
   async delete({ reviewId }) {
     const result = await this.reviewRepository.delete({ reviewId });
-
     return result.affected ? true : false;
   }
 
+  //------------------**[리뷰 복구]**------------------
   async restore({ reviewId }) {
     const result = await this.reviewRepository.restore({ reviewId });
 

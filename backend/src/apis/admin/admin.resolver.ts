@@ -15,7 +15,7 @@ export class AdminResolver {
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
-  //------------------**[Sign up for Admin]**------------------
+  //------------------**[어드민 회원가입]**------------------
   @Mutation(() => Admin)
   async signUpForAdmin(
     @Args('email') email: string,
@@ -32,13 +32,13 @@ export class AdminResolver {
     });
   }
 
-  //------------------**[Find ADMIN]**------------------
+  //------------------**[어드민 유저 찾기]**------------------
   @Query(() => Admin)
   findEmailForAdmin(@Args('email') email: string): Promise<Admin> {
     return this.adminService.findOne({ email });
   }
 
-  //------------------**[Update ADMIN]**------------------
+  //------------------**[어드민 업데이트]**------------------
   @UseGuards(GqlAdminGuard)
   @Mutation(() => Admin)
   async updateAdmin(
@@ -53,7 +53,7 @@ export class AdminResolver {
     });
   }
 
-  //----------------------**[Delete ADMIN]**----------------------
+  //----------------------**[어드민 회원 탈퇴]**----------------------
   @UseGuards(GqlAdminGuard)
   @Mutation(() => Boolean)
   deleteAdmin(
@@ -62,7 +62,7 @@ export class AdminResolver {
   ): Promise<boolean> {
     return this.adminService.delete({ email, password });
   }
-  //------------------**[Auth ADMIN]**------------------
+  //------------------**[어드민 인가]**------------------
   @UseGuards(GqlAdminGuard)
   @Query(() => String)
   authAdmin(
@@ -71,14 +71,5 @@ export class AdminResolver {
     console.log(context.req.user);
     console.log(context);
     return '인가 성공';
-  }
-
-  //------------------**[Auth Token]**------------------
-  @Mutation(() => String)
-  async authTokenForAdmin(
-    @Args('phone') phone: string,
-    @Args('token') token: string,
-  ) {
-    return this.adminService.authToken({ phone, token });
   }
 }

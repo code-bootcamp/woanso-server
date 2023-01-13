@@ -23,7 +23,7 @@ export class UsersResolver {
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
-  //--------------------**[Sign Up]**--------------------
+  //--------------------**[회원가입]**--------------------
   @Mutation(() => User)
   async signUp(
     @Args('email') email: string,
@@ -42,7 +42,7 @@ export class UsersResolver {
     });
   }
 
-  //--------------------**[Find User by EMAIL]**--------------------
+  //--------------------**[이메일로 유저찾기]**--------------------
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => User)
   fetchUser(
@@ -51,7 +51,7 @@ export class UsersResolver {
     return this.usersService.findOne({ email });
   }
 
-  //--------------------**[Find Login User]**--------------------
+  //--------------------**[로그인한 유저찾기]**--------------------
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => User)
   fetchUserLoggedIn(@Context() context: IContext) {
@@ -59,13 +59,13 @@ export class UsersResolver {
     return this.usersService.findLogin({ context });
   }
 
-  //----------------------**[Find User email]**----------------------
+  //----------------------**[이메일찾기]**----------------------
   @Query(() => User)
   findEmail(@Args('phone') phone: string): Promise<User> {
     return this.usersService.findEmail({ phone });
   }
 
-  //----------------------**[Update User info]**----------------------
+  //----------------------**[유저 정보 업데이트]**----------------------
   @Mutation(() => User)
   async updateUser(
     @Args('email') email: string,
@@ -79,7 +79,7 @@ export class UsersResolver {
     });
   }
 
-  //--------------------**[Update Password]**--------------------
+  //--------------------**[비밀번호 재설정]**--------------------
   @Mutation(() => Boolean)
   async updatePassword(
     @Args('email') email: string,
@@ -89,7 +89,7 @@ export class UsersResolver {
     return await this.usersService.updatePassword({ email, hashedPassword });
   }
 
-  //--------------------**[Delete user]**--------------------
+  //--------------------**[회원탈퇴]**--------------------
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   deleteUser(
@@ -99,7 +99,7 @@ export class UsersResolver {
     return this.usersService.delete({ email, password });
   }
 
-  //--------------------**[Auth user]**--------------------
+  //--------------------**[인가]**--------------------
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => String)
   authUser(
@@ -110,22 +110,30 @@ export class UsersResolver {
     return '인가 성공';
   }
 
-  //--------------------**[Send token]**--------------------
+  //--------------------**[휴대폰 SMS 토큰 발송]**--------------------
   @Mutation(() => String)
   async sendToken(@Args('phone') phone: string) {
     return await this.usersService.sendToken({ phone });
   }
 
-  //--------------------**[Auth token]**--------------------
+  //--------------------**[휴대폰 SMS 토큰 인증]**--------------------
   async authToken(@Args('phone') phone: string, @Args('token') token: string) {
     return this.usersService.authToken({ phone, token });
   }
 
-  //----------------------**[FOR ADMIN]**----------------------
-  //----------------------**[FOR ADMIN]**----------------------
-  //----------------------**[FOR ADMIN]**----------------------
+  //************************[어드민]************************
 
-  //----------------------**[SEARCH User for ADMIN]**----------------------
+  //----------------------**[회원검색]**----------------------
+
+  @UseGuards(GqlAdminGuard)
+  @Query(() => [User])
+  fetchComicsWithTitle(
+    @Args('nickname') nickname: string,
+    @Args('page') page: number,
+  ) {
+    return this.usersService.findUserForAdmin({ nickname, page });
+  }
+
   // @UseGuards(GqlAdminGuard)
   // @Query(() => [User])
   // async searchUsersForAdmin(
@@ -158,18 +166,14 @@ export class UsersResolver {
   //   return users;
   // }
 
-  // @UseGuards(GqlAdminGuard)
-  // @Query(() => [User])
-  // async searchUsersForAdmin(
-
-  //----------------------**[Delete User For ADMIN]**----------------------
+  //----------------------**[회원 활동 정지]**----------------------
   @UseGuards(GqlAdminGuard)
   @Mutation(() => Boolean)
   blockUserForAdmin(@Args('email') email: string): Promise<boolean> {
     return this.usersService.deleteUser({ email });
   }
 
-  //----------------------**[Restore User For ADMIN]**----------------------
+  //----------------------**[회원 활동 정지 해제]**----------------------
   @UseGuards(GqlAdminGuard)
   @Mutation(() => Boolean)
   unblockUserForAdmin(
@@ -178,14 +182,14 @@ export class UsersResolver {
     return this.usersService.restoreUser({ email });
   }
 
-  //----------------------**[Fetch Blocked User For ADMIN]**----------------------
+  //----------------------**[활동 정지된 유저 조회]**----------------------
   @UseGuards(GqlAdminGuard)
   @Query(() => [User])
   fetchBlockedUsersForAdmin(email): Promise<User[]> {
     return this.usersService.findBlocked(email);
   }
 
-  //----------------------**[Find Users For ADMIN]**----------------------
+  //----------------------**[모든 유저 조회하기]**----------------------
   @UseGuards(GqlAdminGuard)
   @Query(() => [User])
   fetchUsersForAdmin(
@@ -201,7 +205,7 @@ export class UsersResolver {
     return this.usersService.findAll({ page, order });
   }
 
-  //----------------------**[Find Login Users For ADMIN]**----------------------
+  //----------------------**[로그인한 모든 유저 조회하기]**----------------------
   @UseGuards(GqlAdminGuard)
   @Query(() => User)
   fetchLoginUserForAdmin(@Context() context: IContext) {

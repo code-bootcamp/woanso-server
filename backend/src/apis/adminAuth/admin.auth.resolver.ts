@@ -27,7 +27,7 @@ export class AdminAuthResolver {
     private readonly cacheManager: Cache,
   ) {}
 
-  //----------------------**[ADMIN login]**-----------------------------
+  //----------------------**[어드민 로그인]**-----------------------------
   @Mutation(() => String)
   async adminLogin(
     @Args('email') email: string, //
@@ -55,7 +55,7 @@ export class AdminAuthResolver {
     return this.adminAuthService.getAccessToken({ admin });
   }
 
-  //----------------------**[Access token for ADMIN]**-----------------------------
+  //----------------------**[어드민용 엑세스 토큰]**-----------------------------
   @UseGuards(GqlAuthRefreshGuard)
   @Mutation(() => String)
   restoreAccessTokenForAdmin(
@@ -66,7 +66,7 @@ export class AdminAuthResolver {
     });
   }
 
-  //----------------------**[ADMIN logout]**-----------------------------
+  //----------------------**[어드민 로그아웃]**-----------------------------
   @UseGuards(GqlAdminGuard)
   @Mutation(() => String)
   async logoutForAdmin(

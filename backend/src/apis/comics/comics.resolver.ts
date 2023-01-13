@@ -17,7 +17,7 @@ export class ComicsResolver {
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
-  //조회
+  //------------------**[모든 만화 조회]**------------------
   @Query(() => [Comic])
   fetchComics(
     @Args({ name: 'page', defaultValue: 1, nullable: true })
@@ -26,7 +26,7 @@ export class ComicsResolver {
     return this.comicsService.findAll({ page });
   }
 
-  // 검색기능
+  //------------------**[제목으로 만화검색]**------------------
   @Query(() => [Comic])
   fetchComicsWithTitle(
     @Args('title') title: string,
@@ -35,7 +35,6 @@ export class ComicsResolver {
     return this.comicsService.findWithTitle({ title, page });
   }
 
-  //----------------------------------*[Search comic]*------------------------------------------
   // @Query(() => [Comic])
   // async searchComics(
   //   @Args({ name: 'search', nullable: true, description: '검색어' })
@@ -64,7 +63,7 @@ export class ComicsResolver {
   //   // await this.cache.set(`searchUsers:${search}`, comics, { ttl: 30 });
   //   return comics;
   // }
-  //----------------------------------*[Fetch Comic]*------------------------------------------
+  //------------------**[만화조회]**------------------
   @Query(() => Comic)
   fetchComic(
     @Args('comicId') comicId: string, //
@@ -72,17 +71,13 @@ export class ComicsResolver {
     return this.comicsService.findOne({ comicId });
   }
 
-  //대여가능 , 대여불가 수량 조회
+  //------------------**[대여 가능 / 불가능 만화 수량 확인]**------------------
   @Query(() => [Int])
   availableComicsForAdmin() {
     return this.comicsService.findAll1();
   }
 
-  //------------------------------------------------//
-
-  //생성;
-
-  //수정
+  //------------------**[만화 업데이트]**------------------
   @UseGuards(GqlAdminGuard)
   @Mutation(() => Comic)
   async updateComic(
@@ -94,18 +89,20 @@ export class ComicsResolver {
     return this.comicsService.update({ comic, updateComicInput });
   }
 
-  //삭제
+  //------------------**[만화 삭제]**------------------
   @UseGuards(GqlAdminGuard)
   @Mutation(() => Boolean)
   deleteComic(@Args('comicId', { type: () => ID }) comicId: string) {
     return this.comicsService.delete({ comicId });
   }
+  //------------------**[만화 복구]**------------------
+  // @UseGuards(GqlAdminGuard)
+  // @Mutation(() => Boolean)
+  // restoreComic(@Args('comicId', { type: () => ID }) comicId: string) {
+  //   return this.comicsService.restore({ comicId });
+  // }
 
-  @UseGuards(GqlAdminGuard)
-  @Mutation(() => Boolean)
-  restoreComic(@Args('comicId', { type: () => ID }) comicId: string) {
-    return this.comicsService.restore({ comicId });
-  }
+  //------------------**[만화 등록]**------------------
   @UseGuards(GqlAdminGuard)
   @Mutation(() => Comic)
   createComic(

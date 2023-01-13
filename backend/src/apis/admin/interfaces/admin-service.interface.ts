@@ -5,25 +5,10 @@ export interface IAdminServiceFindOne {
   email: string;
 }
 
-export interface IAdminServiceFindOneForUpdate {
-  email: string;
-  phone: string;
-}
-
-export interface IAdminServiceFindEmail {
-  phone: string;
-}
-
 export interface IAdminServiceCreate {
   email: string;
   hashedPassword: string;
   nickname: string;
-  phone: string;
-}
-
-export interface IAdminServiceCreate {
-  email: string;
-  hashedPassword: string;
   phone: string;
 }
 

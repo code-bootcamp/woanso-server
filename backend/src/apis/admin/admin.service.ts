@@ -1,12 +1,10 @@
 import {
   Injectable,
   ConflictException,
-  UnprocessableEntityException,
   CACHE_MANAGER,
   Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import coolsms from 'coolsms-node-sdk';
 import { Cache } from 'cache-manager';
 import { Admin } from './entities/admin.entity';
 import { Repository } from 'typeorm';
@@ -14,7 +12,6 @@ import {
   IAdminServiceCreate,
   IAdminServiceDelete,
   IAdminServiceFindOne,
-  IAdminServiceFindOneForUpdate,
   IAdminServiceUpdate,
 } from './interfaces/admin-service.interface';
 
@@ -26,7 +23,7 @@ export class AdminService {
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
-  //------------------------**[Create]**-------------------------------
+  //------------------------**[회원가입]**-------------------------------
   async create({
     email,
     hashedPassword: password,
@@ -44,20 +41,12 @@ export class AdminService {
     });
   }
 
-  //------------------------**[Fetch ADMIN by PHONE]**-------------------------------
+  //------------------------**[어드민 유저 찾기]**-------------------------------
   findOne({ email }: IAdminServiceFindOne): Promise<Admin> {
     return this.adminRepository.findOne({ where: { email } });
   }
 
-  //--------------------**[Find ADMIN for update password]**--------------------
-  findOneForUpdate({
-    email,
-    phone,
-  }: IAdminServiceFindOneForUpdate): Promise<Admin> {
-    return this.adminRepository.findOne({ where: { email, phone } });
-  }
-
-  //------------------------**[Update ADMIN]**-------------------------------
+  //------------------------**[어드민 업데이트]**-------------------------------
   update({ admin, updateAdminInput }: IAdminServiceUpdate): Promise<Admin> {
     const result = this.adminRepository.save({
       ...admin, //
@@ -66,63 +55,9 @@ export class AdminService {
     return result;
   }
 
-  //------------------------**[Update password]**-------------------------------
-  async updatePassword({ email, hashedPassword }) {
-    const user = this.adminRepository.findOne({ where: email });
-    await this.adminRepository.save({
-      password: hashedPassword,
-      ...user,
-    });
-  }
-
-  //------------------------**[Delete ADMIN]**-------------------------------
+  //------------------------**[어드민 회원 탈퇴]**-------------------------------
   async delete({ email }: IAdminServiceDelete): Promise<boolean> {
-    const admin = await this.adminRepository.findOne({
-      where: { email },
-    });
-
     const result = await this.adminRepository.softDelete({ email });
     return result.affected ? true : false;
-  }
-
-  //------------------------**[Send token by PHONE]**-------------------------------
-  async sendToken({ phone }) {
-    const SMS_KEY = process.env.SMS_KEY;
-    const SMS_SECRET = process.env.SMS_SECRET;
-    const SMS_SENDER = process.env.SMS_SENDER;
-
-    // prettier-ignore
-    if (phone.length < 10 || phone.length > 11) {
-      const digit = await this.adminRepository.findOne({where: { phone: phone },});
-
-    // prettier-ignore
-      if (digit) {throw new ConflictException('이미 등록된 번호입니다.')}
-      
-    // prettier-ignore
-      const token = String(Math.floor(Math.random() * 1000000)).padStart(6, '0')
-      const SMSservice = new coolsms(SMS_KEY, SMS_SECRET);
-      await SMSservice.sendOne({
-        to: phone,
-        from: SMS_SENDER,
-        text: `[관리자 전용] 관리자 가입 인증번호는 [${token}] 입니다.`,
-        type: 'SMS',
-        autoTypeDetect: false,
-      });
-
-      const myToken = await this.cache.get(phone);
-      if (myToken) {await this.cache.del(phone)}
-      await this.cache.set(phone, token);
-      return token;
-    }
-  }
-
-  //------------------------**[Auth token]**-------------------------------
-  async authToken({ phone, token }) {
-    const myToken = await this.cache.get(phone);
-
-    if (myToken === token) return true;
-    else {
-      throw new UnprocessableEntityException('인증번호가 잘못 되었습니다.');
-    }
   }
 }
