@@ -23,7 +23,7 @@ export class Wishlist {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  @ManyToOne(() => User, { cascade: true })
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @Field(() => User, { nullable: true })
   user: User;
 
