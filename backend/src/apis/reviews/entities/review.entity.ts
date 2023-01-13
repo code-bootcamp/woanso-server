@@ -41,7 +41,7 @@ export class Review {
   @Field(() => Float)
   rating: number;
 
-  @ManyToOne(() => User, { cascade: true })
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @Field(() => User)
   user: User;
 

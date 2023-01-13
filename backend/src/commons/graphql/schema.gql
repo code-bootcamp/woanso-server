@@ -194,7 +194,7 @@ type Mutation {
   uploadOneFile(file: Upload!): String!
   signUp(email: String!, password: String!, nickname: String!, phone: String!, interest: String!): User!
   updateUser(email: String!, updateUserInput: UpdateUserInput!): User!
-  updatePassword(email: String!, phone: String!, updateUserPwdInput: String!): String!
+  updatePassword(email: String!, updateUserPwdInput: String!): Boolean!
   deleteUser(email: String!, password: String!): Boolean!
   sendToken(phone: String!): String!
   blockUserForAdmin(email: String!): Boolean!

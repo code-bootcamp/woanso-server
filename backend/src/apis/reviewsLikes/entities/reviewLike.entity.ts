@@ -14,7 +14,7 @@ export class ReviewLike {
   @Field(() => Review)
   review: Review;
 
-  @ManyToOne(() => User, { cascade: true })
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @Field(() => User)
   user: User;
 }
