@@ -206,11 +206,7 @@ type Mutation {
   deleteComic(comicId: ID!): Boolean!
   createComic(createComicInput: CreateComicInput!): Comic!
   createReview(createReviewInput: CreateReviewInput!): Review!
-<<<<<<< HEAD
   deleteReview(reviewId: ID!, comicId: ID!): Boolean!
-=======
-  deleteReview(reviewId: ID!): Boolean!
->>>>>>> dev
   createWishlist(createWishInput: CreateWishInput!): Boolean!
   createPointTransaction(impUid: String!, comicId: String!, amount: Int!, address: String!): PointTransaction!
   cancelPointTransaction(impUid: String!, comicId: String!): PointTransaction!
