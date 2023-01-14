@@ -11,13 +11,27 @@ export class CommentsResolver {
   constructor(private readonly commentsService: CommentsService) {}
 
   //-------------------------*조회*----------------------------//
+  // @Query(() => [Comment])
+  // fetchComments(): Promise<Comment[]> {
+  //   return this.commentsService.findAll();
+  // }
+
   @Query(() => [Comment])
-  fetchComments(): Promise<Comment[]> {
-    return this.commentsService.findAll();
+  async fetchComments(
+    @Args({ name: 'page', defaultValue: 1, nullable: true })
+    page: number, //
+    @Args({
+      name: 'order',
+      defaultValue: 'DESC',
+      nullable: true,
+    })
+    order: string,
+  ) {
+    return this.commentsService.findAll({ page, order });
   }
 
   @Query(() => Comment)
-  fetchComment(@Args('ID') id: string): Promise<Comment> {
+  fetchComment(@Args('id') id: string): Promise<Comment> {
     return this.commentsService.findOne({ id });
   }
 
