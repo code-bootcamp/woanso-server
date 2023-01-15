@@ -30,6 +30,4 @@ export class Wishlist {
   @ManyToOne(() => Comic, { onDelete: 'CASCADE' })
   @Field(() => Comic, { nullable: true })
   comic: Comic;
-
-  //fgjfiljdfgjdljytrlkj
 }
