@@ -12,10 +12,20 @@ export class CommentsResolver {
 
   //-------------------------*조회*----------------------------//
   @Query(() => [Comment])
-  fetchComments(): Promise<Comment[]> {
-    return this.commentsService.findAll();
+  async fetchComments(
+    @Args({ name: 'page', defaultValue: 1, nullable: true })
+    page: number, //
+    @Args({
+      name: 'order',
+      defaultValue: 'DESC',
+      nullable: true,
+    })
+    order: string,
+  ) {
+    return this.commentsService.findAll({ page, order });
   }
 
+  //-------------------------*아이디로 하나 조회*----------------------------//
   @Query(() => Comment)
   fetchComment(@Args('ID') id: string): Promise<Comment> {
     return this.commentsService.findOne({ id });

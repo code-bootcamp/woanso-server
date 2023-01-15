@@ -127,7 +127,7 @@ export class UsersResolver {
 
   @UseGuards(GqlAdminGuard)
   @Query(() => [User])
-  fetchComicsWithTitle(
+  searchUserForAdmin(
     @Args('nickname') nickname: string,
     @Args('page') page: number,
   ) {
@@ -183,11 +183,12 @@ export class UsersResolver {
   }
 
   //----------------------**[활동 정지된 유저 조회]**----------------------
-  @UseGuards(GqlAdminGuard)
-  @Query(() => [User])
-  fetchBlockedUsersForAdmin(email): Promise<User[]> {
-    return this.usersService.findBlocked(email);
-  }
+  // @UseGuards(GqlAdminGuard)
+  // @Query(() => [User])
+  // fetchBlockedUsersForAdmin(context): Promise<User[]> {
+  //   console.log(context);
+  //   return this.usersService.findBlocked(context);
+  // }
 
   //----------------------**[모든 유저 조회하기]**----------------------
   @UseGuards(GqlAdminGuard)
@@ -206,9 +207,12 @@ export class UsersResolver {
   }
 
   //----------------------**[로그인한 모든 유저 조회하기]**----------------------
-  @UseGuards(GqlAdminGuard)
-  @Query(() => User)
-  fetchLoginUserForAdmin(@Context() context: IContext) {
-    return this.usersService.findLogins({ context });
-  }
+  // @UseGuards(GqlAdminGuard)
+  // @Query(() => [User])
+  // fetchLoginUserForAdmin(
+  //   @Context() context: IContext,
+  //   @Args('page') page: number,
+  // ) {
+  //   return this.usersService.findLogins({ context, page });
+  // }
 }

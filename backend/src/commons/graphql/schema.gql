@@ -170,11 +170,10 @@ type Query {
   fetchUserLoggedIn: User!
   findEmail(phone: String!): User!
   authUser: String!
-  fetchComicsWithTitle(title: String!, page: Float!): [Comic!]!
-  fetchBlockedUsersForAdmin: [User!]!
+  searchUserForAdmin(nickname: String!, page: Float!): [User!]!
   fetchUsersForAdmin(page: Float = 1, order: String = "DESC"): [User!]!
-  fetchLoginUserForAdmin: User!
   fetchComics(page: Float = 1): [Comic!]!
+  fetchComicsWithTitle(title: String!, page: Float!): [Comic!]!
   fetchComic(comicId: String!): Comic!
   availableComicsForAdmin: [Int!]!
   fetchReviews(page: Float = 1, order: String = "DESC"): [Review!]!
@@ -183,7 +182,7 @@ type Query {
   fetchBoards(page: Float = 1, order: String = "DESC"): [Board!]!
   fetchBoardsByUser: [Board!]!
   fetchBoard(id: String!): Board!
-  fetchComments: [Comment!]!
+  fetchComments(page: Float = 1, order: String = "DESC"): [Comment!]!
   fetchComment(ID: String!): Comment!
   findEmailForAdmin(email: String!): Admin!
   authAdmin: String!
@@ -206,11 +205,7 @@ type Mutation {
   deleteComic(comicId: ID!): Boolean!
   createComic(createComicInput: CreateComicInput!): Comic!
   createReview(createReviewInput: CreateReviewInput!): Review!
-<<<<<<< HEAD
   deleteReview(reviewId: ID!, comicId: ID!): Boolean!
-=======
-  deleteReview(reviewId: ID!): Boolean!
->>>>>>> dev
   createWishlist(createWishInput: CreateWishInput!): Boolean!
   createPointTransaction(impUid: String!, comicId: String!, amount: Int!, address: String!): PointTransaction!
   cancelPointTransaction(impUid: String!, comicId: String!): PointTransaction!

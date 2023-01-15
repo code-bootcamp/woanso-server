@@ -24,9 +24,12 @@ export class CommentsService {
   ) {}
 
   //-------------------------**[코멘트 조회]**-------------------------
-  findAll(): Promise<Comment[]> {
+  findAll({ page, order }): Promise<Comment[]> {
     return this.commentsRepository.find({
       relations: ['user', 'board'],
+      skip: (page - 1) * 10,
+      take: 10,
+      order: { createdAt: order },
     });
   }
 
