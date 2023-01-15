@@ -182,14 +182,6 @@ export class UsersResolver {
     return this.usersService.restoreUser({ email });
   }
 
-  //----------------------**[활동 정지된 유저 조회]**----------------------
-  // @UseGuards(GqlAdminGuard)
-  // @Query(() => [User])
-  // fetchBlockedUsersForAdmin(context): Promise<User[]> {
-  //   console.log(context);
-  //   return this.usersService.findBlocked(context);
-  // }
-
   //----------------------**[모든 유저 조회하기]**----------------------
   @UseGuards(GqlAdminGuard)
   @Query(() => [User])
@@ -206,13 +198,10 @@ export class UsersResolver {
     return this.usersService.findAll({ page, order });
   }
 
-  //----------------------**[로그인한 모든 유저 조회하기]**----------------------
-  // @UseGuards(GqlAdminGuard)
-  // @Query(() => [User])
-  // fetchLoginUserForAdmin(
-  //   @Context() context: IContext,
-  //   @Args('page') page: number,
-  // ) {
-  //   return this.usersService.findLogins({ context, page });
-  // }
+  //----------------------**[활동 정지된 유저 조회]**----------------------
+  @UseGuards(GqlAdminGuard)
+  @Query(() => [User])
+  fetchBlockedUsersForAdmin(): Promise<User[]> {
+    return this.usersService.findBlocked();
+  }
 }

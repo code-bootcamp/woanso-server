@@ -24,24 +24,22 @@ export class CommentsService {
   ) {}
 
   //-------------------------**[코멘트 조회]**-------------------------
-  // findAll(): Promise<Comment[]> {
-  //   return this.commentsRepository.find({
-  //     relations: ['user', 'board'],
-  //   });
-  // }
   findAll({ page, order }): Promise<Comment[]> {
     return this.commentsRepository.find({
       relations: ['user', 'board'],
-      skip: (page - 1) * 4,
-      take: 4,
+      skip: (page - 1) * 10,
+      take: 10,
       order: { createdAt: order },
     });
   }
 
-  findOne({ id }: ICommentsServiceFindOne): Promise<Comment> {
-    return this.commentsRepository.findOne({
-      where: { id: id },
+  findByComic({ page, order, id }): Promise<Comment[]> {
+    return this.commentsRepository.find({
       relations: ['user', 'board'],
+      skip: (page - 1) * 10,
+      take: 10,
+      order: { createdAt: order },
+      where: { board: { id } },
     });
   }
 
