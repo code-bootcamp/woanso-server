@@ -30,6 +30,7 @@ export class CommentsResolver {
     return this.commentsService.findAll({ page, order });
   }
 
+  //-------------------------*아이디로 하나 조회*----------------------------//
   @Query(() => Comment)
   fetchComment(@Args('id') id: string): Promise<Comment> {
     return this.commentsService.findOne({ id });

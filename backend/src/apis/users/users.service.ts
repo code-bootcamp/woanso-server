@@ -152,7 +152,7 @@ export class UsersService {
     });
   }
 
-  //----------------------**[Fetch all users for admin]**--------------------
+  //----------------------**[어드민 유저 검색]**--------------------
   async findUserForAdmin({ nickname, page }) {
     const result = await this.usersRepository.find({
       where: { nickname: Like(`%${nickname}%`) },
@@ -179,14 +179,27 @@ export class UsersService {
   }
 
   //----------------------**[Fetch Blocked for admin]**---------------------------
-  async findBlocked(email): Promise<User[]> {
-    return this.usersRepository.find(email);
+  async findBlocked({ context }): Promise<User[]> {
+    console.log(context, context.req);
+    return this.usersRepository.find({
+      where: { deletedAt: context.req.user.deletedAt },
+    });
   }
 
   //------------------------**[Find Login Users]**-------------------------------
-  async findLogins({ context }) {
+  async findLogins({ page, context }) {
     return await this.usersRepository.find({
+      skip: (page - 1) * 6,
+      take: 12,
       where: { email: context.req.user.email },
     });
   }
+
+  // async findAll({ page, order }): Promise<User[]> {
+  //   return this.usersRepository.find({
+  //     skip: (page - 1) * 6,
+  //     take: 12,
+  //     order: { createdAt: order },
+  //   });
+  // }
 }
