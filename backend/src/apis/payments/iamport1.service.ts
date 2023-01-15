@@ -6,9 +6,10 @@
 // import axios from 'axios';
 
 // @Injectable()
-// export class IamportService2 {
+// export class IamportService1 {
 //   async getToken() {
 //     try {
+//       // 액세스 토큰(access token) 발급 받기
 //       const token = await axios({
 //         url: 'https://api.iamport.kr/users/getToken',
 //         method: 'post',
@@ -18,7 +19,7 @@
 //           imp_secret: process.env.IAMPORT_CLIENT_SECRET,
 //         },
 //       });
-//       const { access_token } = token.data.response;
+//       const { access_token } = token.data.response; //인증토큰
 //       return access_token;
 //     } catch (error) {
 //       throw new HttpException(

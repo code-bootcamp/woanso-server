@@ -183,7 +183,7 @@ type Query {
   fetchBoardsByUser: [Board!]!
   fetchBoard(id: String!): Board!
   fetchComments(page: Float = 1, order: String = "DESC"): [Comment!]!
-  fetchComment(ID: String!): Comment!
+  fetchComment(id: String!): Comment!
   findEmailForAdmin(email: String!): Admin!
   authAdmin: String!
 }
