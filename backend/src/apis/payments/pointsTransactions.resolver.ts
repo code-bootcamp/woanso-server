@@ -25,25 +25,45 @@ export class PointsTransactionsResolver {
     @Context()
     context: IContext,
   ): Promise<any> {
+    const user = context.req.user;
     // 1. 아임포트에 요청해서 결제 완료 기록이 존재하는지 확인.
     console.log(impUid, comicId, amount, address);
-    const token = await this.iamportService.getToken();
-    console.log(token);
-    await this.iamportService.checkPaid({ impUid, amount, token });
+    //결제 정보 토큰 받아오기
+    const getToken = await this.iamportService.getToken();
+    console.log(getToken);
+    //토큰 정보에 들어있는 결제 정보 가져오기
+    const checkPaid = await this.iamportService.checkPaid({
+      impUid,
+      getToken,
+      amount,
+    });
     console.log(impUid, '111');
     console.log(amount, '222');
-    console.log(token, '333');
+    //console.log(token, '333');
 
-    // 2. pointTransaction 테이블에는 impUid가 1번만 존재. (중복 결제를 체크)
-    await this.pointsTransactionsService.checkDuplicate({ impUid });
-    const user = context.req.user;
+    //생성하려는 결제정보랑 토큰에 들어있는 결제 정보랑 같은지 검증하기
+    await this.pointsTransactionsService.validate({
+      impUid,
+      amount,
+      checkPaid,
+    });
     return this.pointsTransactionsService.create({
       impUid,
-      amount: amount + 8000,
+      amount: amount,
       user,
       comicId,
-      address,
     });
+
+    // 2. pointTransaction 테이블에는 impUid가 1번만 존재. (중복 결제를 체크)
+    // await this.pointsTransactionsService.checkDuplicate({ impUid });
+    // const user = context.req.user;
+    // return this.pointsTransactionsService.create({
+    //   impUid,
+    //   amount: amount + 8000,
+    //   user,
+    //   // comicId,
+    //   // address,
+    //  });
   }
 
   //--------------------**[결제 취소]**--------------------
