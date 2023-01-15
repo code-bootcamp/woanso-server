@@ -179,27 +179,14 @@ export class UsersService {
   }
 
   //----------------------**[Fetch Blocked for admin]**---------------------------
-  async findBlocked({ context }): Promise<User[]> {
-    console.log(context, context.req);
-    return this.usersRepository.find({
-      where: { deletedAt: context.req.user.deletedAt },
-    });
-  }
+  async findBlocked(): Promise<User[]> {
+    const a = await this.usersRepository.find({ withDeleted: true });
 
-  //------------------------**[Find Login Users]**-------------------------------
-  async findLogins({ page, context }) {
-    return await this.usersRepository.find({
-      skip: (page - 1) * 6,
-      take: 12,
-      where: { email: context.req.user.email },
-    });
-  }
+    console.log(a);
+    console.log('111111111111111111');
 
-  // async findAll({ page, order }): Promise<User[]> {
-  //   return this.usersRepository.find({
-  //     skip: (page - 1) * 6,
-  //     take: 12,
-  //     order: { createdAt: order },
-  //   });
-  // }
+    const result = a.filter((el) => el.deletedAt !== null);
+
+    return result;
+  }
 }
