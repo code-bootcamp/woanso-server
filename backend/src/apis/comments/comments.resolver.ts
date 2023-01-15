@@ -17,7 +17,7 @@ export class CommentsResolver {
   // }
 
   @Query(() => [Comment])
-  async fetchComments(
+  async fetchAllComments(
     @Args({ name: 'page', defaultValue: 1, nullable: true })
     page: number, //
     @Args({
@@ -31,9 +31,20 @@ export class CommentsResolver {
   }
 
   //-------------------------*아이디로 하나 조회*----------------------------//
-  @Query(() => Comment)
-  fetchComment(@Args('id') id: string): Promise<Comment> {
-    return this.commentsService.findOne({ id });
+  @Query(() => [Comment])
+  fetchComments(
+    @Args({ name: 'page', defaultValue: 1, nullable: true })
+    page: number, //
+    @Args({
+      name: 'order',
+      defaultValue: 'DESC',
+      nullable: true,
+    })
+    order: string,
+    @Args('boardId') id: string, // args 를 comicId
+    // @Args('reviewRatingId') reviewRatingId: string, //
+  ): Promise<Comment[]> {
+    return this.commentsService.findByComic({ page, order, id });
   }
 
   //-------------------------*생성*----------------------------//
