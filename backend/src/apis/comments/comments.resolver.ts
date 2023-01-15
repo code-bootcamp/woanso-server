@@ -11,6 +11,11 @@ export class CommentsResolver {
   constructor(private readonly commentsService: CommentsService) {}
 
   //-------------------------*조회*----------------------------//
+  // @Query(() => [Comment])
+  // fetchComments(): Promise<Comment[]> {
+  //   return this.commentsService.findAll();
+  // }
+
   @Query(() => [Comment])
   async fetchComments(
     @Args({ name: 'page', defaultValue: 1, nullable: true })
@@ -27,7 +32,7 @@ export class CommentsResolver {
 
   //-------------------------*아이디로 하나 조회*----------------------------//
   @Query(() => Comment)
-  fetchComment(@Args('ID') id: string): Promise<Comment> {
+  fetchComment(@Args('id') id: string): Promise<Comment> {
     return this.commentsService.findOne({ id });
   }
 
