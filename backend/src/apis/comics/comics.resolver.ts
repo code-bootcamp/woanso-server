@@ -19,11 +19,8 @@ export class ComicsResolver {
 
   //------------------**[모든 만화 조회]**------------------
   @Query(() => [Comic])
-  fetchComics(
-    @Args({ name: 'page', defaultValue: 1, nullable: true })
-    page: number, //
-  ) {
-    return this.comicsService.findAll({ page });
+  fetchComics() {
+    return this.comicsService.findAll({});
   }
 
   //------------------**[제목으로 만화검색]**------------------

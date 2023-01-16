@@ -36,12 +36,10 @@ export class ComicsService {
   }
 
   //------------------**[모든 만화 조회]**------------------
-  findAll({ page }): Promise<Comic[]> {
+  findAll({}): Promise<Comic[]> {
     //페이지네이션? 24개씩
     return this.comicsRepository.find({
       relations: ['comicRating', 'comicImg'],
-      take: 24,
-      skip: (page - 1) * 24,
     });
   }
   //------------------**[만화 조회]**------------------
