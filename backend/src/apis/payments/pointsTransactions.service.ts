@@ -35,7 +35,7 @@ export class PointsTransactionsService {
     amount,
     user: _user,
     comicId,
-    // address,
+    address,
   }): Promise<any> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect(); // DB접속, promise 필수
@@ -47,37 +47,43 @@ export class PointsTransactionsService {
       //   where: { email: _user.email },
       //   lock: { mode: 'pessimistic_write' },
       // });
+      const stock1 = await this.comicRepository.findOne({ where: { comicId } });
+      //console.log(stock1);
+      await this.comicRepository.save({
+        comicId: stock1.comicId,
+        stock: stock1.stock - 1,
+      });
+      //console.log(stock1);
+      const stock2 = await this.comicRepository.findOne({ where: { comicId } });
+      if (stock2.stock === 0) {
+        await this.comicRepository.update({ comicId }, { isAvailable: false });
+      } // 수량이 0이라면 대여불가능
+
+      const deliveryFee = 8000;
+      const totalPrice = amount + deliveryFee;
+      const comic = await this.comicRepository.findOne({
+        where: { comicId },
+      });
 
       const pointTransaction = this.pointsTransactionsRepository.create({
         impUid,
         amount: amount,
         user: _user, //user??
         status: POINT_TRANSACTION_STATUS_ENUM.PAYMENT,
-        //address,
+        address,
+        totalPrice,
+        comic,
+        deliveryFee: 8000,
       });
 
       await queryRunner.manager.save(pointTransaction);
+      // console.log('왜들 그리 다운되ㅇ어있어');
       // await this.pointsTransactionsRepository.save(pointTransaction);
-      const deliveryFee = 8000;
-      const amount1 = amount + deliveryFee;
 
-      const updateAmount = this.pointsTransactionsRepository.create({
-        amount,
-      });
-
-      await queryRunner.manager.save(updateAmount); // amount + delivery fee
+      // await queryRunner.manager.save(updateAmount); // amount + delivery fee
       //await queryRunner.commitTransaction();
 
       // 결제 될 때마다 수량 1개씩 낮춰주기
-      const stock = await this.comicRepository.findOne({ where: comicId });
-      await this.comicRepository.update(
-        { comicId },
-        { stock: stock.stock - 1 },
-      );
-      const stock2 = await this.comicRepository.findOne({ where: comicId });
-      if (stock2.stock === 0) {
-        await this.comicRepository.update({ comicId }, { isAvailable: false });
-      } // 수량이 0이라면 대여불가능
 
       await queryRunner.commitTransaction();
 
@@ -112,7 +118,7 @@ export class PointsTransactionsService {
       });
 
       await queryRunner.manager.save(pointTransaction);
-      await this.pointsTransactionsRepository.save(pointTransaction);
+      // await this.pointsTransactionsRepository.save(pointTransaction);
 
       const stock = await this.comicRepository.findOne({ where: comicId });
       await this.comicRepository.update(
