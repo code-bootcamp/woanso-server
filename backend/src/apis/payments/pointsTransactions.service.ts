@@ -29,7 +29,7 @@ export class PointsTransactionsService {
 
   //--------------------**[결제 생성]**--------------------
 
-  //1. 생성해서 한 줄 만들기
+  // 1. pointTransaction 테이블에 거래기록 1줄 생성
   async create({
     impUid,
     amount,
@@ -42,10 +42,11 @@ export class PointsTransactionsService {
     await queryRunner.startTransaction('SERIALIZABLE'); // Transaction 시작
 
     try {
-      const user = await queryRunner.manager.findOne(User, {
-        where: { email: _user.email },
-        lock: { mode: 'pessimistic_write' },
-      });
+      // 2. 유저의 돈 찾아오기
+      // const user = await queryRunner.manager.findOne(User, {
+      //   where: { email: _user.email },
+      //   lock: { mode: 'pessimistic_write' },
+      // });
 
       const pointTransaction = this.pointsTransactionsRepository.create({
         impUid,

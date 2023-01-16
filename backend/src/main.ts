@@ -13,9 +13,13 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
-      'http://localhost:3000',
+      // 'http://localhost:3000/graphql',
       'https://woanso.shop',
       'https://examplezi.shop',
+      'https://127.0.0.1:5500',
+      'http://127.0.0.1:5500',
+      'http://localhost:3000',
+      'https://localhost:3000',
     ],
     credentials: true,
   });

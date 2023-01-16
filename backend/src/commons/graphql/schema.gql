@@ -172,6 +172,7 @@ type Query {
   authUser: String!
   searchUserForAdmin(nickname: String!, page: Float!): [User!]!
   fetchUsersForAdmin(page: Float = 1, order: String = "DESC"): [User!]!
+  fetchBlockedUsersForAdmin: [User!]!
   fetchComics(page: Float = 1): [Comic!]!
   fetchComicsWithTitle(title: String!, page: Float!): [Comic!]!
   fetchComic(comicId: String!): Comic!
@@ -182,8 +183,8 @@ type Query {
   fetchBoards(page: Float = 1, order: String = "DESC"): [Board!]!
   fetchBoardsByUser: [Board!]!
   fetchBoard(id: String!): Board!
-  fetchComments(page: Float = 1, order: String = "DESC"): [Comment!]!
-  fetchComment(id: String!): Comment!
+  fetchAllComments(page: Float = 1, order: String = "DESC"): [Comment!]!
+  fetchComments(page: Float = 1, order: String = "DESC", boardId: String!): [Comment!]!
   findEmailForAdmin(email: String!): Admin!
   authAdmin: String!
 }
