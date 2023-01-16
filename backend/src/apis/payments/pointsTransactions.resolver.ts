@@ -52,6 +52,7 @@ export class PointsTransactionsResolver {
       amount: amount,
       user,
       comicId,
+      address,
     });
 
     // 2. pointTransaction 테이블에는 impUid가 1번만 존재. (중복 결제를 체크)
