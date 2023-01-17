@@ -101,10 +101,6 @@ export class UsersService {
 
   //------------------------**[Delete user]**-------------------------------
   async delete({ email }: IUsersServiceDelete): Promise<boolean> {
-    // const user = await this.usersRepository.findOne({
-    //   where: { email },
-    // });
-
     const result = await this.usersRepository.delete({ email });
     return result.affected ? true : false;
   }
@@ -181,9 +177,6 @@ export class UsersService {
   //----------------------**[Fetch Blocked for admin]**---------------------------
   async findBlocked(): Promise<User[]> {
     const a = await this.usersRepository.find({ withDeleted: true });
-
-    console.log(a);
-    console.log('111111111111111111');
 
     const result = a.filter((el) => el.deletedAt !== null);
 

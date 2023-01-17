@@ -73,7 +73,6 @@ export class User {
   @Column({ nullable: true, default: '' })
   thumbnail: string;
 
-  ///---------------------------------------
   @OneToMany(() => Comment, (comment) => comment.user, { onDelete: 'CASCADE' })
   @Field(() => [Comment])
   comment: Comment[];
@@ -98,7 +97,7 @@ export class User {
     onDelete: 'CASCADE',
   })
   @Field(() => [BoardLike])
-  boardlLike: BoardLike[];
+  boardLike: BoardLike[];
 
   @OneToMany(() => Board, (board) => board.user, { onDelete: 'CASCADE' })
   @Field(() => [Board])
@@ -116,14 +115,4 @@ export class User {
   )
   @Field(() => [PointTransaction])
   pointTransaction: PointTransaction[];
-
-  // @JoinColumn()
-  // @Field(() => UserImg, { nullable: true })
-  // @OneToOne(() => UserImg)
-  // userImg: UserImg;
-
-  // @OneToMany(() => UserAuthority, (userAuthority) => userAuthority.user, {
-  //   eager: true,
-  // })
-  // authorities?: any[];
 }

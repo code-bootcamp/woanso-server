@@ -16,7 +16,7 @@ export class Wishlist {
   @Field(() => String)
   wishlistId: string;
 
-  @Column({ default: false }) //삭제 : false
+  @Column({ default: false })
   @Field(() => Boolean)
   isDib: boolean;
 

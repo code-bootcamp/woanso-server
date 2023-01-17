@@ -2,10 +2,6 @@ import { Field, InputType, Int } from '@nestjs/graphql';
 
 @InputType()
 export class CreateComicInput {
-  // reviewId?: string;
-
-  // userId?: string;
-
   @Field(() => String)
   title: string;
 
@@ -24,9 +20,6 @@ export class CreateComicInput {
   @Field(() => String)
   publisher: string;
 
-  // @Field(() => Float) // 별점을 줄 수 있도록 0.5 단위로 제한
-  // ratings: number;
-
   @Field(() => Int)
   totalBooks: number;
 
@@ -35,9 +28,6 @@ export class CreateComicInput {
 
   @Field(() => String)
   ISBN: string;
-
-  // @Field(() => Boolean)
-  // isAvailable?: boolean;
 
   @Field(() => Int)
   stock: number;

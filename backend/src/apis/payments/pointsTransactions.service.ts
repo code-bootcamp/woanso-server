@@ -42,18 +42,13 @@ export class PointsTransactionsService {
     await queryRunner.startTransaction('SERIALIZABLE'); // Transaction 시작
 
     try {
-      // 2. 유저의 돈 찾아오기
-      // const user = await queryRunner.manager.findOne(User, {
-      //   where: { email: _user.email },
-      //   lock: { mode: 'pessimistic_write' },
-      // });
       const stock1 = await this.comicRepository.findOne({ where: { comicId } });
-      //console.log(stock1);
+
       await this.comicRepository.save({
         comicId: stock1.comicId,
         stock: stock1.stock - 1,
       });
-      //console.log(stock1);
+
       const stock2 = await this.comicRepository.findOne({ where: { comicId } });
       if (stock2.stock === 0) {
         await this.comicRepository.update({ comicId }, { isAvailable: false });
@@ -68,7 +63,7 @@ export class PointsTransactionsService {
       const pointTransaction = this.pointsTransactionsRepository.create({
         impUid,
         amount: amount,
-        user: _user, //user??
+        user: _user,
         status: POINT_TRANSACTION_STATUS_ENUM.PAYMENT,
         address,
         totalPrice,
@@ -77,13 +72,6 @@ export class PointsTransactionsService {
       });
 
       await queryRunner.manager.save(pointTransaction);
-      // console.log('왜들 그리 다운되ㅇ어있어');
-      // await this.pointsTransactionsRepository.save(pointTransaction);
-
-      // await queryRunner.manager.save(updateAmount); // amount + delivery fee
-      //await queryRunner.commitTransaction();
-
-      // 결제 될 때마다 수량 1개씩 낮춰주기
 
       await queryRunner.commitTransaction();
 
@@ -98,13 +86,6 @@ export class PointsTransactionsService {
 
   //--------------------**[결제 취소]**--------------------
   async cancel({ impUid, amount, _user, comicId }) {
-    // const pointTransaction = await this.create({
-    //   impUid,
-    //   amount: -amount,
-    //   user,
-    //   status: POINT_TRANSACTION_STATUS_ENUM.CANCEL,
-    //   comicId,
-    // });
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect(); // DB접속, promise 필수
@@ -118,7 +99,6 @@ export class PointsTransactionsService {
       });
 
       await queryRunner.manager.save(pointTransaction);
-      // await this.pointsTransactionsRepository.save(pointTransaction);
 
       const stock = await this.comicRepository.findOne({ where: comicId });
       await this.comicRepository.update(
@@ -142,14 +122,6 @@ export class PointsTransactionsService {
     }
   }
 
-  //////////////////////////////////////////////////////////////////////
-
-  // async checkDuplicate({ impUid }) {
-  //   const findPayment = await this.pointsTransactionsRepository.findOne({
-  //     where: { impUid },
-  //   });
-  //   if (findPayment) throw new ConflictException('이미 결제되었습니다.');
-  // }
   //생성하려는 결제정보랑 토큰에 들어있는 결제 정보랑 같은지 검증하기.
   async validate({ impUid, amount, checkPaid }) {
     //결제한 건이 아닐경우
@@ -173,8 +145,6 @@ export class PointsTransactionsService {
     }
   }
 
-  //////////////////////////////////////////////////////////////////////
-
   async isCancelled({ impUid }) {
     const pointTransaction = await this.pointsTransactionsRepository.findOne({
       where: { impUid, status: POINT_TRANSACTION_STATUS_ENUM.CANCEL },
@@ -182,8 +152,6 @@ export class PointsTransactionsService {
     if (pointTransaction)
       throw new ConflictException('이미 취소된 결제입니다.');
   }
-
-  //////////////////////////////////////////////////////////////////////
 
   async isRefund({ impUid }) {
     const findRefund = await this.pointsTransactionsRepository.findOne({
@@ -193,18 +161,4 @@ export class PointsTransactionsService {
       throw new UnprocessableEntityException('이미 환불되었습니다.');
     }
   }
-
-  //////////////////////////////////////////////////////////////////////
-
-  // async checkHasCancelablePoint({ impUid, user }) {
-  //   const pointTransaction = await this.pointsTransactionsRepository.findOne({
-  //     where: {
-  //       impUid,
-  //       user,
-  //       status: POINT_TRANSACTION_STATUS_ENUM.PAYMENT,
-  //     },
-  //   });
-  //   if (!pointTransaction)
-  //     throw new UnprocessableEntityException('결제 기록이 존재하지 않습니다.');
-  // }
 }

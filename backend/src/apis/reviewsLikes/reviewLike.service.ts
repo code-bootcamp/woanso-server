@@ -48,10 +48,6 @@ export class ReviewLikeService {
         user: { id: findUser.id },
       });
 
-      // const reviewBoard = await this.reviewRepository.findOne({
-      //   where: { reviewId },
-      // });
-
       await this.reviewRepository.update(
         { reviewId },
         { like: review.like - 1 },
@@ -63,10 +59,6 @@ export class ReviewLikeService {
         review: { reviewId },
         user: { id: findUser.id },
       });
-
-      // const reviewBoard = await this.reviewRepository.findOne({
-      //   where: { reviewId },
-      // });
 
       await this.reviewRepository.update(
         { reviewId },

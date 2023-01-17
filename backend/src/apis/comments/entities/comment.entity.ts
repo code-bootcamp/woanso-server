@@ -38,7 +38,7 @@ export class Comment {
   @Field(() => User)
   user: User;
 
-  @Column({ default: false }) //필요한가?
+  @Column({ default: false }) //필요없음, 추 후 삭제 예정
   @Field(() => Boolean)
   isDeleted: boolean;
 }

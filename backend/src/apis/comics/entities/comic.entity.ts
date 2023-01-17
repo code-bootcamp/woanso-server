@@ -60,14 +60,6 @@ export class Comic {
   @Field(() => String)
   publisher: string;
 
-  // @Column({ default: 0, nullable: true })
-  // @Field(() => Float) // 별점을 줄 수 있도록 0.5 단위로 제한
-  // rating: number;dilgfh
-
-  // @Column()
-  // @Field(() => String) // 시리즈이기 떄문에 각각 발행일이 다르기 때문에
-  // publicationDate: string;
-
   @Column()
   @Field(() => Int)
   totalBooks: number;
@@ -89,7 +81,6 @@ export class Comic {
   wishListCount: number;
 
   @Column()
-  //@Field(() => Int)
   stock: number;
 
   @CreateDateColumn()

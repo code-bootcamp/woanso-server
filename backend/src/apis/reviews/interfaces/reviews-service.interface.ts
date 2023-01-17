@@ -15,10 +15,6 @@ export interface IReviewsServiceUpdate {
   updateReviewInput: UpdateReviewInput;
 }
 
-// export interface IReviewsServiceCheckSoldout {
-//   review: Review;
-// }
-
 export interface IReviewsServiceDelete {
   reviewId: string;
 }

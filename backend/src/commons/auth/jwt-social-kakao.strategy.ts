@@ -5,9 +5,8 @@ export class JwtKakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
   constructor() {
     super({
       clientID: process.env.KAKAO_CLIENT_ID,
-      //clientSecret: process.env.JWT_KAKAO_SECRET, //어드민
+
       callbackURL: 'https://woanso.shop/login/kakao',
-      //scope: ["email", "profile"],
     });
   }
 

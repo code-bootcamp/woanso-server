@@ -53,26 +53,7 @@ export class ComicsService {
   //------------------**[만화 등록]**------------------
   async create({ createComicInput }: IComicsServiceCreate): Promise<Comic> {
     const { url, ...comic } = createComicInput;
-    // const user = await this.userRepository.findOne({
-    //   where: {
-    //     id: userId,
-    //   },
-    // });
-    // const resultReview = await this.comicsRepository.find({
-    //   where: {
-    //     review: { reviewId },
-    //   },
-    //   relations: ['user', 'review'],
-    // });
-    // const result2 = await this.reviewRepository.findOne({
-    //   where: {
-    //     reviewId,
-    //   },
-    // });
-    // console.log(result2);
-    // if (resultReview.length === 0) {
-    // }
-    // 어떻게 별점 평균으로 저장하지?
+
     const result2 = await this.comicsRatingRepository.save({
       comicRating: 0,
       totalRating: 0,
@@ -97,13 +78,6 @@ export class ComicsService {
     );
     return result;
   }
-
-  //대여가능수량
-  // findOne1(
-  //   { isAvailable }: IComicsServicecheckOne, //: Promise<Comic>
-  // ) {
-  //   return this.comicsRepository.findOne({ where: { isAvailable } });
-  // }
 
   //------------------**[대여 가능/불가능 만화 수량 학인]**------------------
   async findAll1() {

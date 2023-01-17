@@ -11,10 +11,6 @@ export class CommentsResolver {
   constructor(private readonly commentsService: CommentsService) {}
 
   //-------------------------*조회*----------------------------//
-  // @Query(() => [Comment])
-  // fetchComments(): Promise<Comment[]> {
-  //   return this.commentsService.findAll();
-  // }
 
   @Query(() => [Comment])
   async fetchAllComments(
@@ -42,7 +38,7 @@ export class CommentsResolver {
     })
     order: string,
     @Args('boardId') id: string, // args 를 comicId
-    // @Args('reviewRatingId') reviewRatingId: string, //
+    //
   ): Promise<Comment[]> {
     return this.commentsService.findByComic({ page, order, id });
   }

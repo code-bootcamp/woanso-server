@@ -11,7 +11,6 @@ import { Board } from 'src/apis/boards/entities/board.entity';
 
 @Injectable()
 export class CommentsService {
-  //DI
   constructor(
     @InjectRepository(Comment)
     private readonly commentsRepository: Repository<Comment>,

@@ -20,7 +20,6 @@ export class Admin {
   @Column({ nullable: true })
   email: string;
 
-  // @Field(() => String)
   @Column({ nullable: true })
   password: string;
 

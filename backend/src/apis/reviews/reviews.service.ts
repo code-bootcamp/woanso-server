@@ -113,66 +113,6 @@ export class ReviewsService {
     return result;
   }
 
-  //---------------좋아요 함수 -------------------------
-  // async create2(createReviewLikeInput: CreateReviewLikeInput): {
-  //   const { data, review } = createReviewLikeInput;
-
-  //   const reviewData = await getConnection()
-  //     .createQueryBuilder()
-  //     .select('review')
-  //     .from(Review, 'review')
-  //     .where('review.id = :id', { id: review })
-  //     .getOne();
-
-  //   try {
-  //     if (!reviewData)
-  //       throw new NotFoundException('다이어리가 존재하지 않습니다.');
-
-  //     // 좋아요 눌렀는지 확인하기
-  //     const alreadyLiked = await this.reviewRepository.findOne({
-  //       where: { reviewId: review, data },
-  //     });
-
-  //     if (alreadyLiked) {
-  //       // 좋아요 기록 삭제
-  //       await this.reviewRepository.delete({ id: alreadyLiked.id });
-
-  //       // 좋아요 카운트 -1
-  //       await getConnection()
-  //         .createQueryBuilder()
-  //         .update(Review)
-  //         .set({ likeCount: () => `likeCount-1` })
-  //         .where('id = :id', { id: review })
-  //         .execute();
-
-  //       // 다이어리 정보 리턴
-  //       return reviewData;
-  //     }
-
-  //     // 좋아요 기록 생성
-  //     await this.reviewRepository.save({
-  //       reviewId: review,
-  //       data,
-  //     });
-
-  //     // 다이어리 좋아요 +1
-  //     await getConnection()
-  //       .createQueryBuilder()
-  //       .update(Review)
-  //       .set({ likeCount: () => `likeCount+1` })
-  //       .where('id = :id', { id: review })
-  //       .execute();
-
-  //     // 다이어리 정보 리턴
-  //     return reviewData;
-  //   } catch (e) {
-  //     if (e.status === 404) {
-  //       return e;
-  //     }
-  //     throw new Error('Review Like Create Server Error');
-  //   }
-  // }
-
   //------------------**[리뷰 업데이트]**------------------
   update({
     review,

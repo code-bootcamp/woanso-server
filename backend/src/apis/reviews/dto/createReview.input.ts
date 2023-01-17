@@ -14,9 +14,6 @@ export class CreateReviewInput {
   //@Field(() => Int)
   like: number;
 
-  // @Field()
-  // createdAt: Date; 굳이 디비에 저장할 필요없음. 자동 생성
-
   @Field(() => Float)
   rating: number;
 }

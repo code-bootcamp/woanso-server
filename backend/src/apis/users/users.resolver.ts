@@ -4,22 +4,16 @@ import { UsersService } from './users.service';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserInput } from './dto/update.user.input';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
-import {
-  CACHE_MANAGER,
-  Inject,
-  UnprocessableEntityException,
-  UseGuards,
-} from '@nestjs/common';
+import { CACHE_MANAGER, Inject, UseGuards } from '@nestjs/common';
 import { IContext } from 'src/commons/types/context';
 import { Cache } from 'cache-manager';
-import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { GqlAdminGuard } from '../../commons/auth/gql-auth.guard';
 
 @Resolver()
 export class UsersResolver {
   constructor(
     private readonly usersService: UsersService,
-    //private readonly elasticsearchService: ElasticsearchService,
+
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
@@ -133,38 +127,6 @@ export class UsersResolver {
   ) {
     return this.usersService.findUserForAdmin({ nickname, page });
   }
-
-  // @UseGuards(GqlAdminGuard)
-  // @Query(() => [User])
-  // async searchUsersForAdmin(
-  //   @Args({
-  //     name: 'search',
-  //     nullable: true,
-  //     description: '유저 닉네임으로 검색',
-  //   })
-  //   search: string, //
-  // ) {
-  //   // REDIS 캐시 조회
-  //   const userCache = await this.cache.get(`searchUsers:${search}`);
-  //   if (userCache) return userCache;
-  //   // 엘라스틱서치에서 조회
-  //   const result = await this.elasticsearchService.search({
-  //     index: 'user',
-  //     query: { match: { nickname: search } },
-  //   });
-  //   // console.log(JSON.stringify(result, null, ' '));
-  //   const users = result.hits.hits.map((el: any) => ({
-  //     id: el._source.id,
-  //     nickname: el._source.nickname,
-  //     email: el._source.email,
-  //   }));
-
-  //   // console.log(users);
-
-  //   // 엘라스틱 조회 결과가 있다면, 레디스에 결과 캐싱
-  //   await this.cache.set(`searchUsers:${search}`, users);
-  //   return users;
-  // }
 
   //----------------------**[회원 활동 정지]**----------------------
   @UseGuards(GqlAdminGuard)

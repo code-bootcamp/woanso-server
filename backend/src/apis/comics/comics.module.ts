@@ -8,21 +8,8 @@ import { ComicsService } from './comics.service';
 import { Comic } from './entities/comic.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Comic, ComicRating, ComicImg]),
-    // ElasticsearchModule.register({
-    //   node: 'https://elasticsearch:9200',
-    // }),
-  ],
+  imports: [TypeOrmModule.forFeature([Comic, ComicRating, ComicImg])],
   providers: [ComicsService, ComicsResolver],
   exports: [ComicsService],
 })
-
-// @Module({
-//   imports: [TypeOrmModule.forFeature([Comic])],
-//   providers: [
-//     ComicsResolver, //
-//     ComicsService,
-//   ],
-// })
 export class ComicsModule {}

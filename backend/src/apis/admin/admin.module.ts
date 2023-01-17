@@ -5,15 +5,9 @@ import { Comic } from '../comics/entities/comic.entity';
 import { JwtAccessStrategy } from '../../commons/auth/jwt-access.strategy';
 import { AdminResolver } from './admin.resolver';
 import { AdminService } from './admin.service';
-import { ElasticsearchModule } from '@nestjs/elasticsearch';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Admin, Comic]),
-    ElasticsearchModule.register({
-      node: 'http://elasticsearch:9200',
-    }),
-  ],
+  imports: [TypeOrmModule.forFeature([Admin, Comic])],
 
   providers: [
     JwtAccessStrategy,

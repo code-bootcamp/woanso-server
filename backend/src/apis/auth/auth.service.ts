@@ -45,17 +45,7 @@ export class AuthService {
     return refreshToken;
   }
 
-  //개발환경
-  // dklgjdkhdj
-  //   res.setHeader('Set-Cookie', `refreshToken=${refreshToken};path=/;`);
-  //   // 배포환경
-  //   // res.setHeader('Set-Cookie', refreshToken=${refreshToken}; path=/; domain=.mybacksite.com; SameSite=None; Secure; httpOnly;)
-  //   // res.setHeader('Access-Control-Allow-Origin', 'https://myfrontsite.com')
-  // }
-
   async loginOAuth({ req, res }) {
-    //프로필을 받아온 다음, 로그인 처리해야 하는 곳
-    // 회원 조회(찾기)
     let user = await this.usersService.findOne({ email: req.user.email });
     // 회원가입이 안되어있다면 => 회원 등록(가입)
     if (!user) {

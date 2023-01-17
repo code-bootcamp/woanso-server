@@ -173,7 +173,7 @@ type Query {
   searchUserForAdmin(nickname: String!, page: Float!): [User!]!
   fetchUsersForAdmin(page: Float = 1, order: String = "DESC"): [User!]!
   fetchBlockedUsersForAdmin: [User!]!
-  fetchComics(page: Float = 1): [Comic!]!
+  fetchComics: [Comic!]!
   fetchComicsWithTitle(title: String!, page: Float!): [Comic!]!
   fetchComic(comicId: String!): Comic!
   availableComicsForAdmin: [Int!]!

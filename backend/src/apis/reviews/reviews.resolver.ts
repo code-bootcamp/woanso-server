@@ -8,7 +8,7 @@ import { ReviewsService } from './reviews.service';
 @Resolver()
 export class ReviewsResolver {
   constructor(
-    private readonly reviewsService: ReviewsService, // // private readonly reviewsRatingService: ReviewsRatingService, //
+    private readonly reviewsService: ReviewsService, //
   ) {}
 
   //------------------**[모든 리뷰 조회]**------------------
@@ -29,8 +29,7 @@ export class ReviewsResolver {
   //------------------**[리뷰 조회]**------------------
   @Query(() => [Review])
   fetchReview(
-    @Args('comicId') comicId: string, // args 를 comicId
-    // @Args('reviewRatingId') reviewRatingId: string, //
+    @Args('comicId') comicId: string, //
   ): Promise<Review[]> {
     return this.reviewsService.findOne({ comicId });
   }
