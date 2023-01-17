@@ -27,77 +27,65 @@ export class PointsTransactionsService {
     private readonly dataSource: DataSource,
   ) {}
 
-  //////////////////////////////////////////////////////////////////////
+  //--------------------**[결제 생성]**--------------------
 
-  async checkDuplicate({ impUid }) {
-    const findPayment = await this.pointsTransactionsRepository.findOne({
-      where: { impUid },
-    });
-    if (findPayment) throw new ConflictException('이미 결제된 ID 입니다.');
-  }
-  //////////////////////////////////////////////////////////////////////
-
-  async isCancelled({ impUid }) {
-    const pointTransaction = await this.pointsTransactionsRepository.findOne({
-      where: { impUid, status: POINT_TRANSACTION_STATUS_ENUM.CANCEL },
-    });
-    if (pointTransaction)
-      throw new ConflictException('이미 취소된 결제 ID 입니다.');
-  }
-
-  //////////////////////////////////////////////////////////////////////
-
-  async isRefund({ impUid }) {
-    const findRefund = await this.pointsTransactionsRepository.findOne({
-      where: { impUid },
-    });
-    if (findRefund.status === 'CANCEL') {
-      throw new UnprocessableEntityException('이미 취소됨');
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////
-
-  async checkHasCancelablePoint({ impUid, user }) {
-    const pointTransaction = await this.pointsTransactionsRepository.findOne({
-      where: {
-        impUid,
-        user,
-        status: POINT_TRANSACTION_STATUS_ENUM.PAYMENT,
-      },
-    });
-    if (!pointTransaction)
-      throw new UnprocessableEntityException('결제 기록이 존재하지 않습니다.');
-
-    const currentUser = await this.usersRepository.findOne({
-      where: { id: user.id },
-    });
-    if (currentUser.balance < pointTransaction.amount)
-      throw new UnprocessableEntityException('포인트가 부족합니다.');
-  }
-
-  //////////////////////////////////////////////////////////////////////
-  async cancel({ impUid, amount, user, comicId }) {
-    const pointTransaction = await this.create({
-      impUid,
-      amount: -amount,
-      user,
-      status: POINT_TRANSACTION_STATUS_ENUM.CANCEL,
-      comicId,
-    });
-    return pointTransaction;
-  }
-
-  //////////////////////////////////////////////////////////////////////
-
-  //1. 생성해서 한 줄 만들기
+  // 1. pointTransaction 테이블에 거래기록 1줄 생성
   async create({
     impUid,
     amount,
     user: _user,
-    status = POINT_TRANSACTION_STATUS_ENUM.PAYMENT,
     comicId,
+    address,
   }): Promise<any> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect(); // DB접속, promise 필수
+    await queryRunner.startTransaction('SERIALIZABLE'); // Transaction 시작
+
+    try {
+      const stock1 = await this.comicRepository.findOne({ where: { comicId } });
+
+      await this.comicRepository.save({
+        comicId: stock1.comicId,
+        stock: stock1.stock - 1,
+      });
+
+      const stock2 = await this.comicRepository.findOne({ where: { comicId } });
+      if (stock2.stock === 0) {
+        await this.comicRepository.update({ comicId }, { isAvailable: false });
+      } // 수량이 0이라면 대여불가능
+
+      const deliveryFee = 8000;
+      const totalPrice = amount + deliveryFee;
+      const comic = await this.comicRepository.findOne({
+        where: { comicId },
+      });
+
+      const pointTransaction = this.pointsTransactionsRepository.create({
+        impUid,
+        amount: amount,
+        user: _user,
+        status: POINT_TRANSACTION_STATUS_ENUM.PAYMENT,
+        address,
+        totalPrice,
+        comic,
+        deliveryFee: 8000,
+      });
+
+      await queryRunner.manager.save(pointTransaction);
+
+      await queryRunner.commitTransaction();
+
+      // 4, 최종 결과 브라우저에 돌려주기
+      return pointTransaction;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  //--------------------**[결제 취소]**--------------------
+  async cancel({ impUid, amount, _user, comicId }) {
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect(); // DB접속, promise 필수
@@ -105,45 +93,72 @@ export class PointsTransactionsService {
     try {
       const pointTransaction = this.pointsTransactionsRepository.create({
         impUid,
-        amount,
+        amount: -amount,
         user: _user,
-        status,
+        status: POINT_TRANSACTION_STATUS_ENUM.CANCEL,
       });
 
       await queryRunner.manager.save(pointTransaction);
 
-      // await this.pointsTransactionsRepository.save(pointTransaction);
-
-      // 2. 유저의 돈 찾아오기
-      const user = await this.usersRepository.findOne({
-        where: { id: _user.id }, //
-        lock: { mode: 'pessimistic_partial_write' },
-      });
-
-      //
       const stock = await this.comicRepository.findOne({ where: comicId });
       await this.comicRepository.update(
         { comicId },
-        { stock: stock.stock - 1 },
+        { stock: stock.stock + 1 },
       );
       const stock2 = await this.comicRepository.findOne({ where: comicId });
 
-      if (stock2.stock === 0) {
-        await this.comicRepository.update({ comicId }, { isAvailable: false });
+      if (stock2.stock !== 0) {
+        await this.comicRepository.update({ comicId }, { isAvailable: true });
       }
-      // 3. 유저의 돈 업데이트하기
-      await this.usersRepository.update(
-        { id: user.id },
-        { balance: user.balance + amount },
-      );
-      // await queryRunner.manager.save(updatedUser);
+
       await queryRunner.commitTransaction();
+
       // 4, 최종 결과 브라우저에 돌려주기
       return pointTransaction;
     } catch (error) {
       await queryRunner.rollbackTransaction();
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  //생성하려는 결제정보랑 토큰에 들어있는 결제 정보랑 같은지 검증하기.
+  async validate({ impUid, amount, checkPaid }) {
+    //결제한 건이 아닐경우
+    if (checkPaid.status !== 'paid') {
+      throw new ConflictException('결제 내역이 존재하지 않습니다.');
+    }
+
+    //토큰을 통해 결제한 금액이랑 데이터베이스에 입력하려는 금액이 맞는지 확인하기
+    if (amount !== checkPaid.amount) {
+      throw new UnprocessableEntityException(
+        '결제하신 금액과 다른 금액입니다.',
+      );
+    }
+
+    //이미 추가된 결제 건인지 확인하기 impUid가 하나만 조회되어야함.
+    const payment = await this.pointsTransactionsRepository.findOne({
+      where: { impUid: impUid },
+    });
+    if (payment) {
+      throw new ConflictException('이미 결제 되었습니다.');
+    }
+  }
+
+  async isCancelled({ impUid }) {
+    const pointTransaction = await this.pointsTransactionsRepository.findOne({
+      where: { impUid, status: POINT_TRANSACTION_STATUS_ENUM.CANCEL },
+    });
+    if (pointTransaction)
+      throw new ConflictException('이미 취소된 결제입니다.');
+  }
+
+  async isRefund({ impUid }) {
+    const findRefund = await this.pointsTransactionsRepository.findOne({
+      where: { impUid },
+    });
+    if (findRefund.status === 'CANCEL') {
+      throw new UnprocessableEntityException('이미 환불되었습니다.');
     }
   }
 }

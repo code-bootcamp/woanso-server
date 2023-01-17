@@ -18,13 +18,7 @@ export class CreateComicInput {
   illustrator: string;
 
   @Field(() => String)
-  pubisher: string;
-
-  @Field(() => Int) // 별점을 줄 수 있도록 0.5 단위로 제한
-  ratings: number;
-
-  // @Field(() => String) //string
-  // publicationDate: string;
+  publisher: string;
 
   @Field(() => Int)
   totalBooks: number;
@@ -35,12 +29,12 @@ export class CreateComicInput {
   @Field(() => String)
   ISBN: string;
 
-  @Field(() => Boolean)
-  isAvailable: boolean;
+  @Field(() => Int)
+  stock: number;
 
-  // @Field(() => Int)
-  // stock: number;
-
-  @Field(() => [String])
+  @Field(() => [String], { nullable: true })
   url: string[];
+
+  @Field(() => String)
+  category: string;
 }

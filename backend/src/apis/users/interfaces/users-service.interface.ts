@@ -5,6 +5,10 @@ export interface IUsersServiceFindOne {
   email: string;
 }
 
+export interface IUsersServiceFindLogin {
+  user?: User;
+}
+
 export interface IUsersServiceFindOneForUpdate {
   email: string;
   phone: string;
@@ -20,14 +24,12 @@ export interface IUsersServiceCreate {
   nickname: string;
   phone: string;
   interest?: string;
-  role?: string;
 }
 
 export interface IUsersServiceCreateAdmin {
   email: string;
   hashedPassword: string;
   phone?: string;
-  role?: string;
 }
 
 export interface IUsersServiceUpdate {
@@ -38,4 +40,11 @@ export interface IUsersServiceUpdate {
 export interface IUsersServiceDelete {
   email: string;
   password: string;
+}
+
+export interface IAdminServiceUserDelete {
+  email: string;
+}
+export interface IAdminServiceUnblock {
+  email: string;
 }

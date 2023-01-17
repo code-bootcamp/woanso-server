@@ -1,8 +1,17 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
+import { Comic } from 'src/apis/comics/entities/comic.entity';
+import { ComicRating } from 'src/apis/comicsRating/entities/comicRating.entity';
+import { ReviewLike } from 'src/apis/reviewsLikes/entities/reviewLike.entity';
+import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -10,54 +19,44 @@ import {
 @ObjectType()
 export class Review {
   @PrimaryGeneratedColumn('uuid')
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   reviewId: string;
 
   @Column()
   @Field(() => String)
   content: string;
 
-  @Column()
+  @Column({ default: 0 })
   @Field(() => Int)
   like: number;
 
-  @Field(() => Int)
   @CreateDateColumn()
+  @Field(() => Date)
   createdAt: Date;
 
-  @Column()
-  @Field(() => String)
-  author: string;
+  @DeleteDateColumn()
+  deletedAt: Date;
 
   @Column()
-  @Field(() => Int)
+  @Field(() => Float)
   rating: number;
 
-  @Column()
-  @Field(() => String)
-  publisher: string;
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @Field(() => User)
+  user: User;
 
-  @Column()
-  @Field(() => Int) // 별점을 줄 수 있도록 0.5 단위로 제한
-  ratings: number;
+  @ManyToOne(() => Comic, { onDelete: 'CASCADE' })
+  @Field(() => Comic)
+  comic: Comic;
 
-  @Column()
-  @Field(() => String) //string
-  publicationDate: string;
+  @JoinColumn()
+  @OneToOne(() => ComicRating)
+  @Field(() => ComicRating)
+  comicRating: ComicRating;
 
-  @Column()
-  @Field(() => Int)
-  totalBooks: number;
-
-  @Column()
-  @Field(() => String)
-  description: string;
-
-  @Column()
-  @Field(() => String)
-  ISBN: string;
-
-  @Column()
-  @Field(() => Boolean)
-  isAvailable: boolean;
+  @OneToMany(() => ReviewLike, (reviewLike) => reviewLike.review, {
+    onDelete: 'CASCADE',
+  })
+  @Field(() => [ReviewLike])
+  reviewLike?: ReviewLike[];
 }

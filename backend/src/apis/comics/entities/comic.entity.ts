@@ -1,53 +1,64 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { ComicImg } from '../../comicsImgs/entities/comicsimg.entity';
+import { ComicRating } from 'src/apis/comicsRating/entities/comicRating.entity';
+import { PointTransaction } from 'src/apis/payments/entities/payment.entity';
+import { Wishlist } from 'src/apis/wishlists/entities/wishlish.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  ManyToOne,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Review } from 'src/apis/reviews/entities/review.entity';
+
+export enum COMIC_CATEGORY_ENUM {
+  romance = 'romance',
+  drama = 'drama',
+  fantasy = 'fantasy',
+  action = 'action',
+  school = 'school',
+  horror = 'horror',
+}
+
+registerEnumType(COMIC_CATEGORY_ENUM, {
+  name: 'COMIC_CATEGORY_ENUM',
+});
 
 @Entity()
 @ObjectType()
 export class Comic {
   @PrimaryGeneratedColumn('uuid')
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   comicId: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Field(() => String)
   title: string;
 
-  @Column()
+  @Column({ nullable: true, default: 0 })
   @Field(() => Int)
   deliveryFee: number;
 
-  @Column()
+  @Column({ nullable: true, default: 0 })
   @Field(() => Int)
   rentalFee: number;
 
-  @Column()
+  @Column({ nullable: true })
   @Field(() => String)
   author: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Field(() => String)
   illustrator: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Field(() => String)
-  pubisher: string;
-
-  @Column()
-  @Field(() => Int) // 별점을 줄 수 있도록 0.5 단위로 제한
-  ratings: number;
-
-  // @Column()
-  // @Field(() => String) // 시리즈이기 떄문에 각각 발해일이 다르기 때문에
-  // publicationDate: string;
+  publisher: string;
 
   @Column()
   @Field(() => Int)
@@ -61,12 +72,15 @@ export class Comic {
   @Field(() => String)
   ISBN: string;
 
-  @Column()
+  @Column({ default: true })
   @Field(() => Boolean)
   isAvailable: boolean;
 
-  @Column()
+  @Column({ default: 0 })
   @Field(() => Int)
+  wishListCount: number;
+
+  @Column()
   stock: number;
 
   @CreateDateColumn()
@@ -78,35 +92,34 @@ export class Comic {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // @ManyToOne(() => Category)
-  // @Field(() => Category)
-  // category: Category;
+  @JoinColumn()
+  @OneToOne(() => ComicRating, { eager: true, onDelete: 'CASCADE' })
+  @Field(() => ComicRating)
+  comicRating: ComicRating;
 
-  ///////
+  @JoinColumn()
+  @OneToOne(() => PointTransaction)
+  @Field(() => PointTransaction)
+  pointTransaction: PointTransaction;
 
-  // @OneToMany(() => Image, (image) => image.comic)
-  // @Field(() => [Image]) //graphql 방식
-  // image: Image[];
+  @Field(() => COMIC_CATEGORY_ENUM)
+  @Column({ type: 'enum', enum: COMIC_CATEGORY_ENUM, nullable: true })
+  category: string;
 
-  //   @ManyToOne(() => Origin)
-  //   @Field(() => Origin)
-  //   origin: Origin;
+  //@JoinColumn()
+  @OneToMany(() => ComicImg, (comicImg) => comicImg.comic, {
+    onDelete: 'CASCADE',
+  })
+  @Field(() => [ComicImg])
+  comicImg?: ComicImg[];
 
-  //   @ManyToOne(() => Seller)
-  //   @Field(() => Seller)
-  //   seller: Seller;
+  @OneToMany(() => Review, (review) => review.comic, { onDelete: 'CASCADE' })
+  @Field(() => [Review])
+  review?: Review[];
 
-  //   @ManyToOne(() => ProductSub)
-  //   @Field(() => ProductSub)
-  //   productsub: ProductSub;
-
-  //   @JoinColumn() //FK키로 가져와서 참조할 때, 한쪽 테이블에만 적어주기 / 1대 1
-  //   @OneToOne(() => Order)
-  //   @Field(() => Order)
-  //   order: Order;
-
-  //   @JoinTable()
-  //   @ManyToMany(() => Color, (colors) => colors.products)
-  //   @Field(() => [Color])
-  //   colors: Color[];
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.comic, {
+    onDelete: 'CASCADE',
+  })
+  @Field(() => [Wishlist])
+  wishlist?: Wishlist[];
 }

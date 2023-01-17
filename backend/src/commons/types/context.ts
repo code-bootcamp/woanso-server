@@ -11,6 +11,17 @@ export interface IAuthUser {
 }
 
 export interface IContext {
-  req: Request & IAuthUser;
+  req?: Request & IAuthUser;
+  res?: Response;
+}
+
+export interface IAdminAuthUser {
+  email: string;
+  id: string;
+  exp: number;
+}
+
+export interface IAdminContext {
+  req: Request & IAdminAuthUser;
   res: Response;
 }

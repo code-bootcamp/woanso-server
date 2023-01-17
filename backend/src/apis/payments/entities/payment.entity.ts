@@ -1,10 +1,13 @@
 import { Field, ObjectType, Int, registerEnumType } from '@nestjs/graphql';
+import { Comic } from 'src/apis/comics/entities/comic.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -32,6 +35,18 @@ export class PointTransaction {
   @Field(() => Int)
   amount: number;
 
+  @Column()
+  @Field(() => String)
+  address: string;
+
+  @Column()
+  @Field(() => Int)
+  totalPrice: number;
+
+  @Column() //8000
+  @Field(() => Int)
+  deliveryFee: number;
+
   @Field(() => POINT_TRANSACTION_STATUS_ENUM)
   @Column({ type: 'enum', enum: POINT_TRANSACTION_STATUS_ENUM })
   status: string;
@@ -43,4 +58,9 @@ export class PointTransaction {
   @Field(() => Date)
   @CreateDateColumn()
   createdAt: Date;
+
+  @JoinColumn()
+  @OneToOne(() => Comic)
+  @Field(() => Comic)
+  comic: Comic;
 }

@@ -1,5 +1,5 @@
 import { CreateComicInput } from '../dto/createComic.input';
-import { CreateUrlInput } from '../dto/createUrl.input';
+
 import { UpdateComicInput } from '../dto/update-comic.input';
 import { Comic } from '../entities/comic.entity';
 
@@ -24,10 +24,6 @@ export interface IComicsServiceDelete {
   comicId: string;
 }
 
-export interface IImagesServiceCreate {
-  createUrlInput: CreateUrlInput;
+export interface IComicsServicecheckOne {
+  isAvailable: boolean;
 }
-
-// export interface IComicsServicecheckOne {
-//   isAvailable: boolean;
-// }

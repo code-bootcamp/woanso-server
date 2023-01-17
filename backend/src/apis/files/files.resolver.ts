@@ -1,6 +1,6 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { FileUpload, GraphQLUpload } from 'graphql-upload';
 import { FilesService } from './files.service';
+import { FileUpload, GraphQLUpload } from 'graphql-upload';
 
 @Resolver()
 export class FilesResolver {
@@ -13,6 +13,7 @@ export class FilesResolver {
   uploadFile(
     @Args({ name: 'files', type: () => [GraphQLUpload] }) files: FileUpload[],
   ): Promise<string[]> {
+    console.log(files);
     return this.filesService.upload({ files });
   }
 

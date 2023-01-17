@@ -8,6 +8,7 @@ import { User } from '../users/entities/user.entity';
 import { JwtAccessStrategy } from 'src/commons/auth/jwt-access.strategy';
 import { JwtRefreshStrategy } from 'src/commons/auth/jwt-refresh.strategy';
 import { AuthController } from './auth.controller';
+
 @Module({
   imports: [
     JwtModule.register({}), //
@@ -22,8 +23,6 @@ import { AuthController } from './auth.controller';
     AuthService,
     UsersService,
   ],
-  controllers: [
-    AuthController, //
-  ],
+  controllers: [AuthController],
 })
 export class AuthModule {}

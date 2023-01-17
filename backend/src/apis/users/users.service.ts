@@ -6,20 +6,22 @@ import {
   Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import {
+  IAdminServiceUnblock,
+  IAdminServiceUserDelete,
   IUsersServiceCreate,
-  IUsersServiceCreateAdmin,
   IUsersServiceDelete,
   IUsersServiceFindEmail,
   IUsersServiceFindOne,
   IUsersServiceFindOneForUpdate,
   IUsersServiceUpdate,
 } from './interfaces/users-service.interface';
-import coolsms from 'coolsms-node-sdk';
+import * as coolsms from 'coolsms-node-sdk';
 import { Cache } from 'cache-manager';
 
+const mysms = coolsms.default;
 @Injectable()
 export class UsersService {
   constructor(
@@ -28,14 +30,13 @@ export class UsersService {
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
-  //Create
+  //------------------------**[회원가입]**-------------------------------
   async create({
     email,
     hashedPassword: password,
     nickname,
     phone,
     interest,
-    role,
   }: IUsersServiceCreate): Promise<User> {
     const user = await this.usersRepository.findOne({ where: { email } });
     if (user) throw new ConflictException();
@@ -46,31 +47,23 @@ export class UsersService {
       phone,
       password,
       interest,
-      role,
     });
   }
 
-  //CreateAdmin
-  async createAdmin({
-    email,
-    hashedPassword: password,
-    phone,
-    role,
-  }: IUsersServiceCreateAdmin) {
-    return this.usersRepository.save({
-      email,
-      password,
-      role,
-      phone,
-    });
-  }
-
-  //Find one user
+  //--------------------**[Find User by EMAIL]**--------------------
   findOne({ email }: IUsersServiceFindOne): Promise<User> {
     return this.usersRepository.findOne({ where: { email } });
   }
 
-  //Find one user for Update password
+  //--------------------**[Find Login]**--------------------
+  async findLogin({ context }) {
+    console.log(context.req.user.email);
+    return await this.usersRepository.findOne({
+      where: { email: context.req.user.email },
+    });
+  }
+
+  //--------------------**[Find User for update PWD]**--------------------
   findOneForUpdate({
     email,
     phone,
@@ -78,18 +71,12 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { email, phone } });
   }
 
-  //Find email for user
+  //--------------------**[Find email by Phone]**--------------------
   findEmail({ phone }: IUsersServiceFindEmail): Promise<User> {
     return this.usersRepository.findOne({ where: { phone } });
   }
 
-  //Find all user for admin
-  async findAll(email): Promise<User[]> {
-    const user = await this.usersRepository.findOne({ where: { email } });
-    if (user.role === 'ADMIN') return this.usersRepository.find();
-  }
-
-  //Update
+  //--------------------**[Update user]**--------------------
   update({ user, updateUserInput }: IUsersServiceUpdate): Promise<User> {
     const result = this.usersRepository.save({
       ...user, //
@@ -98,22 +85,27 @@ export class UsersService {
     return result;
   }
 
-  //Update password
-  async updatePassword({ email, hashedPassword }) {
-    const user = this.usersRepository.findOne({ where: email });
-    await this.usersRepository.save({
-      password: hashedPassword,
-      ...user,
-    });
+  //--------------------**[Update password]**--------------------
+  async updatePassword({ email, hashedPassword: newPassword }) {
+    try {
+      const user = await this.usersRepository.findOne({ where: { email } });
+      await this.usersRepository.save({
+        ...user,
+        password: newPassword,
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
-  //Delete
+  //------------------------**[Delete user]**-------------------------------
   async delete({ email }: IUsersServiceDelete): Promise<boolean> {
-    const result = await this.usersRepository.softDelete({ email });
+    const result = await this.usersRepository.delete({ email });
     return result.affected ? true : false;
   }
 
-  //Send Token
+  //--------------------**[Send token by PHONE]**--------------------
   async sendToken({ phone }) {
     const SMS_KEY = process.env.SMS_KEY;
     const SMS_SECRET = process.env.SMS_SECRET;
@@ -122,28 +114,20 @@ export class UsersService {
     // prettier-ignore
     if (phone.length < 10 || phone.length > 11) {
       const digit = await this.usersRepository.findOne({where: { phone: phone },});
-
-    // prettier-ignore
       if (digit) {throw new ConflictException('이미 등록된 번호입니다.')}
-    // prettier-ignore
-      const token = String(Math.floor(Math.random() * 1000000)).padStart(6, '0')
-      const SMSservice = new coolsms(SMS_KEY, SMS_SECRET);
-      await SMSservice.sendOne({
-        to: phone,
-        from: SMS_SENDER,
-        text: `[완소] 안녕하세요. 회원가입 인증번호는 [${token}] 입니다.`,
-        type: 'SMS',
-        autoTypeDetect: false,
-      });
-
-      const myToken = await this.cache.get(phone);
-      if (myToken) {await this.cache.del(phone)}
-      await this.cache.set(phone, token);
-      return token;
     }
+    // prettier-ignore
+    const token = String(Math.floor(Math.random() * 1000000)).padStart(6, '0')
+    const SMSservice = new mysms(SMS_KEY, SMS_SECRET);
+    await SMSservice.sendOne({
+      to: phone,
+      from: SMS_SENDER,
+      text: `[완소] 안녕하세요. 회원가입 인증번호는 [${token}] 입니다.`,
+      autoTypeDetect: true,
+    });
+    return token;
   }
-
-  //Auth Token
+  //--------------------**[Auth token]**--------------------
   async authToken({ phone, token }) {
     const myToken = await this.cache.get(phone);
 
@@ -151,5 +135,51 @@ export class UsersService {
     else {
       throw new UnprocessableEntityException('인증번호가 잘못 되었습니다.');
     }
+  }
+
+  //----------------------**[FOR ADMIN]**----------------------
+
+  //----------------------**[Fetch all users for admin]**--------------------
+  async findAll({ page, order }): Promise<User[]> {
+    return this.usersRepository.find({
+      skip: (page - 1) * 6,
+      take: 12,
+      order: { createdAt: order },
+    });
+  }
+
+  //----------------------**[어드민 유저 검색]**--------------------
+  async findUserForAdmin({ nickname, page }) {
+    const result = await this.usersRepository.find({
+      where: { nickname: Like(`%${nickname}%`) },
+      take: 12,
+      skip: (page - 1) * 12,
+      relations: ['board'],
+    });
+    return result;
+  }
+
+  //------------------------**[Block User]**-------------------------------
+  async deleteUser({ email }: IAdminServiceUserDelete): Promise<boolean> {
+    // const user = await this.usersRepository.findOne({
+    //   where: { email },
+    // });
+
+    const result = await this.usersRepository.softDelete({ email });
+    return result.affected ? true : false;
+  }
+  //----------------------**[Restore User]**----------------------
+  async restoreUser({ email }: IAdminServiceUnblock): Promise<boolean> {
+    const result = await this.usersRepository.restore({ email });
+    return result.affected ? true : false;
+  }
+
+  //----------------------**[Fetch Blocked for admin]**---------------------------
+  async findBlocked(): Promise<User[]> {
+    const a = await this.usersRepository.find({ withDeleted: true });
+
+    const result = a.filter((el) => el.deletedAt !== null);
+
+    return result;
   }
 }

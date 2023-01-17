@@ -10,11 +10,14 @@ import axios from 'axios';
 export class IamportService {
   async getToken() {
     try {
+      // 액세스 토큰(access token) 발급 받기
       const result = await axios.post('https://api.iamport.kr/users/getToken', {
         imp_key: process.env.IAMPORT_PAY,
         imp_secret: process.env.IAMPORT_SECRET,
       });
-      return result.data.response.access_token;
+
+      const { access_token } = result.data.response; //인증토큰
+      return access_token;
     } catch (error) {
       throw new HttpException(
         error.response.data.message,
@@ -23,27 +26,22 @@ export class IamportService {
     }
   }
 
-  async checkPaid({ impUid, amount, token }) {
+  //impUid로 서버에서 결제정보 조회하기
+  async checkPaid({ impUid, getToken, amount }) {
     try {
+      const access_token = getToken;
       const result = await axios.get(
         `https://api.iamport.kr/payments/${impUid}`,
-        { headers: { Authorization: token } },
+        { headers: { Authorization: `Bearer ${access_token}` } },
       );
 
-      if (result.data.response.status !== 'paid')
-        throw new ConflictException('결제 내역이 존재하지 않습니다.');
-
-      if (result.data.response.amount !== amount)
-        throw new UnprocessableEntityException('결제 금액이 잘못 되었습니다.');
+      const paymentData = result.data.response; // 조회한 결제 정보
+      return paymentData;
     } catch (error) {
-      if (error?.response?.data?.message) {
-        throw new HttpException(
-          error.response.data.message,
-          error.response.status,
-        );
-      } else {
-        throw error;
-      }
+      throw new HttpException(
+        error.response.data.message,
+        error.response.status,
+      );
     }
   }
 
