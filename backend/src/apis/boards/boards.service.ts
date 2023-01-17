@@ -18,11 +18,10 @@ export class BoardsService {
   ) {}
 
   //----------------------**[Fetch Boards]**----------------------
-  find({ page, order }) {
+  find({ order }) {
     return this.boardRepository.find({
       relations: ['user', 'boardImg'],
-      skip: (page - 1) * 6,
-      take: 6,
+
       order: { createdAt: order },
     });
   }

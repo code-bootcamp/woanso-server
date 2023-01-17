@@ -25,7 +25,7 @@ export class BoardsResolver {
     order: string,
   ) {
     //게시글 전체 불러 오기
-    return this.boardsService.find({ page, order });
+    return this.boardsService.find({ order });
   }
 
   //----------------------**[Fetch Board By User]**----------------------
